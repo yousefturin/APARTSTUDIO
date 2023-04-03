@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Language" content="en">
+</head>
+        
+    <script>
+            function changeIcon() {
+                var menu_btn = document.getElementById("menu_btn");
+                menu_btn.style.display = "none";
+            }
+
+            const canvas = document.getElementById('image-canvas');
+            const ctx = canvas.getContext('2d');
+            const image = new Image();
+            image.onload = function() {
+            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+            }
+            image.src = '/static/image.jpg'; 
+    </script>
+    <style> 
+    </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title id="title">NoT PHOTOSHOT - Editor</title>
+        <link rel = "icon" href ="
+        /static/images/img_icons.png" 
+                type = "image/x-icon">
+        <link rel= "stylesheet" href= "styles.css">
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+        
+    <body>
+        <div class="container">
+            <div class="toppane">
+                <div class="wraplogo">
+                    <img src="/static/images/img_icons.png" alt="logo" class="image-style" title="Non of your Business, Keep Going Bro and Remove Your Pointer From Me">
+                </div>
+                <div class="buttom-toppane">
+            </button> 
+            <button class="material-symbols-outlined" title="Premium">
+               star
+           </button>
+           <button class="material-symbols-outlined" id="download" title="Download Image">
+               download
+               <h>Download</h>
+           </button>
+           <button class="material-symbols-outlined" id="send" title="Share">
+               send
+               <h>Share</h>
+           </button>
+
+        </div>
+            </div>
+
+            <div class="d-flex">
+
+              <div class="leftpane">
+                <div class="wrap-buttoms">
+                <button class="btn" id="drag_pan_button" title="Drag">
+                    <span class="material-symbols-outlined" id="icon_drag_pan">
+                        drag_pan
+                        </span>
+                </button> 
+                <button class="btn" id="crop_rotate_button" title="Crop">
+                    <span class="material-symbols-outlined" id="icon_crop_rotate">
+                        crop_rotate
+                        </span>
+                </button> 
+                <button class="btn" id="aspect_ratio_button" title="Aspect Ratio">
+                    <span class="material-symbols-outlined" id="icon_aspect_ratio">
+                        aspect_ratio
+                        </span>
+                </button> 
+                <button class="btn" id="auto_fix_high_button" title="Select Object">
+                    <span class="material-symbols-outlined" id="icon_auto_fix_high">
+                        auto_fix_high
+                        </span>
+                </button> 
+                <button class="btn" id="auto_awesome_button" title="Ehnace Image">
+                    <span class="material-symbols-outlined" id="icon_auto_awesome">
+                        auto_awesome
+                        </span>
+                </button> 
+                <button class="btn" id="blur_on_button" title="Add Blur">
+                    <span class="material-symbols-outlined" id="icon_blur_on">
+                        blur_on
+                        </span>
+                </button> 
+                <button class="btn" id="brush_button" title="Brush">
+                    <span class="material-symbols-outlined" id="icon_brush">
+                        brush
+                        </span>
+                </button> 
+                <button class="btn" id="grain_button" title="Add Grain">
+                    <span class="material-symbols-outlined" id="icon_grain">
+                        grain
+                        </span>
+                </button> 
+                <button class="btn" id="camera_roll_button" title="Colorize image">
+                    <span class="material-symbols-outlined" id="icon_camera_roll">
+                        camera_roll
+                        </span>
+                </button> 
+                </div>
+            </div>
+              <div class="middlepane">
+                    <canvas id="image-canvas"></canvas>
+                  
+              </div>
+              <div class="rightpane"> 
+                <div class="rightdivider">
+                    
+                    <div class="rightpanetop">
+                        <o>Histogram</o>
+                        <canvas id="histogram-canvas"></canvas>
+                   </div>
+                     <div class="rightpanemiddle">
+                        
+                        <div class="rpmtop">
+                            <o>White-Balance</o>
+                            <m>Temp</m>
+                                <m>Tint</m>
+                            <div class="wraprpmtop">
+                            <input type="range" min="2000" max="50000" value="26000" class="slider" 
+                                id="TEMP"oninput="rangeValueTEMP.innerText = this.value" title="Tempeture">
+                                    <p id="rangeValueTEMP">26000</p>
+                            <input type="range" min="-150" max="150" value="0" class="slider" 
+                                id="TINT"oninput="rangeValueTINT.innerText = this.value" title="Tint">
+                                    <p id="rangeValueTINT">0</p>
+                        </div>
+                        </div>
+                        <div class="rpmmiddle">
+                            <o>Tone</o>
+                            <k>Exposure</k>
+                                <k>Contrast</k>
+                                    <k>Highlights</k>
+                                        <k>Shadows</k>
+                                    <k>Whites</k>
+                                <k>Blacks</k>
+                            <div class="wraprpmmiddle">
+                            <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
+                                id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
+                                    <p id="rangeValueEXPO">0</p>
+                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                id="CONT"oninput="rangeValueCONT.innerText = this.value" title="Contrast">
+                                    <p id="rangeValueCONT">0</p>
+                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                    id="HIGH"oninput="rangeValueHEIGH.innerText = this.value" title="Highlights">
+                                        <p id="rangeValueHIGH">0</p>
+                                <input type="range" min="-100" max="100" value="0" class="slider" 
+                                    id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows">
+                                        <p id="rangeValueSHAD">0</p>
+                                        <input type="range" min="-100" max="100" value="0" class="slider" 
+                                        id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites">
+                                            <p id="rangeValueWHITE">0</p>
+                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                        id="BLACK"oninput="rangeValueBLACK.innerText = this.value" title="Blacks">
+                                            <p id="rangeValueBLACK">0</p>                
+                        </div>
+                    </div>
+                    
+                        <div class="rpmbottom">
+                            <o>Presence</o>
+                            <l>Texture</l>
+                                 <l>Clarity</l>
+                                    <l>Dehaze</l>
+                                        <l>Vibrance</l>
+                                    <l>Saturation</l>
+                            <div class="wraprpmbottom">
+                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                            id="TEXT"oninput="rangeValueTEXT.innerText = this.value" title="Texture">
+                                <p id="rangeValueTEXT">0</p>
+                                <input type="range" min="-100" max="100" value="0" class="slider" 
+                                id="CLAR"oninput="rangeValueCLAR.innerText = this.value" title="Clarity">
+                                    <p id="rangeValueCLAR">0</p>
+                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze">
+                                    <p id="rangeValueDEH">0</p>      
+                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                    id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance">
+                                        <p id="rangeValueVIR">0</p>
+                                        <input type="range" min="-100" max="100" value="0" class="slider" 
+                                        id="SAT"oninput="rangeValueSAT.innerText = this.value" title="Saturation">
+                                            <p id="rangeValueSAT">0</p>
+                        </div>
+                    </div>
+
+                        </div>
+                    
+                    <div class="rightpanebottom">
+                        <div class="rpbtop">
+                            <canvas id="wrap-font-canvas"></canvas>
+                            <select id="font-selector" title="Font Selector">
+                                <option value="Arial" id="arial" >Arial</option>
+                                <option value="Helvetica" id="helvetica">Helvetica</option>
+                                <option value="Times New Roman" id="TNR">Times New Roman</option>
+                                <option value="Courier New" id="CN">Courier New</option>
+                                <option value="Verdana" id="verdana">Verdana</option>
+                                <option value="Georgia" id="georgia">Georgia</option>
+                                <option value="Palatino" id="palation">Palatino</option>
+                                <option value="Garamond" id="garamond">Garamond</option>
+                                <option value="Bookman" id="bookman">Bookman</option>
+                                <option value="Comic Sans MS" id="CSMS">Comic Sans MS</option>
+                                <option value="Impact" id="impact" >Impact</option>
+                                <option value="Lucida Sans Unicode" id="LSU">Lucida Sans Unicode</option>
+                                <option value="Tahoma" id="tahoma">Tahoma</option>
+                                <option value="Trebuchet MS" id="TMS">Trebuchet MS</option>
+                                <option value="Century Gothic" id="CG">Century Gothic</option>
+                                <option value="Consolas" id="consolas">Consolas</option>
+                                <option value="Calibri" id="calibri">Calibri</option>
+                                <option value="Cambria" id="cambria">Cambria</option>
+                                <option value="Franklin Gothic Medium" id="FGM">Franklin Gothic Medium</option>
+                                <option value="Segoe UI" id="SUI">Segoe UI</option>
+                            </select>
+                            
+                            <canvas id="wrap-font-type-canvas"></canvas>
+                            <select id="font-type-selector" title="Font Type Selector">
+                                <option value="Normal" id="Normal">Normal</option>
+                                <option value="Bold" id="Bold">Bold</option>
+                                <option value="Italic" id="Italic">italic</option>
+                            </select>
+                            
+                        </div>
+
+                        <div class="rpbmiddle">
+                            
+                            <input type="number" id="text-size" name="text-size" min="2" max="128" step="2" value="12"title="Font Size">
+                                <span class="material-symbols-outlined" id="icon-format_size" >
+                                    format_size
+                                    </span>
+                            <input type="number" id="text-upper-space" name="text-upper-space" min="14" max="128" step="2" value="14" title="Text Upper Spacing">
+                                <span class="material-symbols-outlined" id="icon-text-format-down">
+                                    text_format
+                                    </span>
+                                    <span class="material-symbols-outlined" id="icon-text-format-up">
+                                        text_format
+                                        </span>
+                                        <span class="material-symbols-outlined" id="icon-text-format-arrows">
+                                            height
+                                            </span>
+                            <input type="number" id="text-left-right-space" name="text-left-right-space" min="0" max="128" step="2" value="0" title="Word Spacing">
+                                <span class="material-symbols-outlined" id="icon-text-left-right-space-arrow">
+                                    height
+                                    </span>
+                                    <span class="material-symbols-outlined"id="icon-text-left-right-space-lang">
+                                        language_us
+                                        </span>
+                            <input type="number" id="text-wrap" name="text-wrap" min="0" max="512" step="2" value="0" title="Single Word Spacing">
+                                <span class="material-symbols-outlined" id="icon-text-wrap-rec">
+                                    rectangle
+                                    </span>
+                                <span class="material-symbols-outlined"  id="icon-text-wrap-arrow">
+                                    height
+                                    </span>
+                                    <span class="material-symbols-outlined"  id="icon-text-wrap-lan">
+                                        language_us
+                                        </span>
+                    </div>
+                        <div class="rpbbottom">
+                            <input type="number" id="text-height" name="text-height" min="2" max="512" step="2" >
+                                <span class="material-symbols-outlined" id="icon-text-height-font">
+                                    title
+                                    </span>
+                                    <span class="material-symbols-outlined" id="icon-text-height-arrow">
+                                        height
+                                        </span>
+                            <input type="number" id="text-width" name="text-width" min="2" max="512" step="2" >
+                                <span class="material-symbols-outlined" id="icon-text-width-font">
+                                    title
+                                    </span>
+                                    <span class="material-symbols-outlined" id="icon-text-width-arrow">
+                                        height
+                                        </span>
+                            <input type="number" id="text-margin" name="text-margin" min="0" max="512" step="2" >
+                                <span class="material-symbols-outlined" id="icon-margin-format-up">
+                                    text_format
+                                    </span>
+                                    <span class="material-symbols-outlined" id="icon-margin-format-down">
+                                        text_format
+                                        </span>
+                                            <span class="material-symbols-outlined" id="icon-margin-height-arrow">
+                                                height
+                                                </span>
+                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2" value="100">
+                                <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
+                                    rotate_right
+                                    </span>
+                                    <span class="material-symbols-outlined" id="icon-text-rotation-font">
+                                        title
+                                        </span>
+
+                    </div>
+                    </div>
+                </div>
+            </div>
+
+                </div>
+            </div>
+          </div>
+          <script src="slider.js"></script>
+    </body>
+    <footer>
+        <div class=" footer">
+            <p class="translate">The content of this site is copyright-protected and is the property of Scalorbost, business concept 
+                is to offer scale images free of charge. Scalorbost has since it was founded in 2022 in istanbul as project for 4th 
+                year student of system programming department at byekoz university.<br><br>
+                
+                <h style="text-decoration:none" href="https://github.com/yousefturin">
+                    <img src="/static/images/github.png" alt="buttonpng" id="img_github" style="width: 20px; height: 20px;">
+                </h>
+                        <h style="text-decoration:none" href="https://www.linkedin.com/in/yusef-rayyan-b82420199/">
+                            <img src="/static/images/linkedin.png"  alt="buttonpng" id="img_linkedin" style="width: 20px; height: 20px;">
+                        </h>
+                                <h style="text-decoration:none" href="https://www.instagram.com/yusefturin/">
+                                    <img src="/static/images/instagram.png"  alt="buttonpng" id="img_instaram" style="width: 20px; height: 20px;">
+                                </h>
+                            
+                        <br><br>
+              Turkey | <h style="text-decoration:none;font-weight: bold;" href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@Scalorbost.com</h></p>
+
+        </div>
+    
+      </footer>
+
+</html>

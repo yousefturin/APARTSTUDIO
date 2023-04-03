@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Language" content="en">
+    <script>
+        $(document).ready(function () {
+            $(document).on('mouseenter', '.divbutton', function () {
+                $(this).find(":button").show();
+            }).on('mouseleave', '.divbutton', function () {
+                $(this).find(":button").hide();
+            }).on('click', ':button', function() {
+                $(this).parent().remove();
+            });
+        });
+        type="img/javascript">
+        $( "#file" ).change(function() {
+        $( "#Up" ).click();
+        });
+        
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("img", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("img");
+            ev.target.appendChild(document.getElementById(data));
+        }
+        function changeIcon() {
+            var uploading = document.getElementById("uploading");
+            var uploaded = document.getElementById("uploaded");
+            uploading.style.display = "none";
+            uploaded.style.display = "inline";
+        }
+        document.getElementById("language").addEventListener("change", function() {
+        var lang = this.value;
+        document.documentElement.lang = lang;
+        document.querySelector('meta[http-equiv="Content-Language"]').setAttribute("content", lang);
+        document.querySelectorAll(".translate").forEach(function(element) {
+        element.textContent = translations[lang][element.id];
+      });
+      });
+      function updateValue(val) {
+        // Update the value displayed next to the slider
+        document.getElementById('value').innerHTML = val;
+        }
+    </script>
+        <style>
+            input[type='number']::placeholder
+            {   
+                text-align: center;   
+            }
+            #uploading {
+                cursor: pointer;
+            }
+            #uploaded {
+                display: none;
+            }
+            p{
+                font-family: "Poppins", sans-serif;
+            }
+            p span{
+                font-weight: bold;
+            }
+    </style>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title id="title">Enhance Image - Scalorbost</title>
+                <link rel = "icon" href = 
+                    "/static/images/img_icon.png" 
+                            type = "image/x-icon">
+                <link rel= "stylesheet" href= 
+                    "{{ url_for('static', filename='styles/style.css') }}">
+                    <link rel="stylesheet" href=
+                        "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+                    <link rel="stylesheet" href=
+                        "https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
+    </head>
+<body>
+    <div class="column_toolbar">
+        <div class="main_tab">
+            <div class="toolbar">
+                <a href="/"> 
+                    <button class="btn" id="menu_btn" onclick="changeIcon()">
+                        <i class="material-symbols-outlined">
+                            home
+                        </i> 
+                             </button> 
+                                </a>
+            </div>
+        </div>
+    </div>
+    <div class="divbutton">
+        <p class="translate">
+            Your Images will be stored on our servers for study and analysis purposes. 
+            Scalorbost use Flask server with Python where the pictures are processed in PLT 
+            library, the store the images in the server then it gets resized either by paying 
+            attention to the aspect ratio if checked  or not and at the end it gets sent
+            it back to the user.
+        </p>
+            <button type="button"  id="i" onclick="document.body.removeChild(this.parentNode)">
+                Accept
+            </button>
+    </div>
+
+    <div class="container" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="row">
+            <h1 class="translate">Image Enhancing System</h1>          
+                <p class="translate">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <ul>
+                                {% for message in messages %}
+                                <li>{{message}}</li>
+                                    {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% endwith %}
+                    </p>    
+                        <form action="/enhance" method="POST" id="img" enctype="multipart/form-data" >
+                            <input type="file" id="file" name="file" style="display: none">
+                                <label for="file" id="uploading" onclick="changeIcon()">
+                                    <i class="material-symbols-outlined">
+                                        cloud_upload
+                                    </i>
+                                </label>
+                                    <label for="file" id="uploaded">
+                                        <i class="material-symbols-outlined">
+                                            cloud_done
+                                        </i>
+                                    </label>
+                                        <h2 class="translate">Browse File to Upload
+                                        </h2>
+                                            <div class="column">
+                                                <p style="color: #b0c4de; font-size: 10px;text-align: center;">
+                                                    Sharpness Factor
+                                                </p>
+                                                    <input type="range" id="sharpness_factor" name="sharpness_factor"
+                                                        min="1.0" max="10.0" step="0.1" oninput="updateValue(this.value)" >
+                                                            <div class="row">
+                                                                <input type="submit"  id= " submit" value="Upload" class="btn btn-info">
+                                                                    <p style="align-items: center;justify-content: center;margin-left: 13px;color: #b0c4de;">
+                                                                        Sharpness: 
+                                                                            <span id="value">5.0
+
+                                                                            </span>
+                                                                    </p>
+        
+                        </form>  
+            </div>
+        </div>
+        <footer>
+            <div class=" footer">
+                <p class="translate">The content of this site is copyright-protected and is the property of Scalorbost, business concept 
+                    is to offer scale images free of charge. Scalorbost has since it was founded in 2022 in istanbul as project for 4th 
+                    year student of system programming department at byekoz university.<br><br>
+                    
+                    <a style="text-decoration:none" href="https://github.com/yousefturin">
+                        <img src="/static/images/github.png" alt="buttonpng" id="img_github" style="width: 20px; height: 20px;">
+                            </a>
+                            <a style="text-decoration:none" href="https://www.linkedin.com/in/yusef-rayyan-b82420199/">
+                                <img src="/static/images/linkedin.png"  alt="buttonpng" id="img_linkedin" style="width: 20px; height: 20px;">
+                                    </a>
+                                    <a style="text-decoration:none" href="https://www.instagram.com/yusefturin/">
+                                        <img src="/static/images/instagram.png"  alt="buttonpng" id="img_instagram" style="width: 20px; height: 20px;">
+                                            </a>
+                                
+                            <br><br>
+                  Turkey | <a style="text-decoration:none" href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@Scalorbost.com</a></p>
+    
+            </div>
+        
+          </footer>
+</body>
+</html>

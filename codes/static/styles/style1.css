@@ -1,0 +1,472 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
+body{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    min-width: 100vw;
+    width: auto !important;
+    background:	#b0c4de ;
+}
+#loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 3px solid #333;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+  }
+  
+  @keyframes spin {
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
+
+/* cookies--------------------------------------------|------------------------------------------------------------cookies*/
+/*                                                    V                                                                  */
+.divbutton{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    margin-top: 40px;
+    background: rgba(255, 255, 255, 0.507);
+    color: black;
+    text-align: center;
+    opacity: 90%;
+}
+.divbutton button{
+    position: relative;
+    margin-bottom: 35px;
+    margin-left: 35px;
+    margin-right: 35px;
+    background-color: #b0c4de;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    cursor: pointer;
+}
+.divbutton button:focus{
+    margin-bottom: 35px;
+    margin-left: 35px;
+    margin-right: 35px;
+    background-color: #738192eb;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    cursor: pointer;
+    font-weight: bold;
+}
+.divbutton p{
+    font-size: 12px;
+    margin: 35px;
+
+}
+
+
+/* toolbar--------------------------------------------|------------------------------------------------------------toolbar*/
+/*                                                    V                                                                  */
+.column_toolbar{
+    left: 0;
+    top: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+
+}
+.main_tab{
+    height: 60px;
+    background-color:  rgb(255, 255, 255);
+    left: 0;
+    top: 0;
+}
+.toolbar button{
+    margin: 15px;
+    cursor: pointer;
+    border: none;
+    border-radius: 20px;
+}
+.toolbar button:active{
+    cursor: pointer;
+    font-size: 23px;
+    margin: 15px;
+}
+.toolbar i{
+    color: black;
+}
+
+
+
+
+/* footer---------------------------------------------|-------------------------------------------------------------footer*/
+/*                                                    V                                                                  */
+
+.footer {
+    position: fixed;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    background-color: white;
+    color: black;
+    text-align: center;
+    font-size: 9px;
+}
+.footer p{
+    margin: 35px;
+
+}
+.footer a{
+    color: black;
+    font-weight: bold;
+}
+
+
+/* index.html-----------------------------------------|---------------------------------------------------------index.html*/
+/*                                                    V                                                                  */
+
+.container{
+    width: 430px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+}
+.container h1{
+    color: #b0c4de;
+    font-size: 30px;
+    font-weight:600 ;
+    text-align: center;
+}
+.container h2{
+    color: #b0c4de;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.row ul{
+    color: #e89090;
+    font-size: 15px;
+    text-align: left;
+    margin-top: 15px;
+    margin-left: 31px;
+    padding: 5px 5px;
+    align-items: center;
+    justify-content: center;
+}
+.container form{
+    height: 300px;
+    display: flex;
+    margin: 30px 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 20px;
+    border: 2px dashed #b0c4de;
+}
+.container i:active{
+    font-size: 60px;
+    color:  #738192eb;
+    cursor: pointer;
+}
+.container i{
+    font-size: 80px;
+    color:  #b0c4de;
+    cursor: pointer;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type=number]:focus {
+    text-align: center;
+    padding: 10px 10px;
+    margin: 10px 0;
+    box-sizing: border-box;
+    border-radius: 20px;
+    background-color: #b0c4de
+}
+input[type=number] {
+    text-align: center;
+    border-radius: 20px;
+    padding: 10px 10px;
+    border: 2px solid #b0c4de;
+}
+.asp{
+    margin: 5px;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    text-align: center;
+    display: block;
+    position: absolute;
+    padding-left: 27px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    border-radius: 20px;
+}
+.asp input {
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+    border-radius: 20px;
+}
+.checkmark {
+    margin-left: 5px;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    padding-left: 20px;
+    top: 0;
+    left: 0;
+    height: 10px;
+    width: 10px;
+    background-color: #b0c4de;
+    border-radius: 20px;
+}
+.asp input:checked ~ .checkmark {
+    align-items: center;
+    justify-content: center;
+    background-color: #738192eb;
+    border-radius: 20px;
+}
+.checkmark:after {
+    align-items: center;
+    justify-content: center;
+    content: "";
+    position: absolute;
+    display: none;
+    border-radius: 20px;
+}
+.asp input:checked ~ .checkmark:after {
+    align-items: center;
+    justify-content: center;
+    display: block;
+    border-radius: 20px;
+}
+.dot{
+    height: 8px;
+    width: 8px;
+    position: absolute;
+    background-color: black;
+    border-radius: 50%;
+    top: 1px;
+    left: 1px;
+    cursor: pointer;
+}
+.dot:active {
+    height: 8px;
+    width: 8px;
+    position: absolute;
+    background-color: black;
+    border-radius: 50%;
+    top: 1px;
+    left: 10px;
+    cursor: pointer;
+}
+input[type=submit]{
+    font-size: 15px;
+    background-color: #b0c4de;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 20px 0;
+    cursor: pointer;
+}
+input[type=submit]:focus{
+    font-size: 13px;
+    background-color: #738192eb;
+    width: 100%;
+    border: none;
+    border-radius: 20px;
+    color: white;
+    padding: 16px 32px;
+    text-decoration: none;
+    margin: 20px 0;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+
+/* download.html--------------------------------------|------------------------------------------------------download.html*/
+/*                                                    V                                                                  */
+
+.cont{
+    width: 430px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+}
+.cont h2{
+    color: #b0c4de;
+    font-size: 16px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.cont h1{
+    color: #b0c4de;
+    font-size: 30px;
+    font-weight:600 ;
+    text-align: center;
+}
+.cont .but{
+    height: 300px;
+    display: flex;
+    margin: 30px 0;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 20px;
+    border: 2px dashed #b0c4de;
+}
+.cont button{ 
+    background-color: #b0c4de;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+}
+.cont button:focus{ 
+    background-color: #738192eb;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px;
+}
+.cont i{
+    font-size: 80px;
+    color: white;
+    border-radius: 20px;
+}
+.cont i:focus{
+    font-size: 80px;
+    color: white;
+    border-radius: 20px;
+}
+
+
+/* main.html------------------------------------------|----------------------------------------------------------main.html*/
+/*                                                    V                                                                  */
+
+
+.box_cont{
+    width: 430px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 20px;
+}
+.box_row h1{
+    color: #b0c4de;
+    font-size: 30px;
+    font-weight:600 ;
+    text-align: center;
+}
+.rescale{
+    height: 150px;
+    display: flex;
+    margin: 30px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    border-radius: 20px;
+    border: 2px dashed #b0c4de;
+}
+.btn{
+    color: #b0c4de;
+    background-color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 20px; 
+}
+.rescale i{
+    font-size: 80px;
+}
+.rescale i:active{
+    font-size: 60px;
+    color: #738192eb;
+    font-weight: bold;
+}
+.rescale p{
+    color: #b0c4de;
+    margin: 20px;
+    font-weight: bold;
+}
+.rescale  p span{
+    font-size: 9px;
+    color:#738192eb;
+}
+.enhance{
+    height: 150px;
+    display: flex;
+    margin: 30px;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    border-radius: 20px;
+    border: 2px dashed #b0c4de;
+}
+.enhance i{
+    font-size: 80px;
+}
+.enhance i:active{
+
+    font-size: 60px;
+    color: #738192eb;
+    font-weight: bold;
+}
+.enhance p{
+    color: #b0c4de;
+    margin: 20px;
+    font-weight: bold;
+}
+.enhance p span{
+    font-size: 9px;
+    color:#738192eb;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+    width: 100%;
+    height: 8px;
+    background: #b0c4de;
+    border: none;
+    border-radius: 20px;
+}
+input[type="range"]{
+    -webkit-appearance: none;
+    background-color: #738192eb;
+    width: 20px;
+    height: 20px;
+    border: none;
+    margin: -3px 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+input[type="range"]::-webkit-slider-thumb { 
+    background-color: #738192eb;
+    color: #738192eb; 
+}
+
+
+
