@@ -28,8 +28,44 @@
         <link rel= "stylesheet" href= "styles.css">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+
         
     <body>
+        <div class="overlay" id="overlay">
+            <div class="overlay-content">
+                <div class="downloadscreen">
+                    <div class="downloadscreentitle">
+                        <a>
+                            Download
+                        </a>
+                    </div>
+                    <div class="downloadscreenup">
+                        <input type="range" id="verticalslider" name="horizontal-slider" min="0" max="100" value="50" style="writing-mode: bt-lr; transform: rotate(270deg);">
+
+                    </div>
+
+                        <div class="downloadscreendown">
+                            <div class="downloadscreendownwrap">
+                                <div class="downloadscreendownleft">
+                                    <div class="downloadname">
+                                        <input type="text" id="textfilename" name="textfilename" placeholder="Enter File name">
+                                    </div>
+                                        <div class="downloadokay">
+                                            <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                done
+                                            </button>
+                                        </div>
+                                </div>
+                                    <div class="downloadscreendownright">
+
+                                    </div>
+                            </div>
+
+                        </div>
+
+                </div>
+            </div>
+          </div>
         <div class="container">
             <div class="toppane">
                 <div class="wraplogo">
@@ -104,193 +140,296 @@
                 </div>
             </div>
               <div class="middlepane">
+                <div class="wrapmiddlepane">
                     <canvas id="image-canvas"></canvas>
-                  
+                </div>
               </div>
               <div class="rightpane"> 
                 <div class="rightdivider">
                     
                     <div class="rightpanetop">
-                        <o>Histogram</o>
-                        <canvas id="histogram-canvas"></canvas>
-                   </div>
-                     <div class="rightpanemiddle">
-                        
-                        <div class="rpmtop">
-                            <o>White-Balance</o>
-                            <m>Temp</m>
-                                <m>Tint</m>
-                            <div class="wraprpmtop">
-                            <input type="range" min="2000" max="50000" value="26000" class="slider" 
-                                id="TEMP"oninput="rangeValueTEMP.innerText = this.value" title="Tempeture">
-                                    <p id="rangeValueTEMP">26000</p>
-                            <input type="range" min="-150" max="150" value="0" class="slider" 
-                                id="TINT"oninput="rangeValueTINT.innerText = this.value" title="Tint">
-                                    <p id="rangeValueTINT">0</p>
-                        </div>
-                        </div>
-                        <div class="rpmmiddle">
-                            <o>Tone</o>
-                            <k>Exposure</k>
-                                <k>Contrast</k>
-                                    <k>Highlights</k>
-                                        <k>Shadows</k>
-                                    <k>Whites</k>
-                                <k>Blacks</k>
-                            <div class="wraprpmmiddle">
-                            <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
-                                id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
-                                    <p id="rangeValueEXPO">0</p>
-                            <input type="range" min="-100" max="100" value="0" class="slider" 
-                                id="CONT"oninput="rangeValueCONT.innerText = this.value" title="Contrast">
-                                    <p id="rangeValueCONT">0</p>
-                                    <input type="range" min="-100" max="100" value="0" class="slider" 
-                                    id="HIGH"oninput="rangeValueHEIGH.innerText = this.value" title="Highlights">
-                                        <p id="rangeValueHIGH">0</p>
-                                <input type="range" min="-100" max="100" value="0" class="slider" 
-                                    id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows">
-                                        <p id="rangeValueSHAD">0</p>
-                                        <input type="range" min="-100" max="100" value="0" class="slider" 
-                                        id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites">
-                                            <p id="rangeValueWHITE">0</p>
-                                    <input type="range" min="-100" max="100" value="0" class="slider" 
-                                        id="BLACK"oninput="rangeValueBLACK.innerText = this.value" title="Blacks">
-                                            <p id="rangeValueBLACK">0</p>                
+                        <div class="wraprpttop">
+                            <div class="wraprptttop">
+                                <o>Histogram</o>
+                            </div>
+                            <div class="wraprptbtop">
+                                <canvas id="histogram-canvas"></canvas>
+                            </div>
                         </div>
                     </div>
+
+                     <div class="rightpanemiddle">              
+                        <div class="rpmtop">
+                            <div class="wraprpmtop">
+                                <div class="wraprpmtop3">
+                                    <o>White-Balance</o>
+                                </div>
+                                    <div class="wraprpmtop4">
+                                        <div class="wraprpmtop1">
+                                            <m>Temp</m>
+                                                <m>Tint</m>
+                                        </div>
+                                        <div class="wraprpmtop2">
+                                            <div class="wraprpmtop6">
+                                                <input type="range" id="TEMP" min="2000" max="50000" value="26000" class="slider" 
+                                                    oninput="rangeValueTEMP.innerText = this.value" title="Tempeture">
+                                                        
+                                                <input type="range"id="TINT" min="-150" max="150" value="0" class="slider" 
+                                                    oninput="rangeValueTINT.innerText = this.value" title="Tint">
+                                            </div>
+                                            <div class="wraprpmtop5">
+                                                <p id="rangeValueTEMP">26000</p>
+                                                    <p id="rangeValueTINT">0</p>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                            </div>
+                        </div>
+
+
+                        <div class="rpmmiddle">
+                            <div class="wraprpmmiddle">
+                                <div class="wraprpmmiddle1">
+                                    <o>Tone</o>
+                                </div>
+                                    <div class="wraprpmmiddle2">
+                                        <div class="wraprpmmiddle3">
+                                            <k>Exposure</k>
+                                                <k>Contrast</k>
+                                                    <k>Highlights</k>
+                                                    <k>Shadows</k>
+                                                <k>Whites</k>
+                                            <k>Blacks</k>
+                                        </div>
+                                            <div class="wraprpmmiddle4">
+                                                <div class="wraprpmmiddle5">
+                                                    <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
+                                                        id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
+                                                            
+                                                        <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                            id="CONT"oninput="rangeValueCONT.innerText = this.value" title="Contrast">
+                                                            
+                                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                                id="HIGH"oninput="rangeValueHEIGH.innerText = this.value" title="Highlights">
+                                                                
+                                                                <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                                    id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows">
+                                                                    
+                                                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                                        id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites">
+                                                                    
+                                                                        <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                                            id="BLACK"oninput="rangeValueBLACK.innerText = this.value" title="Blacks">
+                                                </div>
+                                                    <div class="wraprpmmiddle6">
+                                                            <p id="rangeValueEXPO">0</p>    
+                                                            <p id="rangeValueCONT">0</p>
+                                                            <p id="rangeValueHIGH">0</p>
+                                                            <p id="rangeValueSHAD">0</p>
+                                                            <p id="rangeValueWHITE">0</p>
+                                                            <p id="rangeValueBLACK">0</p> 
+
+                                                    </div>
+                                            </div>
+                                    </div>
+                            </div> 
+                        </div>
                     
                         <div class="rpmbottom">
-                            <o>Presence</o>
-                            <l>Texture</l>
-                                 <l>Clarity</l>
-                                    <l>Dehaze</l>
-                                        <l>Vibrance</l>
-                                    <l>Saturation</l>
                             <div class="wraprpmbottom">
-                            <input type="range" min="-100" max="100" value="0" class="slider" 
-                            id="TEXT"oninput="rangeValueTEXT.innerText = this.value" title="Texture">
-                                <p id="rangeValueTEXT">0</p>
-                                <input type="range" min="-100" max="100" value="0" class="slider" 
-                                id="CLAR"oninput="rangeValueCLAR.innerText = this.value" title="Clarity">
-                                    <p id="rangeValueCLAR">0</p>
-                            <input type="range" min="-100" max="100" value="0" class="slider" 
-                                id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze">
-                                    <p id="rangeValueDEH">0</p>      
-                                    <input type="range" min="-100" max="100" value="0" class="slider" 
-                                    id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance">
-                                        <p id="rangeValueVIR">0</p>
-                                        <input type="range" min="-100" max="100" value="0" class="slider" 
-                                        id="SAT"oninput="rangeValueSAT.innerText = this.value" title="Saturation">
-                                            <p id="rangeValueSAT">0</p>
+                                <div class="wraprpmbottom1">
+                                    <o>Presence</o>
+                                </div>
+                                    <div class="wraprpmbottom2">
+                                        <div class="wraprpmbottom3">
+                                            <l>Texture</l>
+                                                <l>Clarity</l>
+                                                    <l>Dehaze</l>
+                                                <l>Vibrance</l>
+                                            <l>Saturation</l>
+                                        </div>
+                                            <div class="wraprpmbottom4">
+                                                <div class="wraprpmbottom5">
+                                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                    id="TEXT"oninput="rangeValueTEXT.innerText = this.value" title="Texture">
+
+                                                        <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                        id="CLAR"oninput="rangeValueCLAR.innerText = this.value" title="Clarity">
+                                                            
+                                                    <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                        id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze">
+                                                                
+                                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                            id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance">
+                                                                
+                                                                <input type="range" min="-100" max="100" value="0" class="slider" 
+                                                                id="SAT"oninput="rangeValueSAT.innerText = this.value" title="Saturation">              
+                                                </div>
+                                                    <div class="wraprpmbottom6">
+                                                        <p id="rangeValueTEXT">0</p>
+                                                        <p id="rangeValueCLAR">0</p>
+                                                        <p id="rangeValueDEH">0</p> 
+                                                        <p id="rangeValueVIR">0</p> 
+                                                        <p id="rangeValueSAT">0</p>
+                                                    </div>
+                                                    
+                                            </div>
+                                    </div>
+                            </div>
                         </div>
-                    </div>
 
                         </div>
                     
                     <div class="rightpanebottom">
                         <div class="rpbtop">
-                            <canvas id="wrap-font-canvas"></canvas>
-                            <select id="font-selector" title="Font Selector">
-                                <option value="Arial" id="arial" >Arial</option>
-                                <option value="Helvetica" id="helvetica">Helvetica</option>
-                                <option value="Times New Roman" id="TNR">Times New Roman</option>
-                                <option value="Courier New" id="CN">Courier New</option>
-                                <option value="Verdana" id="verdana">Verdana</option>
-                                <option value="Georgia" id="georgia">Georgia</option>
-                                <option value="Palatino" id="palation">Palatino</option>
-                                <option value="Garamond" id="garamond">Garamond</option>
-                                <option value="Bookman" id="bookman">Bookman</option>
-                                <option value="Comic Sans MS" id="CSMS">Comic Sans MS</option>
-                                <option value="Impact" id="impact" >Impact</option>
-                                <option value="Lucida Sans Unicode" id="LSU">Lucida Sans Unicode</option>
-                                <option value="Tahoma" id="tahoma">Tahoma</option>
-                                <option value="Trebuchet MS" id="TMS">Trebuchet MS</option>
-                                <option value="Century Gothic" id="CG">Century Gothic</option>
-                                <option value="Consolas" id="consolas">Consolas</option>
-                                <option value="Calibri" id="calibri">Calibri</option>
-                                <option value="Cambria" id="cambria">Cambria</option>
-                                <option value="Franklin Gothic Medium" id="FGM">Franklin Gothic Medium</option>
-                                <option value="Segoe UI" id="SUI">Segoe UI</option>
-                            </select>
+                            <div class="wraprpbtop">
+                                <div class="wraprpbtop3">
+                                    <o>Font</o>
+                                </div>
+                                <div class="wraprpbtop1">
                             
-                            <canvas id="wrap-font-type-canvas"></canvas>
-                            <select id="font-type-selector" title="Font Type Selector">
-                                <option value="Normal" id="Normal">Normal</option>
-                                <option value="Bold" id="Bold">Bold</option>
-                                <option value="Italic" id="Italic">italic</option>
-                            </select>
-                            
+                                    <select id="font-selector" title="Font Selector">
+                                        <option value="Arial" id="arial" >Arial</option>
+                                            <option value="Helvetica" id="helvetica">Helvetica</option>
+                                                <option value="Times New Roman" id="TNR">Times New Roman</option>
+                                                    <option value="Courier New" id="CN">Courier New</option>
+                                                        <option value="Verdana" id="verdana">Verdana</option>
+                                                            <option value="Georgia" id="georgia">Georgia</option>
+                                                                <option value="Palatino" id="palation">Palatino</option>
+                                                                    <option value="Garamond" id="garamond">Garamond</option>
+                                                                        <option value="Bookman" id="bookman">Bookman</option>
+                                                                            <option value="Comic Sans MS" id="CSMS">Comic Sans MS</option>
+                                                                        <option value="Impact" id="impact" >Impact</option>
+                                                                    <option value="Lucida Sans Unicode" id="LSU">Lucida Sans Unicode</option>
+                                                                <option value="Tahoma" id="tahoma">Tahoma</option>
+                                                            <option value="Trebuchet MS" id="TMS">Trebuchet MS</option>
+                                                        <option value="Century Gothic" id="CG">Century Gothic</option>
+                                                    <option value="Consolas" id="consolas">Consolas</option>
+                                                <option value="Calibri" id="calibri">Calibri</option>
+                                            <option value="Cambria" id="cambria">Cambria</option>
+                                        <option value="Franklin Gothic Medium" id="FGM">Franklin Gothic Medium</option>
+                                    <option value="Segoe UI" id="SUI">Segoe UI</option>
+                                    </select>
+                                </div>
+                                    <div class="wraprpbtop2">
+            
+                                        <select id="font-type-selector" title="Font Type Selector">
+                                            <option value="Normal" id="Normal">Normal</option>
+                                                <option value="Bold" id="Bold">Bold</option>
+                                            <option value="Italic" id="Italic">italic</option>
+                                        </select>
+                                    </div>
+                            </div>
                         </div>
 
                         <div class="rpbmiddle">
-                            
-                            <input type="number" id="text-size" name="text-size" min="2" max="128" step="2" value="12"title="Font Size">
-                                <span class="material-symbols-outlined" id="icon-format_size" >
-                                    format_size
-                                    </span>
-                            <input type="number" id="text-upper-space" name="text-upper-space" min="14" max="128" step="2" value="14" title="Text Upper Spacing">
-                                <span class="material-symbols-outlined" id="icon-text-format-down">
-                                    text_format
-                                    </span>
-                                    <span class="material-symbols-outlined" id="icon-text-format-up">
-                                        text_format
-                                        </span>
-                                        <span class="material-symbols-outlined" id="icon-text-format-arrows">
-                                            height
-                                            </span>
-                            <input type="number" id="text-left-right-space" name="text-left-right-space" min="0" max="128" step="2" value="0" title="Word Spacing">
-                                <span class="material-symbols-outlined" id="icon-text-left-right-space-arrow">
-                                    height
-                                    </span>
-                                    <span class="material-symbols-outlined"id="icon-text-left-right-space-lang">
-                                        language_us
-                                        </span>
-                            <input type="number" id="text-wrap" name="text-wrap" min="0" max="512" step="2" value="0" title="Single Word Spacing">
-                                <span class="material-symbols-outlined" id="icon-text-wrap-rec">
-                                    rectangle
-                                    </span>
-                                <span class="material-symbols-outlined"  id="icon-text-wrap-arrow">
-                                    height
-                                    </span>
-                                    <span class="material-symbols-outlined"  id="icon-text-wrap-lan">
-                                        language_us
-                                        </span>
-                    </div>
-                        <div class="rpbbottom">
-                            <input type="number" id="text-height" name="text-height" min="2" max="512" step="2" >
-                                <span class="material-symbols-outlined" id="icon-text-height-font">
-                                    title
-                                    </span>
-                                    <span class="material-symbols-outlined" id="icon-text-height-arrow">
-                                        height
-                                        </span>
-                            <input type="number" id="text-width" name="text-width" min="2" max="512" step="2" >
-                                <span class="material-symbols-outlined" id="icon-text-width-font">
-                                    title
-                                    </span>
-                                    <span class="material-symbols-outlined" id="icon-text-width-arrow">
-                                        height
-                                        </span>
-                            <input type="number" id="text-margin" name="text-margin" min="0" max="512" step="2" >
-                                <span class="material-symbols-outlined" id="icon-margin-format-up">
-                                    text_format
-                                    </span>
-                                    <span class="material-symbols-outlined" id="icon-margin-format-down">
-                                        text_format
-                                        </span>
-                                            <span class="material-symbols-outlined" id="icon-margin-height-arrow">
-                                                height
+                            <div class="wraprpbmiddle">
+                                <div class="wraprpbmiddle1">
+                                        <div class="wraprpbmiddle2">
+                                            <div class="wraprpbmiddle19">
+                                                <div class="wraprpbniddle4">
+                                                    <input type="number" id="text-size" name="text-size" min="2" max="128" step="2" value="12"title="Font Size">
+                                                </div>
+                                                    <div class="wraprpbmiddle5">
+                                                        <span class="material-symbols-outlined" id="icon-format_size" >
+                                                            format_size
+                                                            </span>
+                                                    </div>
+                                            </div>
+                                        </div>
+                                            <div class="wraprpbmiddle3">
+                                                <div class="wraprpbmiddle20">
+                                                    <div class="wraprpbmiddle6">
+                                                        <input type="number" id="text-upper-space" name="text-upper-space" min="14" max="128" step="2" value="14" title="Text Upper Spacing">
+                                                    </div>
+                                                        <div class="wraprpbmiddle7">
+                                                            <span class="material-symbols-outlined">
+                                                                format_line_spacing
+                                                                </span>
+                                                        </div>
+                                                </div>
+                                            </div>
+                                </div>
+                                <div class="wraprpbmiddle11">
+                                    <div class="wraprpbmiddle12">
+                                        <div class="wraprpbmiddle16">
+                                            <input type="number" id="text-left-right-space" name="text-left-right-space" min="0" max="128" step="2" value="0" title="Word Spacing">
+                                        </div>
+                                            <div class="wraprpbmiddle17">
+                                                <span class="material-symbols-outlined">
+                                                    align_justify_space_between
+                                                    </span>
+                                            </div>
+                                    </div>
+                                        <div class="wraprpbmiddle13">
+                                            <div class="wraprpbmiddle14">
+                                                <input type="number" id="text-wrap" name="text-wrap" min="0" max="512" step="2" value="0" title="Single Word Spacing">
+                                            </div>
+                                            <div class="wraprpbmiddle18">
+                                                <span class="material-symbols-outlined">
+                                                view_headline
                                                 </span>
-                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2" value="100">
-                                <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
-                                    rotate_right
-                                    </span>
-                                    <span class="material-symbols-outlined" id="icon-text-rotation-font">
-                                        title
-                                        </span>
+                                            </div>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
 
+                        <div class="rpbbottom">
+                            <div class="wrapbbottom">
+                                <div class="wrapbbottomup">
+                                    <div class="wrapbbottominsidea">
+                                        <div class="wrapbbottominside1a">
+                                                <div class="wrapbbottomtexta">
+                                                    <input type="number" id="text-height" name="text-height" min="2" max="512" step="2" value="1">
+                                                </div>
+                                                    <div class="wrapbbottomicona">
+                                                        <span class="material-symbols-outlined">
+                                                            vertical_distribute
+                                                            </span>
+                                                    </div>
+                                        </div>
+                                   </div>
+                                    <div class="wrapbbottominsideb">
+                                        <div class="wrapbbottominside2b">
+                                            <div class="wrapbbottomtextb">
+                                                <input type="number" id="text-width" name="text-width" min="2" max="512" step="2"  value="2">
+                                            </div>
+                                            <div class="wrapbbottomiconb">
+                                                <span class="material-symbols-outlined">
+                                                    horizontal_distribute
+                                                    </span>
+                                                </div>
+                                        </div>
+                                    </div>  
+                            </div>
+                                <div class="wrapbbottomdown">
+                                    <div class="wrapbbottomdowninside">
+                                        <div class="wrapbbottomdowntext1">
+                                            <input type="number" id="text-margin" name="text-margin" min="0" max="512" step="2" value="3">
+                                        </div>
+                                            <div class="wrapbbottondownicon1">
+                                                <span class="material-symbols-outlined">
+                                                    format_line_spacing
+                                                    </span>
+                                            </div>
+                                    </div>
+                                    <div class="wrapbbottondowninside2">
+                                        <div class="wrapbbottomdowntext2">
+                                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2"  value="4">
+                                        </div>
+                                            <div class="wrapbbottondownicon2">
+                                                <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
+                                                    rotate_right
+                                                    </span>
+                                            </div>
+                                    </div>
+                                </div>
+                        </div>
                     </div>
-                    </div>
+
+
                 </div>
             </div>
 
