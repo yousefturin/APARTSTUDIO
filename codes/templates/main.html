@@ -80,6 +80,18 @@
           </div>
         <div class="container">
             <div class="toppane">
+                <div class="uploadbutton">
+                    <form action="/" method="POST" id="img" enctype="multipart/form-data" >
+                        <input type="file" id="file" name="file" style="display: none">
+                            <label for="file" id="uploading" onclick="changeIcon()">
+                                <i class="material-symbols-outlined">
+                                    cloud_upload
+                                </i>
+                                                </label>
+                                                    <h2 class="translate">
+                                                        Browse File to Upload
+                                                    </h2>
+                </div>
                 <div class="wraplogo">
                     <img src="/static/images/img_icons.png" alt="logo" class="image-style" title="Non of your Business, Keep Going Bro and Remove Your Pointer From Me">
                 </div>
