@@ -45,7 +45,7 @@ def upload_image():
         if request.method == 'POST':
                 file = request.files['file'] 
                 
-        # config for the image and input values "width"&"height"
+        # config for the image 
                 if 'file' not in request.files:
                         flash('No Image Part')
                         return redirect(request.url)
