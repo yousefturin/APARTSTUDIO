@@ -30,54 +30,8 @@ body{
   background-color: #555;
 }
 
-.buttom-toppane{
-  position: absolute;
-  display: flex;
-  top: 3%;
-  left: 90%;
-  gap: 10px;
-  transform: translate(-50%, -50%);
-  margin-top: 40px;
-  color: black;
-  text-align: center;
-  opacity: 90%;
-}
 
-.buttom-toppane button{
-  margin-bottom: 35px;
-  margin-left: 100px;
-  margin-right: 35px;
-  background-color: rgb(238, 238, 238);
-  border: none;
-  border-radius: 3px;
-  color: rgb(26, 25, 25);
-  padding: 4px 10px;
-  text-decoration: none;
-  cursor: pointer;
-  box-shadow: 0.6px 0.6px 7px 1px  rgb(37, 37, 37);
-}
-.buttom-toppane button:active{
-  margin-bottom: 35px;
-  margin-left: 35px;
-  margin-right: 35px;
-  background-color: #4c4b4b;
-  border: none;
-  border-radius: 3px;
-  color: white;
-  padding: 4.5px 10.5px;
-  text-decoration: none;
-  cursor: pointer;
-  font-weight: bold;
-}
-.image-style{
-  width: 50px;
-  height: 50px;
-  position:absolute;
-  top: 2.9%;
-  left: 2.3%;
-  transform: translate(-50%, -50%);
-  border-radius: 3px;
-}
+
 .footer  {
   left: 0;
   bottom: 0;
@@ -115,6 +69,95 @@ body{
     top: 0;
     
   }
+    .toppanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+
+    }
+    .toppanewrapleft{
+      width: 5%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraplogo{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .image-style{
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      left: 0;
+    }
+    .toppanewrapmiddle{
+      width: 67%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .middlebuttompanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    #open,#info,#premium,#download,#send{
+      border-radius: 5px;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding-top: 5px;
+      padding-left: 3px;
+      width: 100%;
+    }
+    #topbuttoms{
+      position:relative;
+      padding: 4px;
+      padding-bottom: 30px;
+      right: 10px;
+      bottom: 3px;
+    }
+
+    .toppanewrapright{
+      width: 33%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .leftbuttompanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: right;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding-right: 2%;
+      padding: 2%;
+    }
+
 
   .leftpane {
     width: 5%;
@@ -143,7 +186,7 @@ body{
     border-radius: 3px;
 }
     #icon_drag_pan,#icon_crop_rotate,#icon_aspect_ratio,#icon_auto_fix_high,#icon_auto_awesome,#icon_blur_on,#icon_brush,#icon_grain,#icon_camera_roll{
-      font-size: 40px;
+      font-size: 200%;
     }
   
   .middlepane {
@@ -302,8 +345,23 @@ body{
       }
       m{
         text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
-        width: 75%;
+        font-size: 90%;
         text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
+      }
+      #rangeValueTEMP,#rangeValueTINT,#rangeValueEXPO,#rangeValueCONT,
+      #rangeValueHIGH,#rangeValueSHAD,#rangeValueWHITE,#rangeValueBLACK,
+      #rangeValueTEXT,#rangeValueCLAR,#rangeValueDEH,#rangeValueVIR,#rangeValueSAT{
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+        font-size: 90%;
+        text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+
       }
 
 
@@ -344,6 +402,11 @@ body{
           
       
         }  
+        #TINT,#TEMP,#EXPO,#CONT,#HIGH,#SHAD,#WHITE,#BLACK,#TEXT,#CLAR,#DEH,#VIR,#SAT{
+          height: 70%;
+          width: 110%;
+        }
+
       
       
     .rpmmiddle{
@@ -412,8 +475,12 @@ body{
 
       k{ 
         text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
-        width: 75%;
+        font-size: 90%;
         text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
 
       }
     
@@ -568,8 +635,12 @@ body{
 
       l{ 
         text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
-        width: 75%;
+        font-size: 90%;
         text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
       }
     
       #TEXT::-webkit-slider-thumb {
@@ -695,8 +766,8 @@ body{
 
     #font-selector {
       padding-right: 30px;
-      width: 200px;
-      height: 30px;
+      width: 70%;
+      height: 90%;
       border-radius: 5px; 
     }
 
@@ -782,9 +853,8 @@ body{
         
     #font-type-selector {
       padding-right: 30px;
-      text-align: left;
-      width: 200px;
-      height: 30px;
+      width: 70%;
+      height: 90%;
       border-radius: 5px; 
     }
       #Normal{
@@ -1109,6 +1179,8 @@ body{
   }
 input[type = "number"]{
   border-radius: 3px;
+  width: 80%;
+  height: 40%;
 }
 
 .overlay {
@@ -1212,7 +1284,165 @@ input[type = "number"]{
 #savebtnfordownload{
   font-size: 35px;
   border-radius: 5px;
+  border: 0;
 }
 #verticalslider{
   width: 80px;
 }
+
+
+
+
+
+
+
+
+.overlay1 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
+
+.overlay1.active {
+  display: block; /* show the overlay when it's active */
+}
+
+.overlay1-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.openscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+
+}
+
+#form_open{
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+}
+.wrapopenname{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  padding: 5px;
+  width: 150%; 
+}
+#fileopenlable{
+  background: #7a7a7a;
+  display: block;
+  padding: 12px;
+  justify-content: center;
+  border-radius: 5px;
+  width: 100%;
+  line-height: 25px;
+  border: 2px solid #6d6d6d;
+  position: relative;
+  text-align: left;
+}
+#fileopenlable::before{
+  position: absolute;
+  content: "Browse";
+  right: -2px;
+  top: -2px;
+  width: 100px;
+  height: 107%;
+  line-height: 50px;
+  background: #555;
+  text-align: center;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+
+}
+
+.openokay{
+  width: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin: 20px auto;
+  padding: 12px;
+  border-radius: 5px;
+
+}
+
+
+
+#savebtnfordownload{
+  font-size: 280%;
+  border-radius: 5px;
+  cursor: pointer;
+  background: #555;
+
+}
+
