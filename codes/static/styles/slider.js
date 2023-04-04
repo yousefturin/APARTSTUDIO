@@ -1,3 +1,17 @@
+const downloadBtn = document.getElementById('download');
+const overlay = document.getElementById('overlay');
+
+downloadBtn.addEventListener('click', () => {
+  overlay.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlay.addEventListener('click', (event) => {
+  if (event.target === overlay) {
+    overlay.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+
 var buttons = document.getElementsByClassName("btn");
 
 for (var i = 0; i < buttons.length; i++) {
