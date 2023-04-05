@@ -1,3 +1,7 @@
+
+
+
+
 const downloadBtn = document.getElementById('download');
 const overlay = document.getElementById('overlay');
 
@@ -24,6 +28,55 @@ overlay1.addEventListener('click', (event) => {
     overlay1.classList.remove('active'); // remove the 'active' class to hide the overlay
   }
 });
+
+
+const infoBtn = document.getElementById('info');
+const overlay2 = document.getElementById('overlay2');
+
+infoBtn.addEventListener('click', () => {
+  overlay2.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlay2.addEventListener('click', (event) => {
+  if (event.target === overlay2) {
+    overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+
+
+const premBtn = document.getElementById('premium');
+const overlay3 = document.getElementById('overlay3');
+
+premBtn.addEventListener('click', () => {
+  overlay3.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlay3.addEventListener('click', (event) => {
+  if (event.target === overlay3) {
+    overlay3.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+
+const shareBtn = document.getElementById('send');
+const overlay4 = document.getElementById('overlay4');
+
+shareBtn.addEventListener('click', () => {
+  overlay4.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlay4.addEventListener('click', (event) => {
+  if (event.target === overlay4) {
+    overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+
+
+
+
+
 
 
 var buttons = document.getElementsByClassName("btn");
