@@ -6,8 +6,8 @@ from werkzeug.utils import secure_filename
 
 UPLOAD_FOLDER = 'your/path/to/this/folder/codes/uploads'#change this path ---------------------!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
-
 app = Flask(__name__)
+
 
 class ResourceNotFoundError(Exception):
     pass
@@ -36,40 +36,35 @@ app.secret_key = "teqi-Eest1-iold4"
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-
+@app.route('/')
+def home():
+        try:
+                return render_template('main.html')
+        except:
+                raise ResourceNotFoundError("Resource page not found")
+                
+     
 
 
 @app.route('/',methods=['GET','POST'])
 def upload_image():
-        
-        if request.method == 'POST':
-                file = request.files['file'] 
-                
-        # config for the image 
-                if 'file' not in request.files:
-                        flash('No Image Part')
-                        return redirect(request.url)
-                if file.filename == '':
-                        flash('No selected file')
-                        return redirect(request.url)
-                            
-                else:
-                        # checking if that file exist and allowed then pass it 
-                        if file and allowed_file(file.filename):
-                                try:
-                                        filename = secure_filename(file.filename)
-                                        return (file, filename) #needs editing 
-                                except:
-                                        raise ResourceNotFoundError("Image Resource could not be processed")   
 
-                        elif file.filename not in ALLOWED_EXTENSIONS :
-                                flash('Allowed image types are \n (png, jpg, jpeg, gif)')
-                                return redirect(request.url)
-                        
-                        else:
-                                raise ResourceNotFoundError("Image Resource could not be retuned")  
+        if 'file'not in request.files:
+             return redirect(request.url)
+        file = request.files['file']
+        if file.filename == '':
+             return redirect(request.url)
+        if file and allowed_file(file.filename):
+             filename =secure_filename(file.filename)
+             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+             return render_template('main.html', filename=filename)
         else:
-                return render_template('main.html')
-
+             return redirect(request.url)
+        
+@app.route('/display/<filename>')
+def display_image(filename):
+     return redirect(url_for('static', filename='uploads/'+ filename), code=301)
+        
+        
 if __name__ == "__main__":
     app.run(debug=True)
