@@ -43,7 +43,38 @@
                         </a>
                     </div>
                     <div class="downloadscreenup">
-                        <input type="range" id="verticalslider" name="horizontal-slider" min="0" max="100" value="50" style="writing-mode: bt-lr; transform: rotate(270deg);">
+                        <div class="wrapdownloadscreenpreview">
+                            <div class="downloadscreenpreview">
+                                {% if filename %}
+                                <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
+                                {% endif %}
+                            </div>
+                                <div class="downloadscreenoption">
+                                    <div class="downloadscreenoptionwrap">
+                                        <div class="downloadformatwrap">
+                                            <div class="formatformattext">
+                                                <n>Format:</n>
+                                            </div>
+                                            <select id="image_format_selector" title=" Image Format Selector">
+                                                <option value="PNG" id="PNG">png</option>
+                                                    <option value="JPG" id="JPG">jpg</option>
+                                                <option value="JPEG" id="JPEG">jpeg</option>
+                                            </select>
+                                        </div>
+                                            <div class="downloadqualitywrap">
+                                                <div class="qualityqualitytext">
+                                                    <n>Quality:</n>
+                                                </div>
+                                                <select id="image_quality_selector" title=" Image Quality Selector">
+                                                    <option value="100%" id="fullquality">100%</option>
+                                                        <option value="75%" id="almostfull">75%</option>
+                                                        <option value="50%" id="halfquality">50%</option>
+                                                    <option value="25%" id="badquality">25%</option>
+                                                </select>
+                                        </div>
+                                    </div>
+                                </div>
+                        </div>
 
                     </div>
 
@@ -109,6 +140,118 @@
                 </div>
             </div>
           </div>
+
+        <div class="overlay2" id="overlay2">
+            <div class="overlay2-content">
+                <div class="infoscreen">
+                    <div class="infoscreentitle">
+                        <a>
+                            Information
+                        </a>
+                    </div>
+                        <div class="infoscreenup">
+                            <div class="wrapdowninfoscreenpreview">
+
+                            </div>
+
+                        </div>
+
+                            <div class="downloadscreendown">
+                                <div class="downloadscreendownwrap">
+                                    <div class="downloadscreendownleft">
+                                        <div class="downloadname">
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+                                        <div class="downloadscreendownright">
+
+                                        </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
+        <div class="overlay3" id="overlay3">
+            <div class="overlay3-content">
+                <div class="premscreen">
+                    <div class="premscreentitle">
+                        <a>
+                            Premium
+                        </a>
+                    </div>
+                        <div class="premscreenup">
+                            <div class="wrapdownpremscreenpreview">
+
+                            </div>
+
+                        </div>
+
+                            <div class="downloadscreendown">
+                                <div class="downloadscreendownwrap">
+                                    <div class="downloadscreendownleft">
+                                        <div class="downloadname">
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+                                        <div class="downloadscreendownright">
+
+                                        </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
+        <div class="overlay4" id="overlay4">
+            <div class="overlay4-content">
+                <div class="sharescreen">
+                    <div class="sharescreentitle">
+                        <a>
+                            Premium
+                        </a>
+                    </div>
+                        <div class="sharescreenup">
+                            <div class="wrapdownsharescreenpreview">
+
+                            </div>
+
+                        </div>
+
+                            <div class="downloadscreendown">
+                                <div class="downloadscreendownwrap">
+                                    <div class="downloadscreendownleft">
+                                        <div class="downloadname">
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+                                        <div class="downloadscreendownright">
+
+                                        </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
+
+
+
 
         <div class="container">
             <div class="toppane">
@@ -184,24 +327,34 @@
                         auto_fix_high
                         </span>
                 </button> 
-                <button class="btn" id="auto_awesome_button" title="Ehnace Image">
-                    <span class="material-symbols-outlined" id="icon_auto_awesome">
-                        auto_awesome
-                        </span>
-                </button> 
-                <button class="btn" id="blur_on_button" title="Add Blur">
-                    <span class="material-symbols-outlined" id="icon_blur_on">
-                        blur_on
+                <button class="btn" id="format_button" title="Add Text">
+                    <span class="material-symbols-outlined" id="icon_format">
+                        format_shapes
                         </span>
                 </button> 
                 <button class="btn" id="brush_button" title="Brush">
                     <span class="material-symbols-outlined" id="icon_brush">
                         brush
                         </span>
+                </button>
+                <button class="btn" id="eraser_button" title="Eraser">
+                    <span class="material-symbols-outlined" id="icon_eraser">
+                        pen_size_5
+                        </span>
+                </button>
+                <button class="btn" id="blur_on_button" title="Add Blur">
+                    <span class="material-symbols-outlined" id="icon_blur_on">
+                        blur_on
+                        </span>
                 </button> 
                 <button class="btn" id="grain_button" title="Add Grain">
                     <span class="material-symbols-outlined" id="icon_grain">
                         grain
+                        </span>
+                </button> 
+                <button class="btn" id="auto_awesome_button" title="Ehnace Image">
+                    <span class="material-symbols-outlined" id="icon_auto_awesome">
+                        auto_awesome
                         </span>
                 </button> 
                 <button class="btn" id="camera_roll_button" title="Colorize image">
