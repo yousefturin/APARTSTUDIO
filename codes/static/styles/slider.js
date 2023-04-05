@@ -12,6 +12,20 @@ overlay.addEventListener('click', (event) => {
 });
 
 
+const openBtn = document.getElementById('open');
+const overlay1 = document.getElementById('overlay1');
+
+openBtn.addEventListener('click', () => {
+  overlay1.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlay1.addEventListener('click', (event) => {
+  if (event.target === overlay1) {
+    overlay1.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+
 var buttons = document.getElementsByClassName("btn");
 
 for (var i = 0; i < buttons.length; i++) {
