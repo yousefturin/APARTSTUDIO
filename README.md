@@ -1,6 +1,6 @@
 # What is  **Not PHOTOSHOP**
 ## it's in the early stages yet as the Front-end was only developed
-<img title="a title" alt="Alt text" src="static/images/img_icons.png">
+<img title="a title" alt="Alt text" src="code/static/images/img_icons.png">
 
 It's a web application written in Python using the Flask framework and it allows users to editor images where users can upload there pictures and edit them using different tools and methods that program provide, such as:
 > 
@@ -27,4 +27,4 @@ UPLOAD_FOLDER =  "C:/Users/name/your/path/to/this/directory/UL_ph_1/input/"
 ```
 # UI
 
-<img title="a title" alt="Alt text" src="static/images/ui.png">
+<img title="a title" alt="Alt text" src="code/static/images/ui.png">
