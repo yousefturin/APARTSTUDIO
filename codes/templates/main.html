@@ -47,17 +47,17 @@
                                     <div class="downloadscreenoptionwrap">
                                         <div class="downloadformatwrap">
                                             <div class="formatformattext">
-                                                <n>Format:</n>
+                                                <n>Format</n>
                                             </div>
                                             <select id="image_format_selector" name="image_format_selector" title=" Image Format Selector">
-                                                <option value=".png" id="PNG">png</option>
                                                 <option value=".jpg" id="JPG">jpg</option>
+                                                <option value=".png" id="PNG">png</option>
                                                 <option value=".jpeg" id="JPEG">jpeg</option>
                                             </select>
                                         </div>
                                             <div class="downloadqualitywrap">
                                                 <div class="qualityqualitytext">
-                                                    <n>Quality:</n>
+                                                    <n>Quality</n>
                                                 </div>
                                                 <select id="image_quality_selector" name="image_quality_selector" title=" Image Quality Selector">
                                                     <option value="100%" id="fullquality">100%</option>
@@ -103,15 +103,7 @@
                         </a>
                     </div>
                     <div class="openscreenup">
-                        {% with messages = get_flashed_messages() %}
-                        {% if messages %}
-                            <ul>
-                                {% for message in messages %}
-                                <li>{{message}}</li>
-                                {% endfor %}
-                            </ul>
-                            {% endif %}
-                            {% endwith %}
+
                     </div>
  
                         <div class="openscreendown">
