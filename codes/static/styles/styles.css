@@ -1468,6 +1468,15 @@ input[type = "number"]{
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
 }
+#downloadform{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
 .downloadscreentitle{
   width: 100%;
   height: 20%;
@@ -1736,6 +1745,16 @@ input[type = "number"]{
   justify-content: center;
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreenup ul{
+  color: #e89090;
+  font-size: 15px;
+  text-align: left;
+  margin-top: 15px;
+  margin-left: 31px;
+  padding: 5px 5px;
+  align-items: center;
+  justify-content: center;
 }
 .openscreendown{
   width: 100%;
