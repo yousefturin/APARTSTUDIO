@@ -10,13 +10,6 @@
                 menu_btn.style.display = "none";
             }
 
-            const canvas = document.getElementById('image-canvas');
-            const ctx = canvas.getContext('2d');
-            const image = new Image();
-            image.onload = function() {
-            ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
-            }
-            image.src = '/static/image.jpg'; 
     </script>
     <style> 
     </style>
@@ -37,6 +30,7 @@
         <div class="overlay" id="overlay">
             <div class="overlay-content">
                 <div class="downloadscreen">
+                    <form action="{{ url_for('download_file', filename=filename) }}" method="POST" id="downloadform">
                     <div class="downloadscreentitle">
                         <a>
                             Download
@@ -55,20 +49,20 @@
                                             <div class="formatformattext">
                                                 <n>Format:</n>
                                             </div>
-                                            <select id="image_format_selector" title=" Image Format Selector">
-                                                <option value="PNG" id="PNG">png</option>
-                                                    <option value="JPG" id="JPG">jpg</option>
-                                                <option value="JPEG" id="JPEG">jpeg</option>
+                                            <select id="image_format_selector" name="image_format_selector" title=" Image Format Selector">
+                                                <option value=".png" id="PNG">png</option>
+                                                <option value=".jpg" id="JPG">jpg</option>
+                                                <option value=".jpeg" id="JPEG">jpeg</option>
                                             </select>
                                         </div>
                                             <div class="downloadqualitywrap">
                                                 <div class="qualityqualitytext">
                                                     <n>Quality:</n>
                                                 </div>
-                                                <select id="image_quality_selector" title=" Image Quality Selector">
+                                                <select id="image_quality_selector" name="image_quality_selector" title=" Image Quality Selector">
                                                     <option value="100%" id="fullquality">100%</option>
-                                                        <option value="75%" id="almostfull">75%</option>
-                                                        <option value="50%" id="halfquality">50%</option>
+                                                    <option value="75%" id="almostfull">75%</option>
+                                                    <option value="50%" id="halfquality">50%</option>
                                                     <option value="25%" id="badquality">25%</option>
                                                 </select>
                                         </div>
@@ -77,7 +71,6 @@
                         </div>
 
                     </div>
-
                         <div class="downloadscreendown">
                             <div class="downloadscreendownwrap">
                                 <div class="downloadscreendownleft">
@@ -96,7 +89,7 @@
                             </div>
 
                         </div>
-
+                    </form>
                 </div>
             </div>
           </div>
@@ -110,14 +103,21 @@
                         </a>
                     </div>
                     <div class="openscreenup">
-
-
+                        {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <ul>
+                                {% for message in messages %}
+                                <li>{{message}}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            {% endwith %}
                     </div>
  
                         <div class="openscreendown">
                             <div class="openscreendownwrap">
                                 <div class="openscreendownleft">
-                                        <form method="POST" action="/" enctype="multipart/form-data" id="form_open">
+                                        <form method="POST" action="/upload" enctype="multipart/form-data" id="form_open">
                                             <div class="wrapopenname">
                                                 <input type="file" name="file"  id="fileopen" style="display: none;">
                                                 <label for="fileopen" id="fileopenlable">Select Image</label>
