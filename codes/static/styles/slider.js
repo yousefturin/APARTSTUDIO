@@ -1,5 +1,56 @@
+const fileInput = document.getElementById("fileopen");
+const selectedImageName = document.querySelector(".wrapopenname p");
+const openscreenup = document.querySelector(".openscreenup");
 
+fileInput.addEventListener("change", function() {
+  const selectedFile = fileInput.files[0];
+  const selectedFileName = selectedFile ? selectedFile.name : "Select Image";
+  const label = document.querySelector("#fileopenlable");
+  label.textContent = selectedFileName;
 
+  if (selectedFile) {
+    // Create a new FileReader instance
+    const reader = new FileReader();
+
+    // Set up a callback function to run when the file is loaded
+    reader.onload = function() {
+      
+      // Create a new image element
+      const imagePreview = document.createElement("img");
+      imagePreview.src = reader.result;
+      imagePreview.style.padding = "1%";
+      imagePreview.style.maxWidth = "100%";
+      imagePreview.style.height = "auto";
+      imagePreview.style.objectFit = "contain";
+      imagePreview.style.maxHeight = "100%";
+      imagePreview.style.borderRadius = "9px";
+
+      // Add the image element to the openscreenup div
+      openscreenup.innerHTML = "";
+      openscreenup.appendChild(imagePreview);
+
+      selectedImageName.textContent = `${selectedFileName}`;
+      selectedImageName.style.display = "flex";
+    };
+
+    // Read the selected file as a data URL
+    reader.readAsDataURL(selectedFile);
+  } else {
+    openscreenup.innerHTML = "";
+    selectedImageName.style.display = "none";
+  }
+});
+
+const imageFormatSelector = document.querySelector("#image_format_selector");
+const imageQualitySelector = document.querySelector("#image_quality_selector");
+
+imageFormatSelector.addEventListener("change", function() {
+    if (this.value === ".png") {
+        imageQualitySelector.disabled = true;
+    } else {
+        imageQualitySelector.disabled = false;
+    }
+});
 
 
 const downloadBtn = document.getElementById('download');
