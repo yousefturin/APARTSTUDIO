@@ -359,9 +359,16 @@
               <div class="middlepane">
                 <div class="wrapmiddlepane">
                     {% if filename %}
-                    <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
+                    <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
                     {% endif %}
                 </div>
+                <script>
+                    const wrapDiv = document.querySelector('.wrapmiddlepane');
+                    wrapDiv.addEventListener('contextmenu', (event) => {
+                      event.preventDefault();
+                      alert('Right-click is disabled on this image.');
+                    });
+                  </script>
               </div>
               <div class="rightpane"> 
                 <div class="rightdivider">
