@@ -88,18 +88,58 @@ def download_file(filename):
     new_filename = request.form.get('textfilename')
     image_format = request.form.get('image_format_selector').lower()
     image_quality = request.form.get('image_quality_selector')
+    
+    # Split the image format 
     os.path.splitext(filename)
+    
+    # Add the new name and format to the image
     filename = new_filename + image_format
+    
+    # Join the image 
     root_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+    # Reading the end-user image
     img = Image.open(file_path)
+    
+    # Convert the image to RGB mode
     img = img.convert('RGB')
-    # connecting js with python since the changing of png quality does not change anything so it's disabled
-    if image_quality == None:
-         new_quality = int(100)
+    
+    # Reading the logo image and converting it to RGB
+    logo = Image.open(LOGO_COPYWRITE).convert('RGBA')
+    
+    # Calcualting the scaling factor to keep the aspict ratio 
+    logo_width, logo_height = logo.size
+    scaling_factor_width = 200 / logo_width
+
+    # Calculate the scaling factor for the target height
+    scaling_factor_height = 200 / logo_height
+
+    # Choose the smallest scaling factor
+    scaling_factor = min(scaling_factor_width, scaling_factor_height)
+
+    # Calculate the new width and height of the logo
+    new_logo_width = int(logo_width * scaling_factor)
+    new_logo_height = int(logo_height * scaling_factor)
+    logo = logo.resize((new_logo_width, new_logo_height), resample=Image.LANCZOS)
+
+    # Create a new blank image with the same size as the big image
+    result_image = Image.new("RGB", img.size, (255, 255, 255))
+
+    # Paste the big image onto the new image
+    result_image.paste(img, (0, 0))
+
+    # Paste the small image onto the new image in the bottom left corner
+    small_icon_position = (15, result_image.size[1] - new_logo_height)
+    result_image.paste(logo, small_icon_position, logo)
+
+    # Save the new image
+    if image_quality is None:
+        new_quality = int(100)
     else:
         new_quality = int(image_quality.strip('%'))
-    output_img =img.save(root_path, quality=new_quality)
+        output_img = result_image.save(root_path, quality=new_quality)
     return send_file(root_path, output_img, as_attachment=True)
+
 
 if __name__ == "__main__":
     app.run(debug=True)
