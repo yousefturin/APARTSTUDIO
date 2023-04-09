@@ -3,8 +3,8 @@ from PIL import Image
 from flask import Flask, flash, request, make_response, render_template, redirect, url_for, send_file, send_from_directory ,abort, jsonify
 from werkzeug.utils import secure_filename
 
-
-UPLOAD_FOLDER = 'codes/static/uploads'#----------------------------------------------------change this !!!1
+LOGO_COPYWRITE = 'codes/static/images/img_icons.png'
+UPLOAD_FOLDER = 'codes/static/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__)
 
@@ -60,6 +60,7 @@ def upload_image():
             if file and allowed_file(file.filename):
                 try:
                     filename =secure_filename(file.filename)
+                    app.logger.info(f'{filename}')
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                     return render_template('main.html', filename=filename,file=file)
                 except:
@@ -92,7 +93,11 @@ def download_file(filename):
     root_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     img = Image.open(file_path)
     img = img.convert('RGB')
-    new_quality = int(image_quality.strip('%'))
+    # connecting js with python since the changing of png quality does not change anything so it's disabled
+    if image_quality == None:
+         new_quality = int(100)
+    else:
+        new_quality = int(image_quality.strip('%'))
     output_img =img.save(root_path, quality=new_quality)
     return send_file(root_path, output_img, as_attachment=True)
 
