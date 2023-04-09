@@ -1573,6 +1573,7 @@ input[type = "number"]{
   height: 40px;
   width: 30%;
   display: flex;
+  text-align: center;
 }
 
 .qualityqualitytext{
@@ -1590,6 +1591,7 @@ input[type = "number"]{
   display: flex;
   align-content: center;
   padding: 5%;
+
 }
 #image_quality_selector{
   border: none;
@@ -1599,6 +1601,7 @@ input[type = "number"]{
   height: 40px;
   width: 30%;
   display: flex;
+  text-align: center;
 }
 
 
@@ -1741,20 +1744,9 @@ input[type = "number"]{
   width: 100%;
   height: 50%;
   display: flex;
-  flex-direction: row;
-  justify-content: center;
+  justify-content:center;
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
-}
-.openscreenup ul{
-  color: #e89090;
-  font-size: 15px;
-  text-align: left;
-  margin-top: 15px;
-  margin-left: 31px;
-  padding: 5px 5px;
-  align-items: center;
-  justify-content: center;
 }
 .openscreendown{
   width: 100%;
@@ -1798,6 +1790,11 @@ input[type = "number"]{
   padding: 5px;
   width: 150%; 
 }
+.wrapopenname p {
+  display: none;
+}
+
+
 
 #fileopenlable{
   background: #7a7a7a;
