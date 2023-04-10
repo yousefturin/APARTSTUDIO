@@ -2,7 +2,7 @@ import os
 from PIL import Image
 from flask import Flask, flash, request, make_response, render_template, redirect, url_for, send_file, send_from_directory ,abort, jsonify
 from werkzeug.utils import secure_filename
-
+DOWNLOAD_FOLDER = 'codes/static/download/'
 LOGO_COPYWRITE = 'codes/static/images/img_icons.png'
 UPLOAD_FOLDER = 'codes/static/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
@@ -25,7 +25,7 @@ def handle_resource_not_found(e):
 def handle_internal_server_error(e):
     return render_template('error.html', error=e), 500
 
-
+app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 app.secret_key = "teqi-Eest1-iold4"
@@ -88,16 +88,18 @@ def download_file(filename):
     new_filename = request.form.get('textfilename')
     image_format = request.form.get('image_format_selector').lower()
     image_quality = request.form.get('image_quality_selector')
-    
+    if new_filename == '':
+         filenameFirstName = filename.rsplit('.', 1)[0]
+         new_filename = filenameFirstName + "_NotPHOTOSHOP"
+    else:
+         new_filename = new_filename
     # Split the image format 
     os.path.splitext(filename)
     
     # Add the new name and format to the image
     filename = new_filename + image_format
-    
     # Join the image 
-    root_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    
+    root_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
     # Reading the end-user image
     img = Image.open(file_path)
     
@@ -137,7 +139,7 @@ def download_file(filename):
         new_quality = int(100)
     else:
         new_quality = int(image_quality.strip('%'))
-        output_img = result_image.save(root_path, quality=new_quality)
+    output_img = result_image.save(root_path, quality=new_quality)
     return send_file(root_path, output_img, as_attachment=True)
 
 
