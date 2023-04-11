@@ -41,6 +41,8 @@
                             <div class="downloadscreenpreview">
                                 {% if filename %}
                                 <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
+                                {% elif edited_filename %}
+                                <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
                                 {% endif %}
                             </div>
                                 <div class="downloadscreenoption">
@@ -143,6 +145,14 @@
                     </div>
                         <div class="infoscreenup">
                             <div class="wrapdowninfoscreenpreview">
+                                <ul class="infolist">
+                                    <li><b>This application provides users with the necessary tools to edit images.</b></li>
+                                    <li><b>Image enhaning</b> is better to use when you finshed editing you image.</li>
+                                    <li><b>Image colorizing</b> convert B&W images to colorized image using deep learning models.</li>
+                                    <li><b>Image aspict ratio</b> does change the image size with respect to width & height dimentions of the original image.</li>
+                                    <li><b>The added text</b> can be styled using the right bottom window to change all necessary decorations.</li>
+                                    <li><b>Editing images does not mean you need to pull all slides to the max,</b> be relaxed when you do editing.</li>
+                                  </ul>
 
                             </div>
 
@@ -154,7 +164,7 @@
                                         <div class="downloadname">
                                         </div>
                                             <div class="downloadokay">
-                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                <button class="material-symbols-outlined" title="Close" id="savebtnforinfo">
                                                     done
                                                 </button>
                                             </div>
@@ -432,12 +442,12 @@
                                                 <div class="wraprpmmiddle5">
                                                     <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
                                                         id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
-                                                            
+                                                        <form id="contrast-form"  action="{{ url_for('adjust_contrast', filename=filename) }}" method="POST"> 
                                                         <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                            id="CONT"oninput="rangeValueCONT.innerText = this.value" title="Contrast">
-                                                            
+                                                            id="CONT" name="CONT" oninput="rangeValueCONT.innerText = this.value" title="Contrast" onchange="this.form.submit()">
+                                                        </form>
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                id="HIGH"oninput="rangeValueHEIGH.innerText = this.value" title="Highlights">
+                                                                id="HIGH"oninput="rangeValueHIGH.innerText = this.value" title="Highlights">
                                                                 
                                                                 <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                     id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows">
