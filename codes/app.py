@@ -1,10 +1,12 @@
 import os
-from PIL import Image
+import io
+import base64
+from PIL import Image, ImageEnhance
 from flask import Flask, flash, request, make_response, render_template, redirect, url_for, send_file, send_from_directory ,abort, jsonify
 from werkzeug.utils import secure_filename
-DOWNLOAD_FOLDER = 'codes/static/download/'
-LOGO_COPYWRITE = 'codes/static/images/img_icons.png'
-UPLOAD_FOLDER = 'codes/static/uploads'
+DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
+LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
+UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__)
 
@@ -81,7 +83,38 @@ def display_image(filename):
 
 
 
-        
+#need to fix this one and now the post is triggered idk how but it's, and needto place the ned image in the image-canvas
+@app.route('/adjust_contrast/<filename>', methods=['POST'])
+def adjust_contrast(filename):
+    # Get the filename and contrast value from the form input
+    print("im here erere")
+    contrast = float(request.form['CONT'])
+    contrast = (contrast / 100) + 1.0
+    print(contrast)
+    # Get the path of the image file
+    image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    
+
+    # Open the image using Pillow
+    with Image.open(image_path) as img:
+        print(image_path)
+        # Apply the contrast enhancement to the image
+        enhancer = ImageEnhance.Contrast(img)
+        img_contrast = enhancer.enhance(contrast)
+        # Create a new filename for the edited image
+        new_filename = filename
+
+        # Save the modified image to the uploads folder with the new filename
+        edited_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
+        img_contrast.save(edited_path)
+
+        # Update the filename variable with the new filename
+        filename = new_filename
+
+        # Return the modified image data as a Flask response
+        return render_template('main.html', filename=filename)
+
+
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
