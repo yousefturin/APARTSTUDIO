@@ -3,14 +3,6 @@
 <head>
     <meta http-equiv="Content-Language" content="en">
 </head>
-        
-    <script>
-            function changeIcon() {
-                var menu_btn = document.getElementById("menu_btn");
-                menu_btn.style.display = "none";
-            }
-
-    </script>
     <style> 
     </style>
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,9 +32,7 @@
                         <div class="wrapdownloadscreenpreview">
                             <div class="downloadscreenpreview">
                                 {% if filename %}
-                                <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
-                                {% elif edited_filename %}
-                                <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}">
+                                <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
                                 {% endif %}
                             </div>
                                 <div class="downloadscreenoption">
@@ -369,7 +359,7 @@
               <div class="middlepane">
                 <div class="wrapmiddlepane">
                     {% if filename %}
-                    <img id="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
+                    <img id="image-canvas" name="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
                     {% endif %}
                 </div>
                 <script>
@@ -442,16 +432,18 @@
                                                 <div class="wraprpmmiddle5">
                                                     <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
                                                         id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
-                                                        <form id="contrast-form"  action="{{ url_for('adjust_contrast', filename=filename) }}" method="POST"> 
+                                                        <form id="contrast-form"> 
                                                         <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                            id="CONT" name="CONT" oninput="rangeValueCONT.innerText = this.value" title="Contrast" onchange="this.form.submit()">
-                                                        </form>
+                                                            id="CONT" name="CONT" oninput="rangeValueCONT.innerText = this.value" title="Contrast" onchange="getContrast()">
+                                                            </form>
+                                                        <form id="highlight-form"> 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                id="HIGH"oninput="rangeValueHIGH.innerText = this.value" title="Highlights">
-                                                                
+                                                                id="HIGH" name="HIGH"oninput="rangeValueHIGH.innerText = this.value" title="Highlights" onchange="getHighlight()">
+                                                            </form>    
+                                                            <form id="shadow-form">    
                                                                 <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                    id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows">
-                                                                    
+                                                                    id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows" onchange="getShadow()" >
+                                                                </form>  
                                                                     <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                         id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites">
                                                                     
@@ -672,8 +664,11 @@
                 </div>
             </div>
           </div>
-          <script src="{{url_for('static', filename='styles/slider.js')}}"></script>                    
+          <script 
+                src="{{url_for('static', filename='styles/slider.js')}}">
+          </script>
           <!--<script src="slider.js"></script>-->
+          
     </body>
     <footer>
         <div class=" footer">
