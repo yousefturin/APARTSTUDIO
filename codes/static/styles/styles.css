@@ -234,6 +234,21 @@ body{
     color: white;
 
   }
+  #image-canvas1 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+
+  
+  /* Set the initial color of the label to white */
+  #image-canvas1 label {
+    color: white;
+
+  }
   
   .rightpane {
     width: 15%;
@@ -1287,7 +1302,20 @@ input[type = "number"]{
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
 }
-
+.infolist{
+  width: 90%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  text-align: left;
+  font-size:x-small;
+  padding: 2%;
+}
+.infolist li {
+  line-height: 1.5;
+}
 
 .overlay3 {
   position: fixed;
@@ -1674,6 +1702,19 @@ input[type = "number"]{
   cursor: pointer;
 }
 #savebtnfordownload:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+#savebtnforinfo{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforinfo:active{
   font-size: 280%;
   border-radius: 5px;
   background: #555;
