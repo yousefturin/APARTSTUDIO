@@ -1,9 +1,12 @@
 import os
-import io
 import base64
-from PIL import Image, ImageEnhance
+import time
+from PIL import Image, ImageEnhance, ImageDraw, ImageFilter
 from flask import Flask, flash, request, make_response, render_template, redirect, url_for, send_file, send_from_directory ,abort, jsonify
 from werkzeug.utils import secure_filename
+PROCESS_CONTRAST_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/contrast/'
+PROCESS_HIGHLIGHT_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/highlight/'
+PROCESS_SHADOW_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/shadow/'
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
 LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
 UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
@@ -26,7 +29,9 @@ def handle_resource_not_found(e):
 @app.errorhandler(InternalServerError)
 def handle_internal_server_error(e):
     return render_template('error.html', error=e), 500
-
+app.config['PROCESS_CONTRAST_FOLDER'] = PROCESS_CONTRAST_FOLDER
+app.config['PROCESS_HIGHLIGHT_FOLDER'] = PROCESS_HIGHLIGHT_FOLDER
+app.config['PROCESS_SHADOW_FOLDER'] = PROCESS_SHADOW_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
@@ -52,6 +57,7 @@ def home():
 def upload_image():
     if request.method == 'POST':
         file = request.files['file']  
+        print(file)
         if 'file' not in request.files:
              flash('No Image Part')
              return redirect(request.url)
@@ -62,9 +68,11 @@ def upload_image():
             if file and allowed_file(file.filename):
                 try:
                     filename =secure_filename(file.filename)
+                    print("1",filename)
                     app.logger.info(f'{filename}')
                     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                    return render_template('main.html', filename=filename,file=file)
+                   
+                    return render_template('main.html', filename=filename)
                 except:
                     raise ResourceNotFoundError("Image Resource could not be processed")              
             elif file.filename not in ALLOWED_EXTENSIONS :
@@ -76,44 +84,89 @@ def upload_image():
              return redirect(request.url)
 
         
-@app.route('/display/<filename>')
+
+@app.route('/adjust_contrast', methods=['POST'])
+def adjust_contrast():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        contrast_value = float(request.json['contrastValue'])
+        contrast = (contrast_value / 100) + 1.0
+        # Get the image path from the form data
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        output_path = os.path.join(app.config['PROCESS_CONTRAST_FOLDER'], image_name)
+        print("2, IMAGE NAME:",image_name)
+        print(contrast_value)
+        # Open the image and apply contrast adjustment
+        image = Image.open(input_path)
+        # Apply contrast adjustment
+        enhancer = ImageEnhance.Contrast(image)
+        image = enhancer.enhance(contrast)
+        image.save(output_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object
+    return {'image': img_base64}, 200, {'Content-Type': 'application/json'} 
+
+
+
+@app.route('/adjust_highlight', methods=['POST'])
+def adjust_highlight():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        highlight_value = float(request.json['highlightValue'])
+        highlight = (highlight_value / 100) + 1.0
+        # Get the image path from the form data
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        output_path = os.path.join(app.config['PROCESS_HIGHLIGHT_FOLDER'], image_name)
+        print("2, IMAGE NAME:",image_name)
+        print(highlight_value)
+        # Open the image and apply contrast adjustment
+        image = Image.open(input_path)
+        # Apply contrast adjustment
+        enhancer = ImageEnhance.Brightness(image)
+        image = enhancer.enhance(highlight) # Increase brightness by 20%
+        image.save(output_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object
+    return {'image': img_base64}, 200, {'Content-Type': 'application/json'} 
+
+@app.route('/adjust_shadow', methods=['POST'])
+def adjust_shadow():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        shadow_value = int(request.json['shadowValue'])
+        print(shadow_value)
+        # Set the paths for the input and output images
+        input_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        output_path = os.path.join(app.config['PROCESS_SHADOW_FOLDER'], image_name)
+    # Apply the shadow effect to the input image using the add_shadow function
+        with Image.open(input_path) as image:
+            # Split the image into separate red, green, and blue channels
+            r, g, b = image.split()
+
+            # Create a darkened copy of the image to use as a shadow layer
+            shadow_image = Image.merge('RGB', (r.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
+                                            g.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
+                                            b.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0)))))
+
+            # Calculate the alpha value based on the shadow intensity
+            alpha = abs(shadow_value) / 100.0
+            
+            # Blend the shadow image with the original image using the alpha value
+            output_image = Image.blend(image, shadow_image, alpha=alpha)
+            # Save the output image
+            output_image.save(output_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object
+    return {'image': img_base64}, 200, {'Content-Type': 'application/json'} 
+
+
+
+
+
+@app.route('/upload/display/<filename>')
 def display_image(filename):
-     return redirect(url_for('static', filename='uploads/'+ filename), code=301)
-
-
-
-
-#need to fix this one and now the post is triggered idk how but it's, and needto place the ned image in the image-canvas
-@app.route('/adjust_contrast/<filename>', methods=['POST'])
-def adjust_contrast(filename):
-    # Get the filename and contrast value from the form input
-    print("im here erere")
-    contrast = float(request.form['CONT'])
-    contrast = (contrast / 100) + 1.0
-    print(contrast)
-    # Get the path of the image file
-    image_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    
-
-    # Open the image using Pillow
-    with Image.open(image_path) as img:
-        print(image_path)
-        # Apply the contrast enhancement to the image
-        enhancer = ImageEnhance.Contrast(img)
-        img_contrast = enhancer.enhance(contrast)
-        # Create a new filename for the edited image
-        new_filename = filename
-
-        # Save the modified image to the uploads folder with the new filename
-        edited_path = os.path.join(app.config['UPLOAD_FOLDER'], new_filename)
-        img_contrast.save(edited_path)
-
-        # Update the filename variable with the new filename
-        filename = new_filename
-
-        # Return the modified image data as a Flask response
-        return render_template('main.html', filename=filename)
-
+    timestamp = str(int(time.time() * 1000))  # generate a timestamp with milliseconds as the cache-busting parameter
+    return redirect(url_for('static', filename=f'uploads/{filename}?v={timestamp}'), code=301)
 
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
@@ -132,7 +185,7 @@ def download_file(filename):
     # Add the new name and format to the image
     filename = new_filename + image_format
     # Join the image 
-    root_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+    output_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
     # Reading the end-user image
     img = Image.open(file_path)
     
@@ -172,8 +225,8 @@ def download_file(filename):
         new_quality = int(100)
     else:
         new_quality = int(image_quality.strip('%'))
-    output_img = result_image.save(root_path, quality=new_quality)
-    return send_file(root_path, output_img, as_attachment=True)
+    output_img = result_image.save(output_path, quality=new_quality)
+    return send_file(output_path, output_img, as_attachment=True)
 
 
 if __name__ == "__main__":
