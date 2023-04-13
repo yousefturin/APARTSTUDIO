@@ -1,7 +1,153 @@
+
+function getContrast() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var contrastValue = document.getElementById('CONT').value;
+  console.log(contrastValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_contrast?' + Date.now(), true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  // Add cache-busting parameter as a request header
+  xhr.setRequestHeader('Cache-Control', 'no-cache');
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      console.log(imgData)
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+      console.log(imageName)
+      var newURL = '/static/process/contrast/' + imageName;
+      // Set the new image source for both canvases
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      console.log(newURL)
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, contrastValue: contrastValue }));
+}
+
+function getHighlight() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var highlightValue = document.getElementById('HIGH').value;
+  console.log(highlightValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_highlight?' + Date.now(), true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  // Add cache-busting parameter as a request header
+  xhr.setRequestHeader('Cache-Control', 'no-cache');
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      console.log(imgData)
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+      console.log(imageName)
+      var newURL = '/static/process/highlight/' + imageName;
+      // Set the new image source for both canvases
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      console.log(newURL)
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, highlightValue: highlightValue }));
+}
+function getShadow() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var shadowValue = document.getElementById('SHAD').value;
+  console.log(shadowValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_shadow?' + Date.now(), true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  // Add cache-busting parameter as a request header
+  xhr.setRequestHeader('Cache-Control', 'no-cache');
+  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      console.log(imgData)
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+      console.log(imageName)
+      var newURL = '/static/process/shadow/' + imageName;
+      // Set the new image source for both canvases
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      console.log(newURL)
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, shadowValue: shadowValue }));
+}
+
+
+
+
+
+
+
 const fileInput = document.getElementById("fileopen");
 const selectedImageName = document.querySelector(".wrapopenname p");
 const openscreenup = document.querySelector(".openscreenup");
-
 fileInput.addEventListener("change", function() {
   const selectedFile = fileInput.files[0];
   const selectedFileName = selectedFile ? selectedFile.name : "Select Image";
@@ -28,9 +174,6 @@ fileInput.addEventListener("change", function() {
       // Add the image element to the openscreenup div
       openscreenup.innerHTML = "";
       openscreenup.appendChild(imagePreview);
-
-      selectedImageName.textContent = `${selectedFileName}`;
-      selectedImageName.style.display = "flex";
     };
 
     // Read the selected file as a data URL
