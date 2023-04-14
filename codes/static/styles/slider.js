@@ -1,146 +1,288 @@
+const img = document.getElementById('image-canvas');
+var imageSrc = document.getElementById('image-canvas').src;
+const canvas = document.getElementById('histogram-canvas');
+const ctx = canvas.getContext('2d');
+
+img.onload = function() {
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img, 0, 0, img.width, img.height);
+
+  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+
+  const histogram = Array(256).fill(0);
+  const pixels = imageData.data;
+
+  for (let i = 0; i < pixels.length; i += 4) {
+    const r = pixels[i];
+    const g = pixels[i + 1];
+    const b = pixels[i + 2];
+    const luma = Math.round(r * 0.2126 + g * 0.7152 + b * 0.0722);
+    histogram[luma]++;
+  }
+
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+  const barWidth = canvas.width / histogram.length;
+  const barHeight = canvas.height / Math.max(...histogram);
+
+  for (let i = 0; i < histogram.length; i++) {
+    const x = i * barWidth;
+    const y = canvas.height - histogram[i] * barHeight;
+    const width = barWidth;
+    const height = histogram[i] * barHeight;
+    ctx.fillStyle = '#000';
+    ctx.fillRect(x, y, width, height);
+  }
+};
+
+img.src = imageSrc;
+
+
+
+
+
+
+
+
 
 function getContrast() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
   var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var img1 = document.getElementById('image-canvas1'); 
   var contrastValue = document.getElementById('CONT').value;
   console.log(contrastValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
   console.log(imageName);
   var imageExt = imageName.split('.').pop();
   console.log(imageExt);
+  var timestamp = new Date().getTime(); // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
   var xhr = new XMLHttpRequest();
   xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_contrast?' + Date.now(), true);
+  xhr.open('POST', '/adjust_contrast', true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  // Add cache-busting parameter as a request header
-  xhr.setRequestHeader('Cache-Control', 'no-cache');
-  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   xhr.onload = function() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData)
+      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       var byteArray = new Uint8Array(byteNumbers);
       // Create a blob with the byte array and create an object URL
       var blob = new Blob([byteArray], { type: 'image/png' });
       var blobURL = URL.createObjectURL(blob);
       // Get the image name from the URL and construct the new URL
-      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-      console.log(imageName)
-      var newURL = '/static/process/contrast/' + imageName;
-      // Set the new image source for both canvases
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
       img.src = newURL;
-      img1.src = newURL; // new canvas
-      console.log(newURL)
+      img1.src = newURL
+      console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
     }
   };
-  xhr.send(JSON.stringify({ imageName: imageName, contrastValue: contrastValue }));
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
 }
+
 
 function getHighlight() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
   var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var img1 = document.getElementById('image-canvas1');
   var highlightValue = document.getElementById('HIGH').value;
   console.log(highlightValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
   console.log(imageName);
   var imageExt = imageName.split('.').pop();
   console.log(imageExt);
+  var timestamp = new Date().getTime(); // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
   var xhr = new XMLHttpRequest();
   xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_highlight?' + Date.now(), true);
+  xhr.open('POST', '/adjust_highlight', true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  // Add cache-busting parameter as a request header
-  xhr.setRequestHeader('Cache-Control', 'no-cache');
-  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   xhr.onload = function() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData)
+      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       var byteArray = new Uint8Array(byteNumbers);
       // Create a blob with the byte array and create an object URL
       var blob = new Blob([byteArray], { type: 'image/png' });
       var blobURL = URL.createObjectURL(blob);
       // Get the image name from the URL and construct the new URL
-      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-      console.log(imageName)
-      var newURL = '/static/process/highlight/' + imageName;
-      // Set the new image source for both canvases
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
-      console.log(newURL)
+      console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
     }
   };
-  xhr.send(JSON.stringify({ imageName: imageName, highlightValue: highlightValue }));
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
 }
+
 function getShadow() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
   var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1'); // new canvas
+  var img1 = document.getElementById('image-canvas1');
   var shadowValue = document.getElementById('SHAD').value;
   console.log(shadowValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
   console.log(imageName);
   var imageExt = imageName.split('.').pop();
   console.log(imageExt);
+  var timestamp = new Date().getTime(); // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
   var xhr = new XMLHttpRequest();
   xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_shadow?' + Date.now(), true);
+  xhr.open('POST', '/adjust_shadow', true);
   xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  // Add cache-busting parameter as a request header
-  xhr.setRequestHeader('Cache-Control', 'no-cache');
-  xhr.setRequestHeader('X-Requested-With', 'XMLHttpRequest');
   xhr.onload = function() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData)
+      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
-        byteNumbers[i] = byteCharacters.charCodeAt(i);
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       var byteArray = new Uint8Array(byteNumbers);
       // Create a blob with the byte array and create an object URL
       var blob = new Blob([byteArray], { type: 'image/png' });
       var blobURL = URL.createObjectURL(blob);
       // Get the image name from the URL and construct the new URL
-      var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-      console.log(imageName)
-      var newURL = '/static/process/shadow/' + imageName;
-      // Set the new image source for both canvases
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
-      console.log(newURL)
+      console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
     }
   };
-  xhr.send(JSON.stringify({ imageName: imageName, shadowValue: shadowValue }));
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, shadowValue: shadowValue }));
+}
+
+function getWhite() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var whiteValue = document.getElementById('WHITE').value;
+  console.log(whiteValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime(); // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_white', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      console.log(imgData);
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
 }
 
 
 
+function getBlack() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var blackValue = document.getElementById('BLACK').value;
+  console.log(blackValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime(); // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_black', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      console.log(imgData);
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
+}
 
 
 
