@@ -1,637 +1,1903 @@
-const img = document.getElementById('image-canvas');
-// Check first if there is an image and it has an src then do the function if not just skip it
-if (!img || !img.src) {
-  console.error('Image source not found');
-} else {
-  const imageSrc = img.src;
-  console.log(imageSrc)
+*{
+    margin: 0!important;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Poppins", sans-serif;
+}
 
-  const canvas = document.getElementById('histogram-canvas');
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
+body{
+    height: auto;
+    align-items: center;
+    justify-content: center;
+    width: auto !important;
+    background:	#4c4b4b ;
+}
+::-webkit-scrollbar {
+  width: 0.01em;
+}
 
-  img.onload = function() {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-    const histogram = Array(256).fill(0);
-    const pixels = imageData.data;
-
-    for (let i = 0; i < pixels.length; i += 4) {
-      const r = pixels[i];
-      const g = pixels[i + 1];
-      const b = pixels[i + 2];
-      const luma = Math.round(r * 0.2126 + g * 0.7152 + b * 0.0722);
-      histogram[luma]++;
-    }
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const barWidth = canvas.width / histogram.length;
-    const barHeight = canvas.height / Math.max(...histogram);
-
-    for (let i = 0; i < histogram.length; i++) {
-      const x = i * barWidth;
-      const y = canvas.height - histogram[i] * barHeight;
-      const width = barWidth;
-      const height = histogram[i] * barHeight;
-      ctx.fillStyle = '#000';
-      ctx.fillRect(x, y, width, height);
-    }
-  };
-
-  img.src = imageSrc;
+::-webkit-scrollbar-track {
+  background-color: #4c4b4b;
 }
 
 
-function getContrast() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1'); 
-  var contrastValue = document.getElementById('CONT').value;
-  console.log(contrastValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime(); // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_contrast', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+::-webkit-scrollbar-thumb {
+  background-color: 595858;
+  border-radius: 1px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+
+
+.footer  {
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  background-color: #4c4b4b;
+  color: black;
+  text-align: center;
+  font-size: 9px;
+  padding-top: 70px;
+  padding-bottom: 10px;
+}
+
+.footer p{
+  padding-top: 10px;
+  margin: 35px;
+
+}
+
+.footer a{
+  color: black;
+  font-weight: bold;
+}
+
+.container {
+    width: 100%;
+    height: 100%;
+    
+  }
+  
+  .toppane {
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+    height: 60px;
+    background-color:  #595858;
+    left: 0;
+    top: 0;
+    
+  }
+    .toppanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+
+    }
+    .toppanewrapleft{
+      width: 5%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraplogo{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .image-style{
+      width: 50px;
+      height: 50px;
+      border-radius: 5px;
+      left: 0;
+    }
+    .toppanewrapmiddle{
+      width: 67%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .middlebuttompanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    #open,#info,#premium,#download,#send{
+      border-radius: 5px;
+      border: none;
+      border: 2px solid #6d6d6d;
+      background: #7a7a7a;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding-top: 5px;
+      padding-left: 3px;
+      width: 100%;
+      cursor: pointer;
+    }
+    #open:active,#info:active,#premium:active,#download:active,#send:active{
+      border-radius: 5px;
+      border: none;
+      border: 2px solid #363636;
+      background: #7a7a7a;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding-top: 5px;
+      padding-left: 3px;
+      width: 100%;
+    }
+    #topbuttoms{
+      position:relative;
+      padding: 4px;
+      padding-bottom: 30px;
+      right: 10px;
+      bottom: 3px;
+    }
+
+    .toppanewrapright{
+      width: 33%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .leftbuttompanewrap{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: right;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding-right: 2%;
+      padding: 2%;
+    }
+
+
+  .leftpane {
+    width: 5%;
+    height: 100vh;
+    background-color:  #595858;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+   
+  }
+  .wrap-buttoms{
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    position: relative;
+    flex-direction: column;
+    flex-wrap:nowrap;
+    align-content: center;
+  }
+  .btn{
+    background-color: transparent;
+    box-shadow: 0.2px 0.2px 1px 0.2px inset rgb(37, 37, 37);
+    cursor: pointer;
+    border-radius: 5px;
+  }
+  .btn.clicked {
+    background-color: #4c4b4b;
+    box-shadow: -10px -10px 5px -10px inset rgb(109, 109, 109);
+    border-radius: 5px;
+}
+    #icon_drag_pan,#icon_crop_rotate,#icon_aspect_ratio,#icon_auto_fix_high,
+    #icon_auto_awesome,#icon_blur_on,#icon_brush,#icon_grain,#icon_camera_roll,
+    #icon_eraser,#icon_format{
+      font-size: 200%;
+    }
+  
+  .middlepane {
+    width: 80%;
+    height: 100vh;
+    background-color: #4c4b4b;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+  }
+  .wrapmiddlepane{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+  }
+  #image-canvas {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+
+  
+  /* Set the initial color of the label to white */
+  #image-canvas label {
+    color: white;
+
+  }
+  #image-canvas1 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+
+  
+  /* Set the initial color of the label to white */
+  #image-canvas1 label {
+    color: white;
+
+  }
+  
+  .rightpane {
+    width: 15%;
+    height: 100vh;
+    background-color:  #595858;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+  }
+
+
+  .d-flex {
+    display: flex;
+  }
+  
+.rightdivider{
+  width: 100%;
+  height: 80%;
+}
+
+  .rightpanetop{
+    width: 100%;
+    height: 20%;
+    display: flex;
+    box-shadow: -11px -11px 5px -10px inset rgb(15, 15, 15);
+  }
+  .wraprpttop{ 
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wraprptttop{
+    height: 30%;
+    font-size: 12px;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    display: flex;
+  }
+  .wraprptbtop{
+    height: 80%;
+    width: 100%;
+  }
+
+  .histogramwraper{
+    height: 100%;
+    width: 100%;
+    padding-left: 4%;
+    padding-right: 4%;
+    justify-content: center;
+    align-content: center;
+    display: flex;
+    
+  }
+  #histogram-canvas{
+    width: 100%;
+    height: 80%;
+    padding-left: 2%;
+    padding-right: 2%;
+    box-shadow: 2px 2px 7px 1px  rgb(37, 37, 37);
+    background: #7a7a7a;
+  }
+  o{
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    
+  }
+
+
+  .rightpanemiddle{
+    width: 100%;
+    height: 60%;
+    box-shadow: -10px -10px 5px -10px inset rgb(15, 15, 15);
+  }
+    .rpmtop{
+      width: 100%;
+      height: 20%;
+      display: flex;
+      box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+    }
+    .wraprpmtop{ 
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpmtop4{ 
+      width: 100%;
+      height: 70%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpmtop3{ 
+      width: 100%;
+      height: 30%;
+      font-size: 12px;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      display: flex;
+    }
+      .wraprpmtop6{
+        width: 60%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
-}
-
-
-function getHighlight() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var highlightValue = document.getElementById('HIGH').value;
-  console.log(highlightValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime(); // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_highlight', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      .wraprpmtop2{
+        width: 70%;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        display: flex; 
+        gap: 10%;
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
-}
-
-function getShadow() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var shadowValue = document.getElementById('SHAD').value;
-  console.log(shadowValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime(); // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_shadow', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      .wraprpmtop5{
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: right;
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, shadowValue: shadowValue }));
-}
-
-function getWhite() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var whiteValue = document.getElementById('WHITE').value;
-  console.log(whiteValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime(); // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_white', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      .wraprpmtop1{
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: left;
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
-}
-
-
-
-function getBlack() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var blackValue = document.getElementById('BLACK').value;
-  console.log(blackValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime(); // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_black', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      m{
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+        font-size: 90%;
+        text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
       }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
-}
+      #rangeValueTEMP,#rangeValueTINT,#rangeValueEXPO,#rangeValueCONT,
+      #rangeValueHIGH,#rangeValueSHAD,#rangeValueWHITE,#rangeValueBLACK,
+      #rangeValueTEXT,#rangeValueCLAR,#rangeValueDEH,#rangeValueVIR,#rangeValueSAT{
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+        font-size: 90%;
+        text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+
+      }
 
 
-
-
-const fileInput = document.getElementById("fileopen");
-const selectedImageName = document.querySelector(".wrapopenname p");
-const openscreenup = document.querySelector(".openscreenup");
-fileInput.addEventListener("change", function() {
-  const selectedFile = fileInput.files[0];
-  const selectedFileName = selectedFile ? selectedFile.name : "Select Image";
-  const label = document.querySelector("#fileopenlable");
-  label.textContent = selectedFileName;
-
-  if (selectedFile) {
-    // Create a new FileReader instance
-    const reader = new FileReader();
-
-    // Set up a callback function to run when the file is loaded
-    reader.onload = function() {
-      
-      // Create a new image element
-      const imagePreview = document.createElement("img");
-      imagePreview.src = reader.result;
-      imagePreview.style.padding = "1%";
-      imagePreview.style.maxWidth = "100%";
-      imagePreview.style.height = "auto";
-      imagePreview.style.objectFit = "contain";
-      imagePreview.style.maxHeight = "100%";
-      imagePreview.style.borderRadius = "9px";
-
-      // Add the image element to the openscreenup div
-      openscreenup.innerHTML = "";
-      openscreenup.appendChild(imagePreview);
-    };
-
-    // Read the selected file as a data URL
-    reader.readAsDataURL(selectedFile);
-  } else {
-    openscreenup.innerHTML = "";
-    selectedImageName.style.display = "none";
-  }
-});
-
-const imageFormatSelector = document.querySelector("#image_format_selector");
-const imageQualitySelector = document.querySelector("#image_quality_selector");
-
-imageFormatSelector.addEventListener("change", function() {
-    if (this.value === ".png") {
-        imageQualitySelector.disabled = true;
-    } else {
-        imageQualitySelector.disabled = false;
-    }
-});
-
-
-const downloadBtn = document.getElementById('download');
-const overlay = document.getElementById('overlay');
-
-downloadBtn.addEventListener('click', () => {
-  overlay.classList.add('active'); // add the 'active' class to show the overlay
-});
-
-overlay.addEventListener('click', (event) => {
-  if (event.target === overlay) {
-    overlay.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-const openBtn = document.getElementById('open');
-const overlay1 = document.getElementById('overlay1');
-
-openBtn.addEventListener('click', () => {
-  overlay1.classList.add('active'); // add the 'active' class to show the overlay
-});
-
-overlay1.addEventListener('click', (event) => {
-  if (event.target === overlay1) {
-    overlay1.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-const infoBtn = document.getElementById('info');
-const overlay2 = document.getElementById('overlay2');
-
-infoBtn.addEventListener('click', () => {
-  overlay2.classList.add('active'); // add the 'active' class to show the overlay
-});
-
-overlay2.addEventListener('click', (event) => {
-  if (event.target === overlay2) {
-    overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-
-const premBtn = document.getElementById('premium');
-const overlay3 = document.getElementById('overlay3');
-
-premBtn.addEventListener('click', () => {
-  overlay3.classList.add('active'); // add the 'active' class to show the overlay
-});
-
-overlay3.addEventListener('click', (event) => {
-  if (event.target === overlay3) {
-    overlay3.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-const shareBtn = document.getElementById('send');
-const overlay4 = document.getElementById('overlay4');
-
-shareBtn.addEventListener('click', () => {
-  overlay4.classList.add('active'); // add the 'active' class to show the overlay
-});
-
-overlay4.addEventListener('click', (event) => {
-  if (event.target === overlay4) {
-    overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-
-
-
-
-
-
-var buttons = document.getElementsByClassName("btn");
-
-for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener("click", function() {
-        if (this.classList.contains("clicked")) {
-            this.classList.remove("clicked");
-        } else {
-            for (var j = 0; j < buttons.length; j++) {
-                buttons[j].classList.remove("clicked");
-            }
-            this.classList.add("clicked");
+    
+/* Style for slider thumb */
+        #TEMP::-webkit-slider-thumb {
+          margin-top: -4px;
+          cursor: pointer;
+          -webkit-appearance: none;
+          appearance: none;
+          width: 20px;
+          height: 20px;
+          background: gray; /* Change this to the desired color */
+          border-radius: 50%; /* Make the slider thumb circular */
+          border: none;
         }
-    });
+
+        /* Change the color of the track */
+        #TEMP::-webkit-slider-runnable-track {
+          background: linear-gradient(to left, rgb(175, 175, 34), rgb(30, 19, 134));
+          border-radius: 20px;
+          height: 7px;
+          box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+      
+        }
+
+        #TINT::-webkit-slider-thumb {
+          margin-top: -4px;
+          cursor: pointer;
+        }
+        
+        /* Change the color of the track */
+        #TINT::-webkit-slider-runnable-track {
+          background: linear-gradient(to left, rgb(126, 22, 126), rgb(24, 131, 24));
+          border-radius: 20px;
+          height: 7px;
+          box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+          
+      
+        }  
+        #TINT,#TEMP,#EXPO,#CONT,#HIGH,#SHAD,#WHITE,#BLACK,#TEXT,#CLAR,#DEH,#VIR,#SAT{
+          height: 70%;
+          width: 110%;
+        }
+
+      
+      
+    .rpmmiddle{
+      width: 100%;
+      height: 40%;
+      box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+    }
+      .wraprpmmiddle{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      }
+      .wraprpmmiddle1{
+        width: 100%;
+        height: 30%;
+        font-size: 12px;
+        justify-content: center;
+        text-align: center;
+        align-items: center;
+        display: flex;
+      }
+      .wraprpmmiddle2{
+        width: 100%;
+        height: 70%;
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      }
+      .wraprpmmiddle3{
+        width: 30%;
+
+      }
+      .wraprpmmiddle8{
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: left;
+      }
+      .wraprpmmiddle4{
+        width: 70%;
+
+      }
+      .wraprpmmiddle7{
+        width: 100%;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        display: flex; 
+        gap: 10%;
+      }
+      .wraprpmmiddle5{
+        width: 60%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .wraprpmmiddle6{
+        width: 30%;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: right;
+      }
+
+
+      k{ 
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+        font-size: 90%;
+        text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
+
+      }
+    
+      #EXPO::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #EXPO::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(177, 177, 176), rgb(41, 41, 41));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);        
+    
+      }
+
+      #CONT::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #CONT::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+      
+      #HIGH::-webkit-slider-thumb {
+
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #HIGH::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #SHAD::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #SHAD::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #WHITE::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #WHITE::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #BLACK::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #BLACK::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+    
+
+    .rpmbottom{
+      width: 100%;
+      height: 40%;
+      box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+    }
+    .wraprpmbottom{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      }
+    .wraprpmbottom1{
+      width: 100%;
+      height: 30%;
+      font-size: 12px;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      display: flex;
+      }
+    .wraprpmbottom2{
+      width: 100%;
+      height: 70%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      }
+    .wraprpmbottom3{
+      width: 30%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: left;
+      }
+    .wraprpmbottom4{
+      width: 70%;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      display: flex; 
+      gap: 10%;
+      }
+    .wraprpmbottom5{
+      width: 60%;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      }
+    .wraprpmbottom6{
+      width: 30%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: right;
+      }
+
+       l{ 
+        text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+        font-size: 90%;
+        text-align: left;
+        padding-left: 10%;
+        padding-right: 10%;
+        padding: 1%;
+        width: 70%;
+      }
+    
+      #TEXT::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #TEXT::-webkit-slider-runnable-track {
+        background: linear-gradient(to left,rgb(177, 177, 176),rgb(41, 41, 41));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #CLAR::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #CLAR::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(177, 177, 176),rgb(41, 41, 41));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #DEH::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #DEH::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(177, 177, 176),rgb(41, 41, 41));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #VIR::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #VIR::-webkit-slider-runnable-track {
+        background: linear-gradient(to right, 
+        rgb(121, 18, 18) 0%, rgb(161, 161, 32) 16.67%, rgb(25, 114, 25) 33.33%, 
+        rgb(16, 145, 145) 50%, rgb(16, 16, 110) 66.67%, rgb(105, 7, 105) 83.33%, rgb(100, 7, 7) 100%);
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+
+      #SAT::-webkit-slider-thumb {
+        margin-top: -4px;
+        cursor: pointer;
+      }
+      
+      /* Change the color of the track */
+      #SAT::-webkit-slider-runnable-track {
+        background: linear-gradient(to right, 
+        rgb(121, 18, 18) 0%, rgb(161, 161, 32) 16.67%, rgb(25, 114, 25) 33.33%, 
+        rgb(16, 145, 145) 50%, rgb(16, 16, 110) 66.67%, rgb(105, 7, 105) 83.33%, rgb(100, 7, 7) 100%);
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);
+    
+      }  
+        
+    
+  .rightpanebottom{
+    width: 100%;
+    height: 45%;
+    box-shadow: -10px -10px 5px -10px inset rgb(15, 15, 15);
+  }
+  .rpbtop{
+
+    width: 100%;
+    height: 33.3%;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+  
+  }
+  .wraprpbtop{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wraprpbtop1{
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+  }
+  .wraprpbtop2{
+    display: flex;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    height: 30%;
+  }
+  .wraprpbtop3{
+    width: 100%;
+    height: 30%;
+    font-size: 12px;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    display: flex;
+  }
+
+    #font-selector {
+      padding-right: 30px;
+      width: 70%;
+      height: 90%;
+      border-radius: 5px; 
+      border: none;
+      border: 2px solid #6d6d6d;
+      background: #7a7a7a;
+      cursor: pointer;
+    }
+    #font-selector::placeholder{
+      color: black;
+      padding: 5%;
+    }
+
+
+        #arial {
+          font-family: Arial, Helvetica, sans-serif;
+        }
+        
+        #helvetica {
+          font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+        }
+        
+        #TNR {
+          font-family: "Times New Roman", Times, serif;
+        }
+        
+        #CN {
+          font-family: "Courier New", Courier, monospace;
+        }
+        
+        #verdana {
+          font-family: Verdana, Geneva, sans-serif;
+        }
+        
+        #georgia {
+          font-family: Georgia, serif;
+        }
+        
+        #palation {
+          font-family: Palatino, "Palatino Linotype", serif;
+        }
+        
+        #garamond {
+          font-family: Garamond, "Adobe Garamond Pro", serif;
+        }
+        
+        #bookman {
+          font-family: "Bookman Old Style", serif;
+        }
+        
+        #CSMS {
+          font-family: "Comic Sans MS", cursive, sans-serif;
+        }
+        
+        #impact {
+          font-family: Impact, Haettenschweiler, sans-serif;
+        }
+        
+        #LSU {
+          font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        }
+        
+        #tahoma {
+          font-family: Tahoma, Geneva, sans-serif;
+        }
+        
+        #TMS {
+          font-family: "Trebuchet MS", Helvetica, sans-serif;
+        }
+        
+        #CG {
+          font-family: "Century Gothic", sans-serif;
+        }
+        
+        #consolas {
+          font-family: Consolas, monospace;
+        }
+        
+        #calibri{
+          font-family: Calibri, Candara, Segoe, "Segoe UI", Optima, Arial, sans-serif;
+        }
+        
+        #cambria {
+          font-family: Cambria, Georgia, serif;
+        }
+        
+        #FGM {
+          font-family: "Franklin Gothic Medium", "Franklin Gothic", "ITC Franklin Gothic", sans-serif;
+        }
+        
+        #SUI {
+          font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+    #font-type-selector {
+      padding-right: 30px;
+      width: 70%;
+      height: 90%;
+      border-radius: 5px; 
+      border: none;
+      border: 2px solid #6d6d6d;
+      background: #7a7a7a;
+      cursor: pointer;
+    }
+    #font-type-selector::placeholder{
+      color: black;
+      padding: 5%;
+    } 
+    
+      #Normal{
+        text-decoration: none;
+      }
+      #Bold{
+        font-weight: bold;
+      }
+      #Italic{
+        font-style: italic;
+      }
+
+  .rpbmiddle{
+
+    width: 100%;
+    height: 33.3%;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+    }
+
+    .wraprpbmiddle{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle1{
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle2{
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      display: flex;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle19{
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: row-reverse;
+        justify-content: center;
+        align-items: center;
+    }
+    .wraprpbniddle4{
+      width: 60%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle5{
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle3{
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .wraprpbmiddle20{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+    }
+    .wraprpbmiddle6{
+      width: 60%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle7{
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle11{
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle12{
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      display: flex;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle13{
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle16{
+      width: 60%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle17{
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle14{
+      width: 60%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+    .wraprpbmiddle18{
+      width: 30%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+    }
+
+
+
+  .rpbbottom{
+    width: 100%;
+    height: 33.3%;
+    box-shadow: -10px -10px 5px -10px inset rgb(37, 37, 37);
+  }
+  .wrapbbottom{
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomup{
+      width: 100%;
+      height: 50%;
+      display: flex;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottominsidea{
+      width: 50%;
+      height: 100%;
+      display: flex;
+      flex-direction: row-reverse;
+      justify-content: center;
+      text-align: center;
+      align-items: center;
+      display: flex;
+      text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottominside1a{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+  }
+  .wrapbbottomtexta{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomicona{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottominsideb{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottominside2b{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+  }
+  .wrapbbottomtextb{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomiconb{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomdown{
+    width: 100%;
+    height: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomdowninside{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    text-align: center;
+    align-items: center;
+    display: flex;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomdowntext1{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottondownicon1{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottondowninside2{
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottomdowntext2{
+    width: 60%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+  .wrapbbottondownicon2{
+    width: 30%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  }
+input[type = "number"]{
+  border: none;
+  border: 2px solid #6d6d6d;
+  background: #7a7a7a;
+  border-radius: 5px;
+  text-align: left;
+  width: 80%;
+  height: 40%;
+}
+.overlay2 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
 }
 
-const fontTypeSelector = document.querySelector('#font-type-selector');
+.overlay2.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlay2-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.infoscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.infoscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.infoscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.wrapdowninfoscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.infolist{
+  width: 90%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: left;
+  text-align: left;
+  font-size:x-small;
+  padding: 2%;
+}
+.infolist li {
+  line-height: 1.5;
+}
 
-fontTypeSelector.addEventListener('change', () => {
-  const selectedOption = fontTypeSelector.options[fontTypeSelector.selectedIndex];
+.overlay3 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
 
-  if (selectedOption.value === 'Bold' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'bold';
-  } 
-  if (selectedOption.value === 'Italic' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'italic';
-  }
-  if (selectedOption.value === 'Normal' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'normal';
-  }
-});
+.overlay3.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlay3-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.premscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.premscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.premscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.wrapdownpremscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
 
-const fontSelector = document.querySelector('#font-selector');
-
-fontSelector.addEventListener('change', () => {
-  const selectedOption = fontSelector.options[fontSelector.selectedIndex];
-
-  if (selectedOption.value === 'Impact') {
-    document.execCommand('impact', true, 'Impact');
-  } 
-});
 
 
-// Check the initial font and set the selected text accordingly
-const selectedOption = fontSelector.options[fontSelector.selectedIndex];
+.overlay4 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
 
-const tempSlider = document.querySelector('#TEMP');
-const tempRangeValue = document.querySelector('#rangeValueTEMP');
+.overlay4.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlay4-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.sharescreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.sharescreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.sharescreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.wrapdownsharescreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
 
-const tintSlider = document.querySelector('#TINT');
-const tintRangeValue = document.querySelector('#rangeValueTINT');
 
-const expoSlider = document.querySelector('#EXPO');
-const expoRangeValue = document.querySelector('#rangeValueEXPO');
 
-const contSlider = document.querySelector('#CONT');
-const contRangeValue = document.querySelector('#rangeValueCONT');
 
-const highSlider = document.querySelector('#HIGH');
-const highRangeValue = document.querySelector('#rangeValueHIGH');
+.overlay {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
 
-const shadSlider = document.querySelector('#SHAD');
-const shadRangeValue = document.querySelector('#rangeValueSHAD');
+.overlay.active {
+  display: block; /* show the overlay when it's active */
+}
 
-const whiteSlider = document.querySelector('#WHITE');
-const whiteRangeValue = document.querySelector('#rangeValueWHITE');
+.overlay-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.downloadscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+#downloadform{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.wrapdownloadscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreenpreview{
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreenoption{
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  padding: 2.5%;
+}
+.downloadscreenoptionwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
 
-const blackSlider = document.querySelector('#BLACK');
-const blackRangeValue = document.querySelector('#rangeValueBLACK');
+}
+.downloadformatwrap{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.downloadqualitywrap{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
 
-const textSlider = document.querySelector('#TEXT');
-const textRangeValue = document.querySelector('#rangeValueTEXT');
+}
+.formatformattext{
+  border: none;
+  border: 2px solid #6d6d6d;
+  background: #7a7a7a;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  height: 40px;
+  width: 70%;
+  display: flex;
+}
+.formatformattext n {
+  text-align: left;
+  display: flex;
+  align-content: center;
+  padding: 5%;
+}
+#image_format_selector{
+  border: none;
+  background: #555;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  height: 40px;
+  width: 30%;
+  display: flex;
+  text-align: center;
+}
 
-const clarSlider = document.querySelector('#CLAR');
-const clarRangeValue = document.querySelector('#rangeValueCLAR');
+.qualityqualitytext{
+  border: none;
+  border: 2px solid #6d6d6d;
+  background: #7a7a7a;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  height: 40px;
+  width: 70%;
+  display: flex;
+}
+.qualityqualitytext n {
+  text-align: left;
+  display: flex;
+  align-content: center;
+  padding: 5%;
 
-const dehSlider = document.querySelector('#DEH');
-const dehRangeValue = document.querySelector('#rangeValueDEH');
+}
+#image_quality_selector{
+  border: none;
+  background: #555;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  height: 40px;
+  width: 30%;
+  display: flex;
+  text-align: center;
+}
 
-const virSlider = document.querySelector('#VIR');
-const virRangeValue = document.querySelector('#rangeValueVIR');
 
-const satSlider = document.querySelector('#SAT');
-const satRangeValue = document.querySelector('#rangeValueSAT');
 
-tempSlider.addEventListener('input', () => {
-    tempRangeValue.innerText = tempSlider.value;
-});
-  
-tempSlider.addEventListener('dblclick', () => {
-    tempSlider.value = 26000;
-    tempRangeValue.innerText = 26000;
-});
 
-tintSlider.addEventListener('input', () => {
-    tintRangeValue.innerText = tintSlider.value;
-});
 
-tintSlider.addEventListener('dblclick', () => {
-    tintSlider.value = 0;
-    tintRangeValue.innerText = 0;
-});
-  
-expoSlider.addEventListener('input', () => {
-  expoRangeValue.innerText = expoSlider.value;
-});
+.downloadscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
 
-expoSlider.addEventListener('dblclick', () => {
-  expoSlider.value = 0;
-  expoRangeValue.innerText = 0;
-});
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding: 2.4%;
+}
+.downloadname{
+  width: 82.5%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
 
-contSlider.addEventListener('input', () => {
-  contRangeValue.innerText = contSlider.value;
-});
+}
+.downloadokay{
+  width: 17.5%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: right;
+  align-items: center;
+}
+#textfilename{
+  border: none;
+  border: 2px solid #6d6d6d;
+  background: #7a7a7a;
+  border-radius: 5px;
+  text-align: left;
+  padding: 5%;
+  height: 40px;
+  width: 100%;
+}
+#textfilename::placeholder {
+  color: black;
+}
+#savebtnfordownload{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnfordownload:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+#savebtnforinfo{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforinfo:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
 
-contSlider.addEventListener('dblclick', () => {
-  contSlider.value = 0;
-  contRangeValue.innerText = 0;
-});
+#verticalslider{
+  width: 80px;
+}
 
-highSlider.addEventListener('input', () => {
-  highRangeValue.innerText = highSlider.value;
-});
 
-highSlider.addEventListener('dblclick', () => {
-  highSlider.value = 0;
-  highRangeValue.innerText = 0;
-});
 
-shadSlider.addEventListener('input', () => {
-  shadRangeValue.innerText = shadSlider.value;
-});
 
-shadSlider.addEventListener('dblclick', () => {
-  shadSlider.value = 0;
-  shadRangeValue.innerText = 0;
-});
 
-whiteSlider.addEventListener('input', () => {
-  whiteRangeValue.innerText = whiteSlider.value;
-});
 
-whiteSlider.addEventListener('dblclick', () => {
-  whiteSlider.value = 0;
-  whiteRangeValue.innerText = 0;
-});
 
-blackSlider.addEventListener('input', () => {
-  blackRangeValue.innerText = blackSlider.value;
-});
 
-blackSlider.addEventListener('dblclick', () => {
-  blackSlider.value = 0;
-  blackRangeValue.innerText = 0;
-});
+.overlay1 {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
 
-textSlider.addEventListener('input', () => {
-    textRangeValue.innerText = textSlider.value;
-});
-  
-textSlider.addEventListener('dblclick', () => {
-    textSlider.value = 0;
-    textRangeValue.innerText = 0;
-});
+.overlay1.active {
+  display: block; /* show the overlay when it's active */
+}
 
-clarSlider.addEventListener('input', () => {
-    clarRangeValue.innerText = clarSlider.value;
-});
-  
-clarSlider.addEventListener('dblclick', () => {
-    clarSlider.value = 0;
-    clarRangeValue.innerText = 0;
-});
+.overlay1-content {
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.openscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  justify-content:center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
 
-dehSlider.addEventListener('input', () => {
-    dehRangeValue.innerText = dehSlider.value;
-});
-  
-dehSlider.addEventListener('dblclick', () => {
-    dehSlider.value = 0;
-    dehRangeValue.innerText = 0;
-});
+}
 
-virSlider.addEventListener('input', () => {
-    virRangeValue.innerText = virSlider.value;
-});
-  
-virSlider.addEventListener('dblclick', () => {
-    virSlider.value = 0;
-    virRangeValue.innerText = 0;
-});
+#form_open{
+  width: 100%;
+  height: 100%;
+  margin: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: row;
+}
+.wrapopenname{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px auto;
+  padding: 5px;
+  width: 150%; 
+}
+.wrapopenname p {
+  display: none;
+}
 
-satSlider.addEventListener('input', () => {
-    satRangeValue.innerText = satSlider.value;
-});
-  
-satSlider.addEventListener('dblclick', () => {
-    satSlider.value = 0;
-    satRangeValue.innerText = 0;
-});
+
+
+#fileopenlable{
+  background: #7a7a7a;
+  display: block;
+  padding: 12px;
+  justify-content: center;
+  border-radius: 5px;
+  width: 100%;
+  line-height: 25px;
+  border: 2px solid #6d6d6d;
+  position: relative;
+  text-align: left;
+}
+#fileopenlable::before{
+  position: absolute;
+  content: "Browse";
+  right: -2px;
+  top: -2px;
+  width: 100px;
+  height: 107%;
+  line-height: 50px;
+  background: #555;
+  text-align: center;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+}
+#fileopenlable:active{
+  border: 2px solid #363636;
+}
+
+.openokay{
+  width: 30%;
+  height: 100%;
+  display: flex;
+  justify-content: right;
+  align-items: center;
+  margin: 20px auto;
+  padding: 12px;
+  border-radius: 5px;
+
+}
+
+
+
+
