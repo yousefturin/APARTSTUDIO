@@ -237,6 +237,83 @@ def adjust_black():
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 
+@app.route('/adjust_exposure', methods=['POST'])
+def adjust_exposure():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        exposure_value = float(request.json['exposureValue'])
+        print(exposure_value)
+        # Scale the value to fit in cv2 method from 0 - 1 
+        exposure_scaled = float((exposure_value + 5.0) / 10.0)
+        print(exposure_scaled)
+        # Getting the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Determine whether the exposure value is positive or negative
+        if exposure_value >= 0:
+            # If the exposure value is positive, set alpha to a value greater than 1.0 to make the image brighter
+            alpha = 1.0 + exposure_scaled * 1.0
+        else:
+            # If the exposure value is negative, set alpha to a value less than 1.0 to make the image darker
+            alpha = exposure_scaled * 0.5
+        # Apply the exposure adjustment to the image
+        image = cv2.convertScaleAbs(image, alpha=(alpha/exposure_scaled), beta=0)
+        # Converting the name
+        result = image
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_temp', methods=['POST'])
+def adjust_temp():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        temp_value = int(request.json['tempValue'])
+        print(temp_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert the image to the LAB color space
+        lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+
+        # Compute the average A and B values of the image
+        mean_a = lab_image[:, :, 1].mean()
+        mean_b = lab_image[:, :, 2].mean()
+
+        # Compute the shift in A and B values based on the temperature value
+        if temp_value < 26000:
+            shift_blue = 0.0006 * (temp_value - 26000)
+            print(shift_blue)
+            shift_yellow = 0
+        elif temp_value >= 26000 and temp_value <= 50000:
+            shift_blue = 0
+            shift_yellow = 0.0004 * (temp_value - 26000)
+            print(shift_yellow)
+
+
+        # Apply the shift to the A and B channels
+        lab_image[:, :, 1] = lab_image[:, :, 1] - ((mean_a - 128) * (shift_yellow - shift_blue))
+        lab_image[:, :, 2] = lab_image[:, :, 2] + ((mean_b - 128) * (shift_yellow + shift_blue))
+
+        # Convert the image back to the BGR color space
+        corrected_image = cv2.cvtColor(lab_image, cv2.COLOR_LAB2BGR)
+        # Converting the  image name
+        result = corrected_image
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
 
 
 
