@@ -379,7 +379,9 @@
                                 <o>Histogram</o>
                             </div>
                             <div class="wraprptbtop">
-                                <canvas id="histogram-canvas"></canvas>
+                                <div class="histogramwraper">
+                                    <canvas id="histogram-canvas"></canvas>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -439,16 +441,19 @@
                                                         <form id="highlight-form"> 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                 id="HIGH" name="HIGH"oninput="rangeValueHIGH.innerText = this.value" title="Highlights" onchange="getHighlight()">
-                                                            </form>    
+                                                                </form>    
                                                             <form id="shadow-form">    
                                                                 <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                     id="SHAD"oninput="rangeValueSHAD.innerText = this.value" title="Shadows" onchange="getShadow()" >
-                                                                </form>  
+                                                                    </form>  
+                                                                <form id="white-form"> 
                                                                     <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                        id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites">
-                                                                    
+                                                                        id="WHITE"oninput="rangeValueWHITE.innerText = this.value" title="Whites" onchange="getWhite()">
+                                                                        </form>  
+                                                                    <form id="black-form"> 
                                                                         <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                            id="BLACK"oninput="rangeValueBLACK.innerText = this.value" title="Blacks">
+                                                                            id="BLACK"oninput="rangeValueBLACK.innerText = this.value" title="Blacks" onchange="getBlack()">
+                                                                        </form> 
                                                 </div>
                                                     <div class="wraprpmmiddle6">
                                                             <p id="rangeValueEXPO">0</p>    
