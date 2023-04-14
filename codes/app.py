@@ -148,6 +148,8 @@ def adjust_shadow():
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
     # Apply the shadow effect to the input image using the add_shadow function
         with Image.open(image_path) as image:
+            # Put the image to three chanels mode (RED, GREEN, BLUE)       
+            image = image.convert('RGB')
             # Split the image into separate red, green, and blue channels
             r, g, b = image.split()
             # Create a darkened copy of the image to use as a shadow layer
@@ -240,10 +242,13 @@ def adjust_black():
 
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
+    new_filename_html = request.form.get('image_name')
+    filename = new_filename_html
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     new_filename = request.form.get('textfilename')
     image_format = request.form.get('image_format_selector').lower()
     image_quality = request.form.get('image_quality_selector')
+    print(new_filename_html)
     if new_filename == '':
          filenameFirstName = filename.rsplit('.', 1)[0]
          new_filename = filenameFirstName + "_NotPHOTOSHOP"
