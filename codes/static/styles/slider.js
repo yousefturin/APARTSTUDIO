@@ -1,49 +1,49 @@
 const img = document.getElementById('image-canvas');
-var imageSrc = document.getElementById('image-canvas').src;
-const canvas = document.getElementById('histogram-canvas');
-const ctx = canvas.getContext('2d');
+// Check first if there is an image and it has an src then do the function if not just skip it
+if (!img || !img.src) {
+  console.error('Image source not found');
+} else {
+  const imageSrc = img.src;
+  console.log(imageSrc)
 
-img.onload = function() {
-  canvas.width = img.width;
-  canvas.height = img.height;
-  ctx.drawImage(img, 0, 0, img.width, img.height);
+  const canvas = document.getElementById('histogram-canvas');
+  const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-  const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  img.onload = function() {
+    canvas.width = img.width;
+    canvas.height = img.height;
+    ctx.drawImage(img, 0, 0, img.width, img.height);
 
-  const histogram = Array(256).fill(0);
-  const pixels = imageData.data;
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < pixels.length; i += 4) {
-    const r = pixels[i];
-    const g = pixels[i + 1];
-    const b = pixels[i + 2];
-    const luma = Math.round(r * 0.2126 + g * 0.7152 + b * 0.0722);
-    histogram[luma]++;
-  }
+    const histogram = Array(256).fill(0);
+    const pixels = imageData.data;
 
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < pixels.length; i += 4) {
+      const r = pixels[i];
+      const g = pixels[i + 1];
+      const b = pixels[i + 2];
+      const luma = Math.round(r * 0.2126 + g * 0.7152 + b * 0.0722);
+      histogram[luma]++;
+    }
 
-  const barWidth = canvas.width / histogram.length;
-  const barHeight = canvas.height / Math.max(...histogram);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  for (let i = 0; i < histogram.length; i++) {
-    const x = i * barWidth;
-    const y = canvas.height - histogram[i] * barHeight;
-    const width = barWidth;
-    const height = histogram[i] * barHeight;
-    ctx.fillStyle = '#000';
-    ctx.fillRect(x, y, width, height);
-  }
-};
+    const barWidth = canvas.width / histogram.length;
+    const barHeight = canvas.height / Math.max(...histogram);
 
-img.src = imageSrc;
+    for (let i = 0; i < histogram.length; i++) {
+      const x = i * barWidth;
+      const y = canvas.height - histogram[i] * barHeight;
+      const width = barWidth;
+      const height = histogram[i] * barHeight;
+      ctx.fillStyle = '#000';
+      ctx.fillRect(x, y, width, height);
+    }
+  };
 
-
-
-
-
-
-
+  img.src = imageSrc;
+}
 
 
 function getContrast() {
@@ -68,7 +68,6 @@ function getContrast() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
@@ -88,6 +87,11 @@ function getContrast() {
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
@@ -116,7 +120,6 @@ function getHighlight() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
@@ -136,6 +139,11 @@ function getHighlight() {
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
@@ -163,7 +171,6 @@ function getShadow() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
@@ -183,6 +190,11 @@ function getShadow() {
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, shadowValue: shadowValue }));
@@ -210,7 +222,6 @@ function getWhite() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
@@ -230,6 +241,11 @@ function getWhite() {
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
@@ -259,7 +275,6 @@ function getBlack() {
     if (xhr.status === 200) {
       // Decode the Base64-encoded image data
       var imgData = xhr.response['image'];
-      console.log(imgData);
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
@@ -279,6 +294,11 @@ function getBlack() {
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
