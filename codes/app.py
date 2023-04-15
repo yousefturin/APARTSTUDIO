@@ -56,8 +56,8 @@ def home():
 @app.route('/upload',methods=['GET','POST'])
 def upload_image():
     if request.method == 'POST':
-        file = request.files['file']  
-        print(file)
+        file = request.files['file'] 
+
         if 'file' not in request.files:
              flash('No Image Part')
              return redirect(request.url)
@@ -65,23 +65,26 @@ def upload_image():
             if file.filename == '':
                 flash('No Selected Image')
                 return redirect(request.url)
-            if file and allowed_file(file.filename):
-                try:
-                    filename =secure_filename(file.filename)
-                    print("1:",filename)
-                    app.logger.info(f'{filename}')
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                   
-                    return render_template('main.html', filename=filename)
-                except:
-                    raise ResourceNotFoundError("Image Resource could not be processed")              
-            elif file.filename not in ALLOWED_EXTENSIONS :
-                flash('Allowed image types are \n (png, jpg, jpeg, gif)')
-                return redirect(request.url)           
+            if file.filename != '':
+                if file and allowed_file(file.filename):
+                    try:
+                        filename = secure_filename(file.filename)
+                        print("1:",filename)
+                        app.logger.info(f'{filename}')
+                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                        return render_template('main.html', filename=filename)
+                    except:
+                        raise ResourceNotFoundError("Image Resource could not be processed") 
+                                 
+                elif file.filename not in ALLOWED_EXTENSIONS :
+                    flash('Allowed image types are \n (png, jpg, jpeg, gif)')
+                    return redirect(request.url)           
+                else:
+                    raise ResourceNotFoundError("Image Resource could not be retuned") 
             else:
-                    raise ResourceNotFoundError("Image Resource could not be retuned")  
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
     else:
-             return redirect(request.url)
+             return render_template('main.html')
 
 
 @app.route('/display/<filename>')
@@ -264,7 +267,6 @@ def adjust_exposure():
         result = image
         # Saving the adjusted image to the new file path
         cv2.imwrite(new_image_path, result)
-
         img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
@@ -283,11 +285,9 @@ def adjust_temp():
         image = cv2.imread(image_path)
         # Convert the image to the LAB color space
         lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
-
         # Compute the average blue and yellow values of the image
         mean_a = lab_image[:, :, 1].mean()
         mean_b = lab_image[:, :, 2].mean()
-
         # Compute the shift in blue and yellow values based on the temp value
         if temp_value < 26000:
             shift_blue = 0.0006 * (temp_value - 26000)
@@ -303,7 +303,6 @@ def adjust_temp():
         # Apply the shift to the blue and yellow channels
         lab_image[:, :, 1] = lab_image[:, :, 1] - ((mean_a - 128) * (shift_yellow - shift_blue))
         lab_image[:, :, 2] = lab_image[:, :, 2] + ((mean_b - 128) * (shift_yellow + shift_blue))
-
         # Convert the image back to the BGR color space
         corrected_image = cv2.cvtColor(lab_image, cv2.COLOR_LAB2BGR)
         # Converting the  image name
@@ -340,7 +339,6 @@ def adjust_tint():
             A += tint_value * 255 / 150 # fade to pink
             A[A > 255] = 255 # cap at 255
             A = np.uint8(A)
-
         # Merge the LAB channels back together
         lab_img = cv2.merge((L, A, B))
         # Convert the LAB image back to the original color space
@@ -462,17 +460,14 @@ def adjust_deh():
         kernel_size = max(int(min(image.shape[:2]) / 100), 1)
         dark = cv2.erode(gray, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
         dc = 255 - cv2.dilate(dark, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
-
         # Estimate atmosphere light
         num_pixels = dc.size
         num_sample = int(num_pixels * 0.001)
         sample_pixels = np.random.choice(num_pixels, num_sample, replace=False)
         sample_values = np.sort(image.flatten()[sample_pixels])
         athmosphere_light = np.mean(sample_values[-num_sample // 10:])
-
         # Compute transmission
         transmission = 1 - w * dc / athmosphere_light
-
         # Apply soft matting
         radius = max(int(min(image.shape[:2]) / 100), 1)
         epsilon = 0.001
@@ -482,13 +477,12 @@ def adjust_deh():
             guided_filter[:, :, c] = cv2.filter2D(image[:, :, c], -1, guided, borderType=cv2.BORDER_REFLECT_101)
         var = np.var(image)
         transmission = (transmission - guided) / (np.maximum(var, np.mean(var)) + epsilon) + guided
-
         # Apply dehazing
         t = np.maximum(transmission, 1 - deh_value)
         result = np.zeros_like(image, dtype=np.float64)
         for c in range(image.shape[2]):
             result[:, :, c] = (image[:, :, c] - athmosphere_light) / t + athmosphere_light
-        result = np.clip((result / 255) ** gamma * 255, 0, 255)
+        result = np.clip((result / 255 + 1e-6) ** gamma * 255, 0, 255)
         result =  result.astype(np.uint8)
         # Saving the adjusted image to the new file path
         cv2.imwrite(new_image_path, result)
@@ -497,20 +491,83 @@ def adjust_deh():
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 
+@app.route('/adjust_sat', methods=['POST'])
+def adjust_sat():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        sat_value = int(request.json['satValue'])
+        print(sat_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        # Convert the value to a float between 0 and 2
+        sat_value = (sat_value + 100) / 100.0
+        print(sat_value)
+        # Modify the image
+        if sat_value <= 0.0:
+            # Reduce the color intensity
+            enhancer = ImageEnhance.Color(image)
+            image = enhancer.enhance(sat_value)
+        if sat_value > 0.0:
+            # Increase the color intensity
+            enhancer = ImageEnhance.Color(image)
+            image = enhancer.enhance(sat_value)
+        image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
+
+@app.route('/adjust_vir', methods=['POST'])
+def adjust_vir():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        vir_value = int(request.json['virValue'])
+        print(vir_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert image to HSV color space
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # Split the HSV image into separate channels
+        h_channel, s_channel, v_channel = cv2.split(hsv_image)
+        # Determine whether to add or subtract saturation
+        if vir_value < 0:
+            # Subtract saturation adjustment from the saturation channel
+            s_adjust = -1 * vir_value
+            s_channel = cv2.subtract(s_channel, s_adjust)
+        else:
+            # Add saturation adjustment to the saturation channel
+            s_adjust = vir_value
+            s_channel = cv2.add(s_channel, s_adjust)
+        # Clip the pixel values to the valid range of 0-255
+        s_channel = np.clip(s_channel, 0, 255)
+
+        # Merge the HSV channels back together
+        hsv_image = cv2.merge([h_channel, s_channel, v_channel])
+
+        # Convert the HSV image back to BGR color space
+        result = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
     new_filename_html = request.form.get('image_name')
+    print(new_filename_html)
     filename = new_filename_html
     file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    print(file_path)
     new_filename = request.form.get('textfilename')
     image_format = request.form.get('image_format_selector').lower()
     image_quality = request.form.get('image_quality_selector')
     print(new_filename_html)
     if new_filename == '':
-         filenameFirstName = filename.rsplit('.', 1)[0]
-         new_filename = filenameFirstName + "_NotPHOTOSHOP"
+         new_filename = "Your_image_from" + "_NotPHOTOSHOP"
     else:
          new_filename = new_filename
     # Split the image format 
