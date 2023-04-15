@@ -1,3 +1,45 @@
+
+function shareImageOnTwitter() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  const imageUrl = imageSrc ; // replace with the URL of the image you want to share
+  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(imageUrl)}`);
+  console.log(imageUrl);
+}
+function shareImageOnFacebook() {
+    var imageSrc = document.getElementById('image-canvas').src;
+    console.log(imageSrc);
+    const imageUrl = imageSrc ;
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`);
+}
+function shareImageOnInstagram() {
+    var imageSrc = document.getElementById('image-canvas').src;
+    console.log(imageSrc);
+    const imageUrl = imageSrc ;
+    window.open(`https://www.instagram.com/create/story/image/?url=${encodeURIComponent(imageUrl)}`);
+}
+function shareImageOnLinkedIn() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  const imageUrl = imageSrc ;
+  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(imageUrl)}`);
+}
+function shareImageOnPinterest() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  const imageUrl = imageSrc ;
+  window.open(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(imageUrl)}`);
+}
+
+
+
+
+
+
+
+
+
+
 const img = document.getElementById('image-canvas');
 // Check first if there is an image and it has an src then do the function if not just skip it
 if (!img || !img.src) {
@@ -5,6 +47,7 @@ if (!img || !img.src) {
 } else {
   const imageSrc = img.src;
   console.log(imageSrc)
+  document.getElementById("imageurl").innerHTML = imageSrc;
 
   const canvas = document.getElementById('histogram-canvas');
   const ctx = canvas.getContext('2d', { willReadFrequently: true });
@@ -49,6 +92,7 @@ if (!img || !img.src) {
 function getContrast() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1'); 
   var contrastValue = document.getElementById('CONT').value;
@@ -92,6 +136,7 @@ function getContrast() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
@@ -101,6 +146,7 @@ function getContrast() {
 function getHighlight() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var highlightValue = document.getElementById('HIGH').value;
@@ -144,6 +190,7 @@ function getHighlight() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
@@ -152,6 +199,7 @@ function getHighlight() {
 function getShadow() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var shadowValue = document.getElementById('SHAD').value;
@@ -195,6 +243,7 @@ function getShadow() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, shadowValue: shadowValue }));
@@ -203,6 +252,7 @@ function getShadow() {
 function getWhite() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var whiteValue = document.getElementById('WHITE').value;
@@ -246,6 +296,7 @@ function getWhite() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
@@ -256,6 +307,7 @@ function getWhite() {
 function getBlack() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var blackValue = document.getElementById('BLACK').value;
@@ -299,6 +351,7 @@ function getBlack() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
@@ -308,6 +361,7 @@ function getBlack() {
 function getExposure() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var exposureValue = document.getElementById('EXPO').value;
@@ -351,6 +405,7 @@ function getExposure() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, exposureValue: exposureValue }));
@@ -360,6 +415,7 @@ function getExposure() {
 function getTemp() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var tempValue = document.getElementById('TEMP').value;
@@ -403,6 +459,7 @@ function getTemp() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, tempValue: tempValue }));
@@ -411,6 +468,7 @@ function getTemp() {
 function getTint() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var tintValue = document.getElementById('TINT').value;
@@ -454,6 +512,7 @@ function getTint() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, tintValue: tintValue }));
@@ -463,6 +522,7 @@ function getTint() {
 function getText() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var textValue = document.getElementById('TEXT').value;
@@ -506,6 +566,7 @@ function getText() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, textValue: textValue }));
@@ -515,6 +576,7 @@ function getText() {
 function getClar() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var clarValue = document.getElementById('CLAR').value;
@@ -558,6 +620,7 @@ function getClar() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, clarValue: clarValue }));
@@ -568,6 +631,7 @@ function getClar() {
 function getDeh() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var dehValue = document.getElementById('DEH').value;
@@ -611,6 +675,7 @@ function getDeh() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, dehValue: dehValue }));
@@ -620,6 +685,7 @@ function getDeh() {
 function getSat() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var satValue = document.getElementById('SAT').value;
@@ -663,6 +729,7 @@ function getSat() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, satValue: satValue }));
@@ -672,6 +739,7 @@ function getSat() {
 function getVir() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
   var virValue = document.getElementById('VIR').value;
@@ -715,6 +783,8 @@ function getVir() {
       console.log(imgName)
       // set the value of the hidden input field to the filename
       document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
     }
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, virValue: virValue }));
