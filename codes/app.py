@@ -284,11 +284,11 @@ def adjust_temp():
         # Convert the image to the LAB color space
         lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
 
-        # Compute the average A and B values of the image
+        # Compute the average blue and yellow values of the image
         mean_a = lab_image[:, :, 1].mean()
         mean_b = lab_image[:, :, 2].mean()
 
-        # Compute the shift in A and B values based on the temperature value
+        # Compute the shift in blue and yellow values based on the temp value
         if temp_value < 26000:
             shift_blue = 0.0006 * (temp_value - 26000)
             print(shift_blue)
@@ -297,9 +297,10 @@ def adjust_temp():
             shift_blue = 0
             shift_yellow = 0.0004 * (temp_value - 26000)
             print(shift_yellow)
-
-
-        # Apply the shift to the A and B channels
+        else:
+             shift_yellow = 0
+             shift_blue = 0
+        # Apply the shift to the blue and yellow channels
         lab_image[:, :, 1] = lab_image[:, :, 1] - ((mean_a - 128) * (shift_yellow - shift_blue))
         lab_image[:, :, 2] = lab_image[:, :, 2] + ((mean_b - 128) * (shift_yellow + shift_blue))
 
@@ -313,6 +314,187 @@ def adjust_temp():
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
+
+@app.route('/adjust_tint', methods=['POST'])
+def adjust_tint():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        tint_value = int(request.json['tintValue'])
+        print(tint_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert the input image to the LAB color space
+        lab_img = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        # Split the LAB channels
+        L, A, B = cv2.split(lab_img)
+        # Adjust the A and B channels based on the tint value
+        if tint_value < 0:
+            B = np.float32(B)
+            B += abs(tint_value) * 255 / 150 # fade to green
+            B[B > 255] = 255 # cap at 255
+            B = np.uint8(B)
+        elif tint_value > 0:
+            A = np.float32(A)
+            A += tint_value * 255 / 150 # fade to pink
+            A[A > 255] = 255 # cap at 255
+            A = np.uint8(A)
+
+        # Merge the LAB channels back together
+        lab_img = cv2.merge((L, A, B))
+        # Convert the LAB image back to the original color space
+        result = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_text', methods=['POST'])
+def adjust_text():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        text_value = int(request.json['textValue'])
+        text_value = text_value / 100.0
+        print("text_value",text_value)
+        # Compute the sign of the input value
+        text_sign = np.sign(text_value)
+        print("text_sign",text_sign)
+        # Compute the amount as the square of the rescaled input value
+        if text_value > 0:
+            text_value = text_value * -1
+            amount = 0.2 * text_value
+            weight = text_sign * amount 
+            weight = weight * -1
+        else:
+            print("im here on else")
+            amount = 0.2 * text_value
+            weight = 0.5 * text_sign * amount 
+        print("amount",amount)
+        print("weight",weight)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Split the image into color channels
+        b, g, r = cv2.split(image)
+        # Apply a bilateral filter to each color channel
+        b_smoothed = cv2.bilateralFilter(b, 30, 100, 100)
+        g_smoothed = cv2.bilateralFilter(g, 30, 100, 100)
+        r_smoothed = cv2.bilateralFilter(r, 30, 100, 100)
+        # Compute the high-pass filtered image for each color channel
+        b_high_pass = cv2.subtract(b, b_smoothed)
+        g_high_pass = cv2.subtract(g, g_smoothed)
+        r_high_pass = cv2.subtract(r, r_smoothed)
+        # Compute the weights for blending the high-pass filtered image with the original color image
+        if text_value > 0:
+            b_weight = 10 / (np.mean(b_high_pass) + text_value)
+            g_weight = 10 / (np.mean(g_high_pass) + text_value)
+            r_weight = 10 / (np.mean(r_high_pass) + text_value)
+        else:
+            b_weight = 10 / (np.mean(b_high_pass) - text_value)
+            g_weight = 10 / (np.mean(g_high_pass) - text_value)
+            r_weight = 10 / (np.mean(r_high_pass) - text_value)
+        # Normalize the high-pass filtered image for each color channel to the range [0, 255]
+        cv2.normalize(b_high_pass, b_high_pass, 0, 255, cv2.NORM_MINMAX)
+        cv2.normalize(g_high_pass, g_high_pass, 0, 255, cv2.NORM_MINMAX)
+        cv2.normalize(r_high_pass, r_high_pass, 0, 255, cv2.NORM_MINMAX)
+        b_high_pass = b_high_pass.astype(np.uint8)
+        g_high_pass = g_high_pass.astype(np.uint8)
+        r_high_pass = r_high_pass.astype(np.uint8)
+        # Blend the high-pass filtered image with the original color image using the computed weights
+        b_output = cv2.addWeighted(b, 1, b_high_pass, -text_sign * amount * b_weight, 0)
+        g_output = cv2.addWeighted(g, 1, g_high_pass, -text_sign * amount * g_weight, 0)
+        r_output = cv2.addWeighted(r, 1, r_high_pass, -text_sign * amount * r_weight, 0)
+        # Merge the color channels back into a single image
+        result = cv2.merge([b_output, g_output, r_output])
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_clar', methods=['POST'])
+def adjust_clar():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        clar_value = int(request.json['clarValue'])
+        print(clar_value)
+        clar_value = clar_value * -1 
+        alpha = clar_value / 100
+        print("alpha",alpha)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        if clar_value > 0:
+            lowpass = cv2.blur(image, (5, 5))
+            result = cv2.addWeighted(image, 1 - alpha, lowpass, alpha, 0)
+        if clar_value < 0:
+            lowpass = cv2.blur(image, (5, 5))
+            result = cv2.addWeighted(image, 1 - alpha, lowpass, alpha, 0)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_deh', methods=['POST'])
+def adjust_deh():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        deh_value = int(request.json['dehValue'])
+        deh_value = deh_value/100
+        print(deh_value)
+        gamma = 1.2
+        w = 0.95
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Apply dark channel prior
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        kernel_size = max(int(min(image.shape[:2]) / 100), 1)
+        dark = cv2.erode(gray, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
+        dc = 255 - cv2.dilate(dark, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
+
+        # Estimate atmosphere light
+        num_pixels = dc.size
+        num_sample = int(num_pixels * 0.001)
+        sample_pixels = np.random.choice(num_pixels, num_sample, replace=False)
+        sample_values = np.sort(image.flatten()[sample_pixels])
+        athmosphere_light = np.mean(sample_values[-num_sample // 10:])
+
+        # Compute transmission
+        transmission = 1 - w * dc / athmosphere_light
+
+        # Apply soft matting
+        radius = max(int(min(image.shape[:2]) / 100), 1)
+        epsilon = 0.001
+        guided = cv2.blur(transmission, (radius, radius))
+        guided_filter = np.zeros_like(image, dtype=np.float64)
+        for c in range(image.shape[2]):
+            guided_filter[:, :, c] = cv2.filter2D(image[:, :, c], -1, guided, borderType=cv2.BORDER_REFLECT_101)
+        var = np.var(image)
+        transmission = (transmission - guided) / (np.maximum(var, np.mean(var)) + epsilon) + guided
+
+        # Apply dehazing
+        t = np.maximum(transmission, 1 - deh_value)
+        result = np.zeros_like(image, dtype=np.float64)
+        for c in range(image.shape[2]):
+            result[:, :, c] = (image[:, :, c] - athmosphere_light) / t + athmosphere_light
+        result = np.clip((result / 255) ** gamma * 255, 0, 255)
+        result =  result.astype(np.uint8)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 
 
