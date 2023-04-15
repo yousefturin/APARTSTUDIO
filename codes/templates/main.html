@@ -403,10 +403,10 @@
                                         <div class="wraprpmtop2">
                                             <div class="wraprpmtop6">
                                                 <input type="range" id="TEMP" min="2000" max="50000" value="26000" class="slider" 
-                                                    oninput="rangeValueTEMP.innerText = this.value" title="Tempeture">
+                                                    oninput="rangeValueTEMP.innerText = this.value" title="Tempeture" onchange="getTemp() ">
                                                         
                                                 <input type="range"id="TINT" min="-150" max="150" value="0" class="slider" 
-                                                    oninput="rangeValueTINT.innerText = this.value" title="Tint">
+                                                    oninput="rangeValueTINT.innerText = this.value" title="Tint" onchange="getTint() ">
                                             </div>
                                             <div class="wraprpmtop5">
                                                 <p id="rangeValueTEMP">26000</p>
@@ -439,7 +439,7 @@
                                                 <div class="wraprpmmiddle7">
                                                     <div class="wraprpmmiddle5">
                                                         <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
-                                                            id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure">
+                                                            id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure" onchange="getExposure()">
                                                             <form id="contrast-form"> 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                 id="CONT" name="CONT" oninput="rangeValueCONT.innerText = this.value" title="Contrast" onchange="getContrast()">
@@ -492,13 +492,13 @@
                                             <div class="wraprpmbottom4">
                                                 <div class="wraprpmbottom5">
                                                     <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                    id="TEXT"oninput="rangeValueTEXT.innerText = this.value" title="Texture">
+                                                    id="TEXT"oninput="rangeValueTEXT.innerText = this.value" title="Texture" onchange="getText()">
 
                                                         <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                        id="CLAR"oninput="rangeValueCLAR.innerText = this.value" title="Clarity">
+                                                        id="CLAR"oninput="rangeValueCLAR.innerText = this.value" title="Clarity" onchange="getClar()">
                                                             
                                                     <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                        id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze">
+                                                        id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze" onchange="getDeh()">
                                                                 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
                                                             id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance">
