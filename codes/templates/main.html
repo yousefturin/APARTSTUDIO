@@ -97,6 +97,17 @@
                         </a>
                     </div>
                     <div class="openscreenup">
+                        <p>
+                            {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                <ul>
+                                    {% for message in messages %}
+                                    <li>{{message}}</li>
+                                    {% endfor %}
+                                </ul>
+                                {% endif %}
+                                {% endwith %}
+                        </p>  
 
                     </div>
  
@@ -501,10 +512,10 @@
                                                         id="DEH"oninput="rangeValueDEH.innerText = this.value" title="Dehaze" onchange="getDeh()">
                                                                 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                            id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance">
+                                                            id="VIR"oninput="rangeValueVIR.innerText = this.value" title="Vibrance" onchange="getVir()">
                                                                 
                                                                 <input type="range" min="-100" max="100" value="0" class="slider" 
-                                                                id="SAT"oninput="rangeValueSAT.innerText = this.value" title="Saturation">              
+                                                                id="SAT"oninput="rangeValueSAT.innerText = this.value" title="Saturation" onchange="getSat()">              
                                                 </div>
                                                     <div class="wraprpmbottom6">
                                                         <p id="rangeValueTEXT">0</p>
