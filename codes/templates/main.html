@@ -228,6 +228,55 @@
                     </div>
                         <div class="sharescreenup">
                             <div class="wrapdownsharescreenpreview">
+                                <div class="wrapimagepreshare">
+                                    {% if filename %}
+                                    <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                    {% endif %}
+                                </div>
+                                <div class="shareicons">
+                                    <div class="wrapshareicons">
+                                        <div class="topiconswrapper">
+                                            <div class="facebookwrapper">
+                                                <button id="facebookbutton" name="facebookbutton" style="display: none;"></button>
+                                                <label for="facebookbutton" id="facebookbuttonlable" alt="Facebook share button" onclick="shareImageOnFacebook()">
+                                                    <img id="facebookimage" src="static/images/facebookshare.png">
+                                                </label>
+                                            </div>
+                                                <div class="instagramwrapper">
+                                                    <button id="instagrambutton" name="instagrambutton" style="display: none;"></button>
+                                                    <label for="instagrambutton" id="instagrambuttonlable" alt="Instagram share button" onclick="shareImageOnInstagram()">
+                                                        <img id="instagramimage" src="static/images/instagramshare.png">
+                                                    </label>
+                                                </div>
+                                                    <div class="twitterwrapper">
+                                                        <button id="twitterbutton" name="twitterbutton" style="display: none;"></button>
+                                                        <label for="twitterbutton" id="twitterbuttonlable" alt="Twitter share button" onclick="shareImageOnTwitter()">
+                                                            <img id="twitterimage" src="static/images/twittershare.png" >
+                                                        </label>
+                                                    </div>
+                                        </div>
+                                            <div class="bottomiconswrapper">
+                                                <div class="linkedinwrapper">
+                                                    <button id="linkedinbutton" name="linkedinbutton" style="display: none;"></button>
+                                                    <label for="linkedinbutton" id="linkedinbuttonlable" alt="LinkedIn share button" onclick="shareImageOnLinkedIn()"> 
+                                                        <img id="linkedinimage" src="static/images/linkedinshare.png">
+                                                    </label>
+                                                </div>
+                                                    <div class="pinterestwrapper">
+                                                        <button id="pinterestbutton" name="pinterestbutton" style="display: none;"></button>
+                                                        <label for="pinterestbutton" id="pinterestbuttonlable" alt="Pinterest share button" onclick="shareImageOnPinterest()">
+                                                            <img id="pinterestimage" src="static/images/pinterestshare.png">
+                                                        </label>
+                                                    </div>
+                                            </div>
+
+                                    </div>
+
+
+                                </div>
+
+
+
 
                             </div>
 
@@ -237,6 +286,9 @@
                                 <div class="downloadscreendownwrap">
                                     <div class="downloadscreendownleft">
                                         <div class="downloadname">
+                                            <div class="urlplaceholder" id="urlplaceholder">
+                                                <p id="imageurl"></p>
+                                            </div>
                                         </div>
                                             <div class="downloadokay">
                                                 <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
