@@ -1472,6 +1472,101 @@ input[type = "number"]{
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
 }
+.wrapimagepreshare{
+  width: 40%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content:center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.shareicons{
+  width: 60%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  padding: 2.5%;
+}
+.wrapshareicons{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+}
+.topiconswrapper{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+}
+.facebookwrapper{
+    width: 25%;
+}
+.instagramwrapper{
+    width: 25%;
+}
+.twitterwrapper{
+    width: 25%;
+}
+
+.bottomiconswrapper{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+}
+
+.linkedinwrapper{
+  width: 25%;
+}
+.pinterestwrapper{
+  width: 25%;
+}
+#facebookimage, #instagramimage,#twitterimage, #linkedinimage,#pinterestimage{
+  border: none;
+  cursor: pointer;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+#facebookimage:active, #instagramimage:active, #twitterimage:active, #linkedinimage:active, #pinterestimage:active{
+  border-radius: 7px;
+  border: 2px solid #363636;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  }
+
+
+.urlplaceholder{
+  border: none;
+  border: 2px solid #6d6d6d;
+  background: #7a7a7a;
+  border-radius: 5px;
+  padding: 5%;
+  height: 40px;
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  align-content: center;
+
+}
+#imageurl{
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+
 
 
 
