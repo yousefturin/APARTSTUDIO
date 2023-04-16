@@ -1256,6 +1256,181 @@ input[type = "number"]{
   width: 80%;
   height: 40%;
 }
+
+
+.overlaygrain {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
+
+.overlaygrain.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlaygrain-content{
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.grainscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.grainscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.grainscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  
+}
+.wrapdowngrainscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+#savebtnforgrain{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforgrain:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+
+
+
+
+
+
+
+
+
+.overlayblur {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
+
+.overlayblur.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlayblur-content{
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.blurscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.blurscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.blurscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  
+}
+.wrapdownblurscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+#savebtnforblur{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforblur:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+
+
+
+
 .overlay2 {
   position: fixed;
   width: 100%;
@@ -1403,6 +1578,20 @@ input[type = "number"]{
   align-items: center;
   text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
 }
+#savebtnforpremium{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforpremium:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+
 
 
 
@@ -1564,6 +1753,20 @@ input[type = "number"]{
   white-space: nowrap;
   overflow: hidden;
 }
+#savebtnforshare{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforshare:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+
 
 
 
