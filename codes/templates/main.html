@@ -19,6 +19,100 @@
         
     <body>
 
+        <div class="overlaygrain" id="overlaygrain">
+            <div class="overlaygrain-content">
+                <div class="grainscreen">
+                    <div class="grainscreentitle">
+                        <a>
+                            Add Grain
+                        </a>
+                    </div>
+                        <div class="grainscreenup">
+                            <div class="wrapdowngrainscreenpreview">
+                                {% if filename %}
+                                <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                            <div class="downloadscreendown">
+                                <div class="downloadscreendownwrap">
+                                    <div class="downloadscreendownleft">
+                                        <div class="downloadname">
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Close" id="savebtnforgrain">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+                                        <div class="downloadscreendownright">
+                                            
+                                        </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
+
+
+
+
+
+
+        <div class="overlayblur" id="overlayblur">
+            <div class="overlayblur-content">
+                <div class="blurscreen">
+                    <div class="blurscreentitle">
+                        <a>
+                            Add Blur
+                        </a>
+                    </div>
+                        <div class="blurscreenup">
+                            <div class="wrapdownblurscreenpreview">
+                                {% if filename %}
+                                <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                            <div class="downloadscreendown">
+                                <div class="downloadscreendownwrap">
+                                    <div class="downloadscreendownleft">
+                                        <div class="downloadname">
+                                            <input type="range" id="blurslider">
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Close" id="savebtnforblur">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+                                        <div class="downloadscreendownright">
+                                            
+                                        </div>
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
+
+
+
+
+
+
+
+
+
         <div class="overlay" id="overlay">
             <div class="overlay-content">
                 <div class="downloadscreen">
@@ -156,7 +250,7 @@
                                     <li><b>The added text</b> can be styled using the right bottom window to change all necessary decorations.</li>
                                     <li><b>Editing images does not mean you need to pull all slides to the max,</b> be relaxed when you do editing.</li>
                                   </ul>
-
+                                  
                             </div>
 
                         </div>
@@ -203,7 +297,7 @@
                                         <div class="downloadname">
                                         </div>
                                             <div class="downloadokay">
-                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                <button class="material-symbols-outlined" title="Premium" id="savebtnforpremium">
                                                     done
                                                 </button>
                                             </div>
@@ -291,7 +385,7 @@
                                             </div>
                                         </div>
                                             <div class="downloadokay">
-                                                <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                                <button class="material-symbols-outlined" title="Premium" id="savebtnforshare">
                                                     done
                                                 </button>
                                             </div>
