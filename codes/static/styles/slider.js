@@ -31,15 +31,6 @@ function shareImageOnPinterest() {
   window.open(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(imageUrl)}`);
 }
 
-
-
-
-
-
-
-
-
-
 const img = document.getElementById('image-canvas');
 // Check first if there is an image and it has an src then do the function if not just skip it
 if (!img || !img.src) {
@@ -840,6 +831,27 @@ imageFormatSelector.addEventListener("change", function() {
     }
 });
 
+const blurBtn = document.getElementById('blur_on_button');
+const overlayblur = document.getElementById('overlayblur');
+const saveBtnBlur = document.getElementById('savebtnforblur');
+blurBtn.addEventListener('click', () => {
+  overlayblur.classList.add('active'); // add the 'active' class to show the overlay
+});
+overlayblur.addEventListener('click', (event) => {
+  if (event.target === overlayblur) {
+    overlayblur.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+
+saveBtnBlur.addEventListener('click', () => {
+  overlayblur.classList.remove('active'); // remove the 'active' class to hide the overlay
+});
+
+
+
+
+
+
 
 const downloadBtn = document.getElementById('download');
 const overlay = document.getElementById('overlay');
@@ -869,8 +881,10 @@ overlay1.addEventListener('click', (event) => {
 });
 
 
+
 const infoBtn = document.getElementById('info');
 const overlay2 = document.getElementById('overlay2');
+const closeinfoBtn = document.getElementById('savebtnforinfo');
 
 infoBtn.addEventListener('click', () => {
   overlay2.classList.add('active'); // add the 'active' class to show the overlay
@@ -881,12 +895,15 @@ overlay2.addEventListener('click', (event) => {
     overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
   }
 });
+closeinfoBtn.addEventListener('click', () => {
+  overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
+});
 
 
 
 const premBtn = document.getElementById('premium');
 const overlay3 = document.getElementById('overlay3');
-
+const closepremBtn = document.getElementById('savebtnforpremium');
 premBtn.addEventListener('click', () => {
   overlay3.classList.add('active'); // add the 'active' class to show the overlay
 });
@@ -896,10 +913,13 @@ overlay3.addEventListener('click', (event) => {
     overlay3.classList.remove('active'); // remove the 'active' class to hide the overlay
   }
 });
-
+closepremBtn.addEventListener('click', () => {
+  overlay3.classList.remove('active'); // remove the 'active' class to hide the overlay
+});
 
 const shareBtn = document.getElementById('send');
 const overlay4 = document.getElementById('overlay4');
+const closeshareBtn = document.getElementById('savebtnforshare');
 
 shareBtn.addEventListener('click', () => {
   overlay4.classList.add('active'); // add the 'active' class to show the overlay
@@ -909,6 +929,28 @@ overlay4.addEventListener('click', (event) => {
   if (event.target === overlay4) {
     overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
   }
+});
+closeshareBtn.addEventListener('click', () => {
+  overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
+});
+
+
+
+const grainBtn = document.getElementById('grain_button');
+const overlaygrain = document.getElementById('overlaygrain');
+const closegrainBtn = document.getElementById('savebtnforgrain');
+
+grainBtn.addEventListener('click', () => {
+  overlaygrain.classList.add('active'); // add the 'active' class to show the overlay
+});
+
+overlaygrain.addEventListener('click', (event) => {
+  if (event.target === overlaygrain) {
+    overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
+  }
+});
+closegrainBtn.addEventListener('click', () => {
+  overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
 });
 
 
@@ -932,6 +974,16 @@ for (var i = 0; i < buttons.length; i++) {
         }
     });
 }
+saveBtnBlur.addEventListener("click", function() {
+  for (var j = 0; j < buttons.length; j++) {
+      buttons[j].classList.remove("clicked");
+  }
+});
+closegrainBtn.addEventListener("click", function() {
+  for (var j = 0; j < buttons.length; j++) {
+      buttons[j].classList.remove("clicked");
+  }
+});
 
 const fontTypeSelector = document.querySelector('#font-type-selector');
 
