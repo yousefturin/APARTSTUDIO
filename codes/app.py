@@ -5,9 +5,6 @@ import numpy as np
 from PIL import Image, ImageEnhance
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
-PROCESS_CONTRAST_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/contrast/'
-PROCESS_HIGHLIGHT_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/highlight/'
-PROCESS_SHADOW_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/process/shadow/'
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
 LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
 UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
@@ -21,9 +18,6 @@ class ResourceNotFoundError(Exception):
 class InternalServerError(Exception):
     pass
 
-app.config['PROCESS_CONTRAST_FOLDER'] = PROCESS_CONTRAST_FOLDER
-app.config['PROCESS_HIGHLIGHT_FOLDER'] = PROCESS_HIGHLIGHT_FOLDER
-app.config['PROCESS_SHADOW_FOLDER'] = PROCESS_SHADOW_FOLDER
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
@@ -239,7 +233,7 @@ def adjust_black():
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
-
+# there is logic error here double check it the alpha must be connevted to the input value so that it will change 
 @app.route('/adjust_exposure', methods=['POST'])
 def adjust_exposure():
     if request.method == 'POST':
@@ -248,7 +242,7 @@ def adjust_exposure():
         exposure_value = float(request.json['exposureValue'])
         print(exposure_value)
         # Scale the value to fit in cv2 method from 0 - 1 
-        exposure_scaled = float((exposure_value + 5.0) / 10.0)
+        exposure_scaled = float((exposure_value + 4.9) / 10.0)
         print(exposure_scaled)
         # Getting the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
@@ -257,7 +251,7 @@ def adjust_exposure():
         # Determine whether the exposure value is positive or negative
         if exposure_value >= 0:
             # If the exposure value is positive, set alpha to a value greater than 1.0 to make the image brighter
-            alpha = 1.0 + exposure_scaled * 1.0
+            alpha = 1.0 + exposure_scaled * 0.9
         else:
             # If the exposure value is negative, set alpha to a value less than 1.0 to make the image darker
             alpha = exposure_scaled * 0.5
@@ -557,56 +551,62 @@ def adjust_vir():
 
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
-    new_filename_html = request.form.get('image_name')
-    print(new_filename_html)
-    filename = new_filename_html
-    file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-    print(file_path)
-    new_filename = request.form.get('textfilename')
-    image_format = request.form.get('image_format_selector').lower()
-    image_quality = request.form.get('image_quality_selector')
-    print(new_filename_html)
-    if new_filename == '':
-         new_filename = "Your_image_from" + "_NotPHOTOSHOP"
-    else:
-         new_filename = new_filename
-    # Split the image format 
-    os.path.splitext(filename)
-    # Add the new name and format to the image
-    filename = new_filename + image_format
-    # Join the image 
-    output_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
-    # Reading the end-user image
-    img = Image.open(file_path)
-    # Convert the image to RGB mode
-    img = img.convert('RGB')
-    # Reading the logo image and converting it to RGB
-    logo = Image.open(LOGO_COPYWRITE).convert('RGBA')
-    # Calcualting the scaling factor to keep the aspict ratio 
-    logo_width, logo_height = logo.size
-    scaling_factor_width = 200 / logo_width
-    # Calculate the scaling factor for the target height
-    scaling_factor_height = 200 / logo_height
-    # Choose the smallest scaling factor
-    scaling_factor = min(scaling_factor_width, scaling_factor_height)
-    # Calculate the new width and height of the logo
-    new_logo_width = int(logo_width * scaling_factor)
-    new_logo_height = int(logo_height * scaling_factor)
-    logo = logo.resize((new_logo_width, new_logo_height), resample=Image.LANCZOS)
-    # Create a new blank image with the same size as the big image
-    result_image = Image.new("RGB", img.size, (255, 255, 255))
-    # Paste the big image onto the new image
-    result_image.paste(img, (0, 0))
-    # Paste the small image onto the new image in the bottom left corner
-    small_icon_position = (15, result_image.size[1] - new_logo_height)
-    result_image.paste(logo, small_icon_position, logo)
-    # Save the new image
-    if image_quality is None:
-        new_quality = int(100)
-    else:
-        new_quality = int(image_quality.strip('%'))
-    output_img = result_image.save(output_path, quality=new_quality)
-    return send_file(output_path, output_img, as_attachment=True)
+        if request.method == 'POST':
+            new_filename_html = request.form.get('image_name')
+            print(new_filename_html)
+            filename = new_filename_html
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            if file_path == '':
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
+            if file_path != '':
+                print(file_path)
+                new_filename = request.form.get('textfilename')
+                image_format = request.form.get('image_format_selector').lower()
+                image_quality = request.form.get('image_quality_selector')
+                print(new_filename_html)
+                if new_filename == '':
+                    new_filename = "Your_image_from" + "_NotPHOTOSHOP"
+                else:
+                    new_filename = new_filename
+                # Split the image format 
+                os.path.splitext(filename)
+                # Add the new name and format to the image
+                filename = new_filename + image_format
+                # Join the image 
+                output_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+                # Reading the end-user image
+                img = Image.open(file_path)
+                # Convert the image to RGB mode
+                img = img.convert('RGB')
+                # Reading the logo image and converting it to RGB
+                logo = Image.open(LOGO_COPYWRITE).convert('RGBA')
+                # Calcualting the scaling factor to keep the aspict ratio 
+                logo_width, logo_height = logo.size
+                scaling_factor_width = 200 / logo_width
+                # Calculate the scaling factor for the target height
+                scaling_factor_height = 200 / logo_height
+                # Choose the smallest scaling factor
+                scaling_factor = min(scaling_factor_width, scaling_factor_height)
+                # Calculate the new width and height of the logo
+                new_logo_width = int(logo_width * scaling_factor)
+                new_logo_height = int(logo_height * scaling_factor)
+                logo = logo.resize((new_logo_width, new_logo_height), resample=Image.LANCZOS)
+                # Create a new blank image with the same size as the big image
+                result_image = Image.new("RGB", img.size, (255, 255, 255))
+                # Paste the big image onto the new image
+                result_image.paste(img, (0, 0))
+                # Paste the small image onto the new image in the bottom left corner
+                small_icon_position = (15, result_image.size[1] - new_logo_height)
+                result_image.paste(logo, small_icon_position, logo)
+                # Save the new image
+                if image_quality is None:
+                    new_quality = int(100)
+                else:
+                    new_quality = int(image_quality.strip('%'))
+                output_img = result_image.save(output_path, quality=new_quality)
+            else:
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
+        return send_file(output_path, output_img, as_attachment=True)
 
 
 
