@@ -549,6 +549,50 @@ def adjust_vir():
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
+@app.route('/adjust_blur', methods=['POST'])
+def adjust_blur():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        blur_value = float(request.json['blurValue'])
+        print(blur_value)
+        sigma = 0
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Check for minimum input value of 0.1 and set kernel size to 1
+        if blur_value < 0.2:
+            kernel_size = 1
+        else:
+            kernel_size = int(blur_value)* 2  + 1
+        # Apply the blur using a Gaussian kernel
+        print(kernel_size)
+        blurred_img = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
+
+        result = blurred_img
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_grain', methods=['POST'])
+def adjust_grain():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        grain_value = int(request.json['grainValue'])
+        print(grain_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+
+        
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
         if request.method == 'POST':
