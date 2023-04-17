@@ -86,6 +86,9 @@ function getContrast() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1'); 
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var contrastValue = document.getElementById('CONT').value;
   console.log(contrastValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -118,7 +121,10 @@ function getContrast() {
       var newURL = '/static/uploads/' + newImageName;
       // Set the new image source
       img.src = newURL;
-      img1.src = newURL
+      img1.src = newURL;
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -140,6 +146,9 @@ function getHighlight() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var highlightValue = document.getElementById('HIGH').value;
   console.log(highlightValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -173,6 +182,9 @@ function getHighlight() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -193,6 +205,9 @@ function getShadow() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var shadowValue = document.getElementById('SHAD').value;
   console.log(shadowValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -226,6 +241,9 @@ function getShadow() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -246,6 +264,9 @@ function getWhite() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var whiteValue = document.getElementById('WHITE').value;
   console.log(whiteValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -279,6 +300,9 @@ function getWhite() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -301,6 +325,9 @@ function getBlack() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var blackValue = document.getElementById('BLACK').value;
   console.log(blackValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -334,6 +361,9 @@ function getBlack() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -355,6 +385,9 @@ function getExposure() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var exposureValue = document.getElementById('EXPO').value;
   console.log(exposureValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -388,6 +421,9 @@ function getExposure() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -409,6 +445,9 @@ function getTemp() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var tempValue = document.getElementById('TEMP').value;
   console.log(tempValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -441,7 +480,10 @@ function getTemp() {
       var newURL = '/static/uploads/' + newImageName;
       // Set the new image source
       img.src = newURL;
-      img1.src = newURL; // new canvas
+      img1.src = newURL;       // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -462,6 +504,9 @@ function getTint() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var tintValue = document.getElementById('TINT').value;
   console.log(tintValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -495,6 +540,9 @@ function getTint() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -516,6 +564,9 @@ function getText() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var textValue = document.getElementById('TEXT').value;
   console.log(textValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -549,6 +600,9 @@ function getText() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -570,6 +624,9 @@ function getClar() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
   var clarValue = document.getElementById('CLAR').value;
   console.log(clarValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -603,6 +660,9 @@ function getClar() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -625,6 +685,9 @@ function getDeh() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var dehValue = document.getElementById('DEH').value;
   console.log(dehValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -658,6 +721,9 @@ function getDeh() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -679,6 +745,9 @@ function getSat() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var satValue = document.getElementById('SAT').value;
   console.log(satValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -712,6 +781,9 @@ function getSat() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -733,6 +805,9 @@ function getVir() {
   document.getElementById("imageurl").innerHTML = imageSrc;
   var img = document.getElementById('image-canvas');
   var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');  
   var virValue = document.getElementById('VIR').value;
   console.log(virValue);
   var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
@@ -766,6 +841,9 @@ function getVir() {
       // Set the new image source
       img.src = newURL;
       img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas      
       console.log(newURL);
       // Revoke the old object URL to free up memory
       URL.revokeObjectURL(blobURL);
@@ -780,6 +858,130 @@ function getVir() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, virValue: virValue }));
 }
+
+function getBlur() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var blurValue = document.getElementById('blurslider').value;
+  console.log(blurValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_blur', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL;
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blurValue: blurValue }));
+}
+
+
+function getGrain() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var grainValue = document.getElementById('grainslider').value;
+  console.log(grainValue);
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_grain', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas    
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, grainValue: grainValue }));
+}
+
+
+
 
 const fileInput = document.getElementById("fileopen");
 const selectedImageName = document.querySelector(".wrapopenname p");
@@ -836,11 +1038,6 @@ const overlayblur = document.getElementById('overlayblur');
 const saveBtnBlur = document.getElementById('savebtnforblur');
 blurBtn.addEventListener('click', () => {
   overlayblur.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlayblur.addEventListener('click', (event) => {
-  if (event.target === overlayblur) {
-    overlayblur.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
 });
 
 saveBtnBlur.addEventListener('click', () => {
@@ -944,11 +1141,6 @@ grainBtn.addEventListener('click', () => {
   overlaygrain.classList.add('active'); // add the 'active' class to show the overlay
 });
 
-overlaygrain.addEventListener('click', (event) => {
-  if (event.target === overlaygrain) {
-    overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
 closegrainBtn.addEventListener('click', () => {
   overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
 });
