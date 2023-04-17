@@ -242,10 +242,47 @@ body{
     object-fit: contain;
     max-height: 100%;
   }
-
-  
   /* Set the initial color of the label to white */
   #image-canvas1 label {
+    color: white;
+  }
+  
+  #image-canvas2 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+  /* Set the initial color of the label to white */
+  #image-canvas2 label {
+    color: white;
+
+  }
+  #image-canvas3 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+  /* Set the initial color of the label to white */
+  #image-canvas3 label {
+    color: white;
+
+  }
+  #image-canvas4 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+  /* Set the initial color of the label to white */
+  #image-canvas4 label {
     color: white;
 
   }
@@ -1277,7 +1314,7 @@ input[type = "number"]{
   background-color: #4c4b4b;
   width: 80%;
   height: 35%;
-  max-width: 600px;
+  max-width: 400px;
   margin: 50px auto;
   padding: 20px;
   text-align: center;
@@ -1338,6 +1375,74 @@ input[type = "number"]{
   background: #555;
   border: 2px solid #363636;
 }
+.grainscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.grainscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.grainscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding: 2.4%;
+}
+.spacegrainfix{
+  width: 17.5%;
+  height: 100%;
+}
+.grainname{
+  width: 65%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+.wrapgrainsliderinput{
+  width: 100%;
+  height: 100%;
+}
+.wrapgrainsliderrang{
+  width: 80%;
+  padding: 5%;
+}
+#grainslider{
+  height: 70%;
+  width: 100%;
+}
+#grainslider::-webkit-slider-thumb {
+  margin-top: -4px;
+  cursor: pointer;
+}
+      /* Change the color of the track */
+      #grainslider::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);        
+    
+      }
+.wrapsgrainrangevalue{
+  width: 20%;
+}
 
 
 
@@ -1366,7 +1471,7 @@ input[type = "number"]{
   background-color: #4c4b4b;
   width: 80%;
   height: 35%;
-  max-width: 600px;
+  max-width: 400px;
   margin: 50px auto;
   padding: 20px;
   text-align: center;
@@ -1426,6 +1531,74 @@ input[type = "number"]{
   border-radius: 5px;
   background: #555;
   border: 2px solid #363636;
+}
+.blurscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.blurscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.blurscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding: 2.4%;
+}
+.blurname{
+  width: 65%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+.wrapblursliderinput{
+  width: 100%;
+  height: 100%;
+}
+.wrapblursliderrang{
+  width: 80%;
+  padding: 5%;
+}
+#blurslider{
+  height: 70%;
+  width: 100%;
+}
+#blurslider::-webkit-slider-thumb {
+  margin-top: -4px;
+  cursor: pointer;
+}
+      /* Change the color of the track */
+      #blurslider::-webkit-slider-runnable-track {
+        background: linear-gradient(to left, rgb(41, 41, 41), rgb(177, 177, 176));
+        border-radius: 20px;
+        height: 7px;
+        box-shadow: 0.2px 0.2px 0.2px 0.2px inset rgb(15, 15, 15);        
+    
+      }
+.wrapsblurrangevalue{
+  width: 20%;
+}
+.spaceblurfix{
+  width: 17.5%;
+  height: 100%;
 }
 
 
@@ -1949,11 +2122,6 @@ input[type = "number"]{
   display: flex;
   text-align: center;
 }
-
-
-
-
-
 .downloadscreendown{
   width: 100%;
   height: 30%;
@@ -1987,9 +2155,8 @@ input[type = "number"]{
   height: 100%;
   display: flex;
   flex-direction: row;
-  justify-content: left;
+  justify-content: center;
   align-items: center;
-
 }
 .downloadokay{
   width: 17.5%;
