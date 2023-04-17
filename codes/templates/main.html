@@ -30,27 +30,32 @@
                         <div class="grainscreenup">
                             <div class="wrapdowngrainscreenpreview">
                                 {% if filename %}
-                                <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                <img id="image-canvas3" name="image-canvas3" src="{{ url_for('display_image',filename=filename )}}">
                                 {% endif %}
 
                             </div>
 
                         </div>
 
-                            <div class="downloadscreendown">
-                                <div class="downloadscreendownwrap">
-                                    <div class="downloadscreendownleft">
-                                        <div class="downloadname">
-                                        </div>
+                        <div class="grainscreendown">
+                            <div class="grainscreendownwrap">
+                                <div class="grainscreendownleft">
+                                    <div class="spacegrainfix"></div>
+                                    <div class="grainname">
+                                        <div class="wrapgrainsliderrang">
+                                          <input type="range" min="0.1" max="100.0" value="0.1" step="0.1" class="slider" 
+                                                        id="grainslider"oninput="rangeValuegrain.innerText = this.value" title="Grain" >
+                                                    </div>
+                                                    <div class="wrapsgrainrangevalue">
+                                                        <p id="rangeValuegrain">0.1</p> 
+                                                    </div>
+                                    </div>
                                             <div class="downloadokay">
                                                 <button class="material-symbols-outlined" title="Close" id="savebtnforgrain">
                                                     done
                                                 </button>
                                             </div>
                                     </div>
-                                        <div class="downloadscreendownright">
-                                            
-                                        </div>
                                 </div>
 
                             </div>
@@ -75,18 +80,25 @@
                         <div class="blurscreenup">
                             <div class="wrapdownblurscreenpreview">
                                 {% if filename %}
-                                <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                <img id="image-canvas2" name="image-canvas2" src="{{ url_for('display_image',filename=filename )}}">
                                 {% endif %}
 
                             </div>
 
                         </div>
 
-                            <div class="downloadscreendown">
-                                <div class="downloadscreendownwrap">
-                                    <div class="downloadscreendownleft">
-                                        <div class="downloadname">
-                                            <input type="range" id="blurslider">
+                            <div class="blurscreendown">
+                                <div class="blurscreendownwrap">
+                                    <div class="blurscreendownleft">
+                                        <div class="spaceblurfix"></div>
+                                        <div class="blurname">
+                                            <div class="wrapblursliderrang">
+                                              <input type="range" min="0.1" max="100.0" value="0.1" step="0.1" class="slider" 
+                                                            id="blurslider"oninput="rangeValueblur.innerText = this.value" title="Blur" onchange="getBlur()">
+                                                        </div>
+                                                        <div class="wrapsblurrangevalue">
+                                                            <p id="rangeValueblur">0.1</p> 
+                                                        </div>
                                         </div>
                                             <div class="downloadokay">
                                                 <button class="material-symbols-outlined" title="Close" id="savebtnforblur">
@@ -94,9 +106,7 @@
                                                 </button>
                                             </div>
                                     </div>
-                                        <div class="downloadscreendownright">
-                                            
-                                        </div>
+
                                 </div>
 
                             </div>
@@ -324,7 +334,7 @@
                             <div class="wrapdownsharescreenpreview">
                                 <div class="wrapimagepreshare">
                                     {% if filename %}
-                                    <img id="image-canvas1" name="image-canvas1" src="{{ url_for('display_image',filename=filename )}}">
+                                    <img id="image-canvas4" name="image-canvas4" src="{{ url_for('display_image',filename=filename )}}">
                                     {% endif %}
                                 </div>
                                 <div class="shareicons">
