@@ -104,7 +104,7 @@ body{
       left: 0;
     }
     .toppanewrapmiddle{
-      width: 67%;
+      width: 50%;
       height: 100%;
       display: flex;
       flex-direction: row;
@@ -120,6 +120,16 @@ body{
       justify-content: left;
       align-items: center;
       text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+      padding: 2%;
+    }
+
+    .middlebuttompanewrapfree{
+      width: 80%;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      justify-content: left;
+      align-items: center;
     }
 
     #open,#info,#premium,#download,#send{
@@ -152,7 +162,7 @@ body{
     }
 
     .toppanewrapright{
-      width: 33%;
+      width: 45%;
       height: 100%;
       display: flex;
       flex-direction: row;
@@ -168,7 +178,6 @@ body{
       justify-content: right;
       align-items: center;
       text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
-      padding-right: 2%;
       padding: 2%;
     }
 
@@ -226,12 +235,19 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
+
   }
 
   
   /* Set the initial color of the label to white */
   #image-canvas label {
     color: white;
+ 
 
   }
   #image-canvas1 {
@@ -283,6 +299,19 @@ body{
   }
   /* Set the initial color of the label to white */
   #image-canvas4 label {
+    color: white;
+
+  }
+  #image-canvas5 {
+    padding: 5%; 
+    max-width: 100%;
+    height: auto;
+    display: block;
+    object-fit: contain;
+    max-height: 100%;
+  }
+  /* Set the initial color of the label to white */
+  #image-canvas5 label {
     color: white;
 
   }
@@ -1600,6 +1629,167 @@ input[type = "number"]{
   width: 17.5%;
   height: 100%;
 }
+
+
+
+
+
+
+
+.overlayasp {
+  position: fixed;
+  width: 100%;
+  height: 100%;
+  align-items: center;
+  align-content: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.616); /* semi-transparent black overlay */
+  z-index: 999; /* make sure the overlay is on top of everything else */
+  display: none; /* initially hidden */
+}
+
+.overlayasp.active {
+  display: block; /* show the overlay when it's active */
+}
+.overlayasp-content{
+  background-color: #4c4b4b;
+  width: 80%;
+  height: 35%;
+  max-width: 400px;
+  margin: 50px auto;
+  padding: 20px;
+  text-align: center;
+  display: inline-block;
+  position: absolute;
+  left: 50%;
+  top: 20%;
+  transform: translateX(-50%);
+  border-radius: 5px;
+}
+.aspscreen{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.aspscreentitle{
+  width: 100%;
+  height: 20%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.aspscreenup{
+  width: 100%;
+  height: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+  
+}
+.wrapdownaspscreenpreview{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+#savebtnforasp{
+  font-size: 280%;
+  border-radius: 5px;
+  border: 0;
+  background: #555;
+  cursor: pointer;
+}
+#savebtnforasp:active{
+  font-size: 280%;
+  border-radius: 5px;
+  background: #555;
+  border: 2px solid #363636;
+}
+.aspscreendown{
+  width: 100%;
+  height: 30%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.aspscreendownwrap{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+
+  text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.aspscreendownleft{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  padding: 2.4%;
+}
+.aspname{
+  width: 65%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+
+}
+.wrapblursliderinput{
+  width: 100%;
+  height: 100%;
+}
+.wrapaspsliderrang{
+  width: 100%;
+  padding: 5%;
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+}
+.wrapthetextwidth{
+  width: 20%;
+}
+.wrapwidthpan{
+  width: 30%;
+}
+.wrapthetextheight{
+  width: 20%;
+}
+.wrapheightpan{
+  width: 30%;
+}
+
+
+.spaceaspfix{
+  width: 17.5%;
+  height: 100%;
+}
+
+
+
+
+
+
+
 
 
 
