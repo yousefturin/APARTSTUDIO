@@ -4,12 +4,91 @@ var textBox = null; // initialize textBox variable to null
 
 formatButton.addEventListener("click", function() {
   if (textBox) { // if textBox exists, remove it
+    var img = document.getElementById('image-canvas');
+      // Get the size of the textBox element
+    var textBoxValue = textBox.value; 
+    var textBoxWidth = textBox.offsetWidth;
+    var textBoxHeight = textBox.offsetHeight;
+    var textBoxX = textBox.offsetLeft - img.offsetLeft;
+    var textBoxY = textBox.offsetTop - img.offsetTop;
+    // Get the natural width and height of the image
+    var naturalWidth = img.naturalWidth;
+    var naturalHeight = img.naturalHeight;
+    console.log(naturalWidth);
+    console.log(naturalHeight);
+    console.log(textBox.value);
+    // Map the position and size of the textBox to the natural width and height of the image
+    var mappedX = textBoxX * naturalWidth / img.offsetWidth;
+    var mappedY = textBoxY * naturalHeight / img.offsetHeight;
+    var mappedWidth = textBoxWidth * naturalWidth / img.offsetWidth;
+    var mappedHeight = textBoxHeight * naturalHeight / img.offsetHeight;
+    console.log(mappedX);
+    console.log(mappedY);
+    console.log(mappedWidth);
+    console.log(mappedHeight);
+    var imageSrc = document.getElementById('image-canvas').src;
+    console.log(imageSrc);
+    document.getElementById("imageurl").innerHTML = imageSrc;
+    var img1 = document.getElementById('image-canvas1'); 
+    var img2 = document.getElementById('image-canvas2');
+    var img3 = document.getElementById('image-canvas3');
+    var img4 = document.getElementById('image-canvas4');
+    var img5 = document.getElementById('image-canvas5');
+    var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+    console.log(imageName);
+    var imageExt = imageName.split('.').pop();
+    console.log(imageExt);
+    var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+    var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+    console.log(newImageName);
+    var xhr = new XMLHttpRequest();
+    xhr.responseType = 'json';
+    xhr.open('POST', '/add_text', true);
+    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+    xhr.onload = function() {
+      if (xhr.status === 200) {
+        // Decode the Base64-encoded image data
+        var imgData = xhr.response['image'];
+        var byteCharacters = atob(imgData);
+        var byteNumbers = new Array(byteCharacters.length);
+        for (var i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
+        }
+        var byteArray = new Uint8Array(byteNumbers);
+        // Create a blob with the byte array and create an object URL
+        var blob = new Blob([byteArray], { type: 'image/png' });
+        var blobURL = URL.createObjectURL(blob);
+        // Get the image name from the URL and construct the new URL
+        var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+        console.log(imageName);
+        var newURL = '/static/uploads/' + newImageName;
+        // Set the new image source
+        img.src = newURL;
+        img1.src = newURL;
+        img2.src = newURL;
+        img3.src = newURL;
+        img4.src = newURL;// new canvas
+        img5.src = newURL;
+        console.log(newURL);
+        // Revoke the old object URL to free up memory
+        URL.revokeObjectURL(blobURL);
+        const imgSrc = img.src;
+        const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+        console.log(imgName)
+        // set the value of the hidden input field to the filename
+        document.getElementById('image_name').value = imgName;
+        document.getElementById("imageurl").innerHTML = imageSrc;
+      }
+    };
+    xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth, mappedHeight: mappedHeight, textBoxValue: textBoxValue}));
     textBox.parentNode.removeChild(textBox);
     textBox = null; // reset textBox variable to null
   } else { // if textBox does not exist, add it
     textBox = addTextBoxToCanvas();
   }
 });
+
+
 
 
 function addTextBoxToCanvas() {
@@ -21,8 +100,8 @@ function addTextBoxToCanvas() {
   textBox.placeholder = "Type your text here";
   textBox.style.cssText = "color: black; ::placeholder {color: black;}";// not working idk why !!!!!!!!!!!!
   textBox.style.position = "absolute";
-  textBox.style.width = "200px";
-  textBox.style.height = "100px";
+  textBox.style.width = "100px";
+  textBox.style.height = "50px";
   textBox.style.border = "none";
   textBox.style.backgroundColor = "transparent";
   
