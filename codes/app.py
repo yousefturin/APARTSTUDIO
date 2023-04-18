@@ -581,13 +581,58 @@ def adjust_grain():
     if request.method == 'POST':
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
-        grain_value = int(request.json['grainValue'])
+        grain_value = float(request.json['grainValue'])
         print(grain_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
-        image = Image.open(image_path)
+        image = cv2.imread(image_path)
+        if grain_value <= 0.1:
+            result = image 
+        else:
+            # Get the height and width of the image
+            h, w, c = image.shape
+            # Calculate the standard deviation for the Gaussian noise.
+            std_dev = 255/(100.0/ grain_value)
+            # Generate the random noise matrix with the same shape as the image.
+            noise = np.zeros((h, w), dtype=np.uint8)
+            cv2.randn(noise, 0, std_dev)
+            # Create a grayscale version of the noise
+            noise_gray = cv2.cvtColor(noise, cv2.COLOR_GRAY2RGB)
+            noisy_image = np.uint8(noise_gray)
+            noisy_image = np.clip(image + noise_gray, 0, 255)
+            noisy_image = np.uint8(noisy_image)
+            result = noisy_image
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
-        
+
+@app.route('/adjust_asp', methods=['POST'])
+def adjust_asp():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        width_value = int(request.json['widthAspValue'])
+        height_value = int(request.json['heightAspValue'])
+        print(width_value)
+        print(height_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        img_width, img_height = image.size
+        # Calculate the scaling factor for the target width
+        scaling_factor_width = width_value / img_width
+        # Calculate the scaling factor for the target height
+        scaling_factor_height = height_value / img_height
+        # Choose the smallest scaling factor
+        scaling_factor = min(scaling_factor_width, scaling_factor_height)
+
+        # Calculate the new width and height of the image
+        new_width = int(img_width* scaling_factor)
+        new_height = int(img_height * scaling_factor)
+        image = image.resize((new_width, new_height), resample=Image.LANCZOS)
+        image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
