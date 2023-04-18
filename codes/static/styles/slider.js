@@ -1,4 +1,164 @@
 
+var formatButton = document.getElementById("format_button");
+var textBox = null; // initialize textBox variable to null
+
+formatButton.addEventListener("click", function() {
+  if (textBox) { // if textBox exists, remove it
+    textBox.parentNode.removeChild(textBox);
+    textBox = null; // reset textBox variable to null
+  } else { // if textBox does not exist, add it
+    textBox = addTextBoxToCanvas();
+  }
+});
+
+
+function addTextBoxToCanvas() {
+  // Get the canvas element
+  var canvas = document.getElementById("image-canvas");
+
+  // Create a new text box element
+  var textBox = document.createElement("textarea");
+  textBox.placeholder = "Type your text here";
+  textBox.style.cssText = "color: black; ::placeholder {color: black;}";// not working idk why !!!!!!!!!!!!
+  textBox.style.position = "absolute";
+  textBox.style.width = "200px";
+  textBox.style.height = "100px";
+  textBox.style.border = "none";
+  textBox.style.backgroundColor = "transparent";
+  
+  var canvasRect = canvas.getBoundingClientRect();
+  var xMin = canvasRect.left + 20;
+  var xMax = canvasRect.right - textBox.offsetWidth - 20;
+  var yMin = canvasRect.top + 20;
+  var yMax = canvasRect.bottom - textBox.offsetHeight - 20;
+  
+  var x = Math.floor(Math.random() * (xMax - xMin + 1) + xMin);
+  var y = Math.floor(Math.random() * (yMax - yMin + 1) + yMin);
+  
+  textBox.style.left = x + "px";
+  textBox.style.top = y + "px";
+
+
+  // Add event listeners for moving the text box
+  var isDragging = false;
+  var startX, startY;
+  textBox.addEventListener("mousedown", function(event) {
+    isDragging = true;
+    startX = event.clientX - parseInt(textBox.style.left);
+    startY = event.clientY - parseInt(textBox.style.top);
+  });
+  textBox.addEventListener("mouseup", function(event) {
+    isDragging = false;
+  });
+  textBox.addEventListener("mousemove", function(event) {
+    if (isDragging) {
+      var xMin = canvasRect.left + 20;
+      var xMax = canvasRect.right - textBox.offsetWidth - 20;
+      var yMin = canvasRect.top + 20;
+      var yMax = canvasRect.bottom - textBox.offsetHeight - 20;
+      
+      var x = event.clientX - startX;
+      var y = event.clientY - startY;
+  
+      x = Math.min(Math.max(x, xMin), xMax);
+      y = Math.min(Math.max(y, yMin), yMax);
+      
+      textBox.style.left = x + "px";
+      textBox.style.top = y + "px";
+    }
+  });
+
+  // Stop moving the text box when the mouse leaves it
+  textBox.addEventListener("mouseleave", function(event) {
+    isDragging = false;
+  });
+
+  // Add event listeners for resizing the text box
+  var isResizing = false;
+  var startWidth, startHeight, startX, startY;
+  var resizer = document.createElement("div");
+  resizer.style.width = "10px";
+  resizer.style.height = "10px";
+  resizer.style.position = "absolute";
+  resizer.style.bottom = 0;
+  resizer.style.right = 0;
+  textBox.appendChild(resizer);
+  resizer.addEventListener("mousedown", function(event) {
+    isResizing = true;
+    startWidth = parseInt(textBox.style.width);
+    startHeight = parseInt(textBox.style.height);
+    startX = event.clientX;
+    startY = event.clientY;
+  });
+  textBox.addEventListener("mouseup", function(event) {
+    isResizing = false;
+  });
+  textBox.addEventListener("mousemove", function(event) {
+    if (isResizing) {
+      var width = startWidth + (event.clientX - startX);
+      var height = startHeight + (event.clientY - startY);
+      textBox.style.width = width + "px";
+      textBox.style.height = height + "px";
+      resizer.style.right = -width/2 + "px";
+      resizer.style.bottom = -height/2 + "px";
+    }
+  });
+
+  // Stop resizing the text box when the mouse leaves it
+  textBox.addEventListener("mouseleave", function(event) {
+    isResizing = false;
+  });
+
+  // Add the text box element to the canvas element
+  canvas.parentNode.appendChild(textBox);
+  return textBox;
+}
+
+const selectorFont = document.getElementById("font-selector");
+
+selectorFont.addEventListener("change", (event) => {
+  const selectorFont = event.target.value;
+  textBox.style.fontFamily = selectorFont;
+});
+const fontWeightStyle = document.getElementById("font-type-selector");
+// Add an event listener to the font-type-selector element
+fontWeightStyle.addEventListener("change", function() {
+  // Get the selected font type
+  const fontType = fontWeightStyle.value;
+  
+  // Set the font style based on the selected font type
+  if (fontType === "Bold") {
+    textBox.style.fontWeight = "bold";
+    textBox.style.fontStyle = "normal";
+  } else if (fontType === "Italic") {
+    textBox.style.fontStyle = "italic";
+    textBox.style.fontWeight = "normal";
+  } else {
+    textBox.style.fontWeight = "normal";
+    textBox.style.fontStyle = "normal";
+  }
+});
+
+const fontSizeInput = document.getElementById("text-size");
+fontSizeInput.addEventListener("input", () => {
+  // set the font size of the textbox to the value of the input element
+  textBox.style.fontSize = `${fontSizeInput.value}px`;
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function updateSize() {
   var image = document.getElementById("image-canvas");
   var widthInput = document.getElementById("imageaspwidth");
