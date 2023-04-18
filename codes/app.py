@@ -2,7 +2,7 @@ import os
 import base64
 import cv2
 import numpy as np
-from PIL import Image, ImageEnhance
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
@@ -574,6 +574,37 @@ def adjust_blur():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/add_text', methods=['POST'])
+def add_text():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        text_value = request.json['textBoxValue']
+        position_x = float(request.json['mappedX'])
+        position_y = float(request.json['mappedY'])
+        text_width_box = float(request.json['mappedWidth'])
+        text_height_box = float(request.json['mappedHeight'])
+        print(position_x)
+        print(position_y)
+        print(text_width_box)
+        print(text_height_box)
+        print(text_value)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        draw = ImageDraw.Draw(image)
+        font = ImageFont.truetype("arial.ttf", 20)
+        text = text_value
+        x, y = position_x, position_y
+        text_width_box, text_height_box = draw.textsize(text, font=font)
+        draw.text((x, y, x+text_width_box, y+text_height_box), text, font=font, fill=(255, 255, 255))
+        image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
 
 
 @app.route('/adjust_grain', methods=['POST'])
