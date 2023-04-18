@@ -44,7 +44,7 @@
                                     <div class="grainname">
                                         <div class="wrapgrainsliderrang">
                                           <input type="range" min="0.1" max="100.0" value="0.1" step="0.1" class="slider" 
-                                                        id="grainslider"oninput="rangeValuegrain.innerText = this.value" title="Grain" >
+                                                        id="grainslider"oninput="rangeValuegrain.innerText = this.value" title="Grain" onchange="getGrain()">
                                                     </div>
                                                     <div class="wrapsgrainrangevalue">
                                                         <p id="rangeValuegrain">0.1</p> 
@@ -115,7 +115,58 @@
                 </div>
         </div>
 
+        <div class="overlayasp" id="overlayasp">
+            <div class="overlayasp-content">
+                <div class="aspscreen">
+                    <div class="aspscreentitle">
+                        <a>
+                            Aspict Ration
+                        </a>
+                    </div>
+                        <div class="aspscreenup">
+                            <div class="wrapdownaspscreenpreview">
+                                {% if filename %}
+                                <img id="image-canvas5" name="image-canvas5" src="{{ url_for('display_image',filename=filename )}}">
+                                {% endif %}
 
+                            </div>
+
+                        </div>
+
+                            <div class="aspscreendown">
+                                <div class="aspscreendownwrap">
+                                    <div class="aspscreendownleft">
+                                        <div class="spaceaspfix"></div>
+                                        <div class="aspname">
+                                            <div class="wrapaspsliderrang">
+                                                <div class="wrapthetextwidth">
+                                                    <p style="font-size: small;">Width</p>
+                                                </div>
+                                                <div class="wrapwidthpan">
+                                                    <input type="number" id="imageaspwidth" name="imageaspwidth" min="2" max="6000" title="width Size">
+                                                </div>
+                                                <div class="wrapthetextheight">
+                                                    <p style="font-size: small;">Height</p>
+                                                </div>
+                                                <div class="wrapheightpan">
+                                                    <input type="number" id="imageaspheight" name="imageaspheight" min="2" max="6000" title="height Size">
+                                                </div>
+                                                        </div>
+                                        </div>
+                                            <div class="downloadokay">
+                                                <button class="material-symbols-outlined" title="Close" id="savebtnforasp" onclick="getAsp()">
+                                                    done
+                                                </button>
+                                            </div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                    </div>
+                </div>
+        </div>
 
 
 
@@ -438,6 +489,9 @@
                                         <h id="topbuttoms">Info</h>
                                     </button>
                                 </div>
+                                <div class="middlebuttompanewrapfree">
+                                    
+                                </div>
 
                             </div>
                         </div>
@@ -529,6 +583,9 @@
             </div>
               <div class="middlepane">
                 <div class="wrapmiddlepane">
+                    <div style="position: relative; width: 500px; height: 500px; background-color: transparent;">
+                        <canvas id="my-canvas" width="500" height="500" style="position: absolute; top: 0; left: 0; background-color: transparent;"></canvas>
+                      </div>
                     {% if filename %}
                     <img id="image-canvas" name="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
                     {% endif %}
