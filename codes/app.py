@@ -8,6 +8,28 @@ from werkzeug.utils import secure_filename
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
 LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
 UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
+ARIAL = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/arial/'
+BOOKMAN = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Bookman/'
+CALIBRI = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Calibri/'
+CAMBRIA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Cambria/'
+CENTURY_GOTHIC = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Century_Gothic/'
+COMIC_SANS_MS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Comic_Sans_MS/'
+CONSOLAS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Consolas/'
+COURIER_NEW = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Courier_New/'
+FRANKLIN_GOTHIC_MEDIUM = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Franklin_Gothic_Medium/'
+GARAMOND = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Garamond/'
+GEORGIA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Georgia/'
+HELVETICA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/helvetica/'
+IMPACT = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Impact/'
+LUCIDA_SANS_UNICODE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Lucida_Sans_Unicode/'
+PALATINO = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Palatino/'
+SEGOE_UI = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Segoe_UI/'
+TAHOMA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Tahoma/'
+TIMES_NEW_ROMAN = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Times_New_Roman/'
+TREBUCHET_MS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Trebuchet_MS/'
+VERDANA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Verdana/'
+
+
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 app = Flask(__name__)
 
@@ -582,26 +604,229 @@ def add_text():
         image_name = request.json['imageName'] # image name
         new_image_name = request.json['newImageName'] # image new name to be stored
         textBoxValue = request.json['textBoxValue'] # text in the box to be added to image
-        #textFontWight = request.json['textFontWight'].lower() # font wight, bold, italic, normal
-        textFontStyle = request.json['textFontStyle'] # font stly, arial, impact...
-        textFontStyle = textFontStyle.lower() + ".ttf"
+        textFontStyle = request.json['textFontWight'].lower() # font wight, bold, italic, normal
+        textFontName = request.json['textFontStyle'].lower() # font stly, arial, impact...
         position_x = float(request.json['mappedX']) # position of box in X scale
         position_y = float(request.json['mappedY']) # position of box in Y scale
         text_width_box = float(request.json['mappedWidth']) # mapping the size of box to image
         text_height_box = float(request.json['mappedHeight'])
-        textFontSize= int(request.json['textFontSize']) # font size 14, 16,20...
-        textFontSize = textFontSize * 6
-        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
-        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
-        image = Image.open(image_path)
-        draw = ImageDraw.Draw(image)
-        # need to download all .ttf folders for font's to make the bold or italic work!!!!!! be aware of it
-        font = ImageFont.truetype(textFontStyle, textFontSize)
-        text = textBoxValue
-        x, y = position_x, position_y
-        text_width_box, text_height_box = draw.textsize(text, font=font)
-        draw.text((x, y, x + text_width_box, y + text_height_box), text, font=font, fill=(255, 255, 255))
-        image.save(new_image_path)
+        textFontSize= int(request.json['textFontSize'])*2 # font size 14, 16,20...
+        if textBoxValue == ' ': 
+            image = Image.open(image_path)
+            image.save(new_image_path)
+        else:
+            if textFontName == 'arial':
+                if textFontStyle == 'bold':
+                    textFontCombo = ARIAL + 'arial-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = ARIAL + 'arial-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = ARIAL + 'arial-normal.ttf'
+                else:
+                    textFontCombo = ARIAL + 'arial-normal.ttf'
+
+            elif textFontName == 'helvetica':
+                if textFontStyle == 'bold':
+                    textFontCombo = HELVETICA + 'Helvetica-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = HELVETICA + 'Helvetica-italic.otf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = HELVETICA + 'Helvetica-normal.otf'
+                else:
+                    textFontCombo = HELVETICA + 'Helvetica-normal.otf'
+            elif textFontName == 'times new roman':
+                if textFontStyle == 'bold':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-normal.ttf'
+                else:
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-normal.ttf'
+
+            elif textFontName == 'courier new':
+                if textFontStyle == 'bold':
+                    textFontCombo = COURIER_NEW + 'Courier_New-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = COURIER_NEW + 'Courier_New-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = COURIER_NEW + 'Courier_New-normal.ttf'
+                else:
+                    textFontCombo = COURIER_NEW + 'Courier_New-normal.ttf' 
+
+            elif textFontName == 'verdana':
+                if textFontStyle == 'bold':
+                    textFontCombo = VERDANA + 'Verdana-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = VERDANA + 'Verdana-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = VERDANA + 'Verdana-normal.ttf'
+                else:
+                    textFontCombo = VERDANA + 'Verdana-normal.ttf'
+
+            elif textFontName == 'georgia':
+                if textFontStyle == 'bold':
+                    textFontCombo = GEORGIA + 'Georgia-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = GEORGIA + 'Georgia-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = GEORGIA + 'Georgia-normal.ttf'
+                else:
+                    textFontCombo = GEORGIA + 'Georgia-normal.ttf' 
+
+            elif textFontName == 'palatino':
+                if textFontStyle == 'bold':
+                    textFontCombo = PALATINO + 'Palatino-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = PALATINO + 'Palatino-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = PALATINO + 'Palatino-normal.ttf'
+                else:
+                    textFontCombo = PALATINO + 'Palatino-normal.ttf'
+
+            elif textFontName == 'Garamond':
+                if textFontStyle == 'bold':
+                    textFontCombo = GARAMOND + 'Garamond-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = GARAMOND + 'Garamond-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = GARAMOND + 'Garamond-normal.TTF'
+                else:
+                    textFontCombo = GARAMOND + 'Garamond-normal.TTF' 
+
+            elif textFontName == 'Bookman':
+                if textFontStyle == 'bold':
+                    textFontCombo = BOOKMAN + 'bookman-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = BOOKMAN + 'bookman-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = BOOKMAN + 'bookman-normal.TTF'
+                else:
+                    textFontCombo = BOOKMAN + 'bookman-normal.TTF'
+
+            elif textFontName == 'comic sans ms':
+                if textFontStyle == 'bold':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-normal.ttf'
+                else:
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-normal.ttf' 
+
+            elif textFontName == 'impact':
+                if textFontStyle == 'bold':
+                    textFontCombo = IMPACT + 'impact-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = IMPACT + 'impact-italic.otf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = IMPACT + 'impact-normal.ttf'
+                else:
+                    textFontCombo = IMPACT + 'impact-normal.ttf'
+
+            elif textFontName == 'lucida sans unicode':
+                if textFontStyle == 'bold':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-normal.ttf'
+                else:
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-normal.ttf' 
+
+            elif textFontName == 'tahoma':
+                if textFontStyle == 'bold':
+                    textFontCombo = TAHOMA + 'Tahoma-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TAHOMA + 'Tahoma-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TAHOMA + 'Tahoma-normal.ttf'
+                else:
+                    textFontCombo = TAHOMA + 'Tahoma-normal.ttf'
+
+            elif textFontName == 'trebuchet ms':
+                if textFontStyle == 'bold':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-normal.ttf'
+                else:
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-normal.ttf'
+
+            elif textFontName == 'century gothic':
+                if textFontStyle == 'bold':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-normal.TTF'
+                else:
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-normal.TTF'
+
+            elif textFontName == 'consolas':
+                if textFontStyle == 'bold':
+                    textFontCombo = CONSOLAS + 'Consolas-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CONSOLAS + 'Consolas-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CONSOLAS + 'Consolas-normal.ttf'
+                else:
+                    textFontCombo = CONSOLAS + 'Consolas-normal.ttf' 
+
+            elif textFontName == 'calibri':
+                if textFontStyle == 'bold':
+                    textFontCombo = CALIBRI + 'calibri-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CALIBRI + 'calibri-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CALIBRI + 'calibri-normal.ttf'
+                else:
+                    textFontCombo = CALIBRI + 'calibri-normal.ttf'
+
+            elif textFontName == 'cambria':
+                if textFontStyle == 'bold':
+                    textFontCombo = CAMBRIA + 'cambria-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CAMBRIA + 'cambria-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CAMBRIA + 'cambria-normal.ttc'# it might be not supported check the documintation
+                else:
+                    textFontCombo = CAMBRIA + 'Helvetica-normal.ttc' 
+
+            elif textFontName == 'franklin gothic medium':
+                if textFontStyle == 'bold':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-normal.ttf'
+                else:
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-normal.ttf'
+
+            elif textFontName == 'segoe ui':
+                if textFontStyle == 'bold':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-normal.ttf'
+                else:
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-normal.ttf'
+            else:
+                textFontCombo = ARIAL + 'arial-normal.ttf'                                                                                                                                          
+
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+            new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+            image = Image.open(image_path)
+            draw = ImageDraw.Draw(image)
+            # need to download all .ttf folders for font's to make the bold or italic work!!!!!! be aware of it
+            font = ImageFont.truetype(textFontCombo, textFontSize)
+            text = textBoxValue
+            x, y = position_x, position_y
+            text_width_box, text_height_box = draw.textsize(text, font=font)
+            draw.text((x, y, x + text_width_box, y + text_height_box), text, font=font, fill=(255, 255, 255))
+            image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
