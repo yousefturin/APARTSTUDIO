@@ -257,6 +257,11 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
   }
   /* Set the initial color of the label to white */
   #image-canvas1 label {
@@ -270,6 +275,11 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
   }
   /* Set the initial color of the label to white */
   #image-canvas2 label {
@@ -283,6 +293,11 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
   }
   /* Set the initial color of the label to white */
   #image-canvas3 label {
@@ -296,6 +311,11 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
   }
   /* Set the initial color of the label to white */
   #image-canvas4 label {
@@ -309,6 +329,11 @@ body{
     display: block;
     object-fit: contain;
     max-height: 100%;
+    user-select: none;
+    -moz-user-select: none;
+    -webkit-user-select: none;
+    -ms-user-select: none;
+    pointer-events: none;
   }
   /* Set the initial color of the label to white */
   #image-canvas5 label {
@@ -896,8 +921,6 @@ body{
       color: black;
       padding: 5%;
     }
-
-
         #arial {
           font-family: Arial, Helvetica, sans-serif;
         }
@@ -2552,7 +2575,3 @@ input[type = "number"]{
   border-radius: 5px;
 
 }
-
-
-
-
