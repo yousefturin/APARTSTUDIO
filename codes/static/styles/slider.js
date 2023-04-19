@@ -6,7 +6,10 @@ formatButton.addEventListener("click", function() {
   if (textBox) { // if textBox exists, remove it
     var img = document.getElementById('image-canvas');
       // Get the size of the textBox element
-    var textBoxValue = textBox.value; 
+    var textBoxValue = textBox.value;
+    var textFontSize = document.getElementById("text-size").value;
+    var textFontWight = document.getElementById("font-type-selector").value;
+    var textFontStyle = document.getElementById("font-selector").value;
     var textBoxWidth = textBox.offsetWidth;
     var textBoxHeight = textBox.offsetHeight;
     var textBoxX = textBox.offsetLeft - img.offsetLeft;
@@ -14,20 +17,12 @@ formatButton.addEventListener("click", function() {
     // Get the natural width and height of the image
     var naturalWidth = img.naturalWidth;
     var naturalHeight = img.naturalHeight;
-    console.log(naturalWidth);
-    console.log(naturalHeight);
-    console.log(textBox.value);
     // Map the position and size of the textBox to the natural width and height of the image
     var mappedX = textBoxX * naturalWidth / img.offsetWidth;
     var mappedY = textBoxY * naturalHeight / img.offsetHeight;
     var mappedWidth = textBoxWidth * naturalWidth / img.offsetWidth;
     var mappedHeight = textBoxHeight * naturalHeight / img.offsetHeight;
-    console.log(mappedX);
-    console.log(mappedY);
-    console.log(mappedWidth);
-    console.log(mappedHeight);
     var imageSrc = document.getElementById('image-canvas').src;
-    console.log(imageSrc);
     document.getElementById("imageurl").innerHTML = imageSrc;
     var img1 = document.getElementById('image-canvas1'); 
     var img2 = document.getElementById('image-canvas2');
@@ -35,12 +30,9 @@ formatButton.addEventListener("click", function() {
     var img4 = document.getElementById('image-canvas4');
     var img5 = document.getElementById('image-canvas5');
     var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-    console.log(imageName);
     var imageExt = imageName.split('.').pop();
-    console.log(imageExt);
     var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
     var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-    console.log(newImageName);
     var xhr = new XMLHttpRequest();
     xhr.responseType = 'json';
     xhr.open('POST', '/add_text', true);
@@ -60,7 +52,6 @@ formatButton.addEventListener("click", function() {
         var blobURL = URL.createObjectURL(blob);
         // Get the image name from the URL and construct the new URL
         var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-        console.log(imageName);
         var newURL = '/static/uploads/' + newImageName;
         // Set the new image source
         img.src = newURL;
@@ -69,18 +60,19 @@ formatButton.addEventListener("click", function() {
         img3.src = newURL;
         img4.src = newURL;// new canvas
         img5.src = newURL;
-        console.log(newURL);
         // Revoke the old object URL to free up memory
         URL.revokeObjectURL(blobURL);
         const imgSrc = img.src;
         const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-        console.log(imgName)
         // set the value of the hidden input field to the filename
         document.getElementById('image_name').value = imgName;
         document.getElementById("imageurl").innerHTML = imageSrc;
       }
     };
-    xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth, mappedHeight: mappedHeight, textBoxValue: textBoxValue}));
+    xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName,
+       mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth,
+        mappedHeight: mappedHeight, textBoxValue: textBoxValue, 
+      textFontSize: textFontSize, textFontWight: textFontWight, textFontStyle: textFontStyle}));
     textBox.parentNode.removeChild(textBox);
     textBox = null; // reset textBox variable to null
   } else { // if textBox does not exist, add it
