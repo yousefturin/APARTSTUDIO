@@ -575,31 +575,32 @@ def adjust_blur():
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
-
+# this function need to download all font to make them work correctly with the ui/ux
 @app.route('/add_text', methods=['POST'])
 def add_text():
     if request.method == 'POST':
-        image_name = request.json['imageName']
-        new_image_name = request.json['newImageName']
-        text_value = request.json['textBoxValue']
-        position_x = float(request.json['mappedX'])
-        position_y = float(request.json['mappedY'])
-        text_width_box = float(request.json['mappedWidth'])
+        image_name = request.json['imageName'] # image name
+        new_image_name = request.json['newImageName'] # image new name to be stored
+        textBoxValue = request.json['textBoxValue'] # text in the box to be added to image
+        #textFontWight = request.json['textFontWight'].lower() # font wight, bold, italic, normal
+        textFontStyle = request.json['textFontStyle'] # font stly, arial, impact...
+        textFontStyle = textFontStyle.lower() + ".ttf"
+        position_x = float(request.json['mappedX']) # position of box in X scale
+        position_y = float(request.json['mappedY']) # position of box in Y scale
+        text_width_box = float(request.json['mappedWidth']) # mapping the size of box to image
         text_height_box = float(request.json['mappedHeight'])
-        print(position_x)
-        print(position_y)
-        print(text_width_box)
-        print(text_height_box)
-        print(text_value)
+        textFontSize= int(request.json['textFontSize']) # font size 14, 16,20...
+        textFontSize = textFontSize * 6
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = Image.open(image_path)
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype("arial.ttf", 20)
-        text = text_value
+        # need to download all .ttf folders for font's to make the bold or italic work!!!!!! be aware of it
+        font = ImageFont.truetype(textFontStyle, textFontSize)
+        text = textBoxValue
         x, y = position_x, position_y
         text_width_box, text_height_box = draw.textsize(text, font=font)
-        draw.text((x, y, x+text_width_box, y+text_height_box), text, font=font, fill=(255, 255, 255))
+        draw.text((x, y, x + text_width_box, y + text_height_box), text, font=font, fill=(255, 255, 255))
         image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
