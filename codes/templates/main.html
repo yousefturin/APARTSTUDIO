@@ -574,8 +574,8 @@
                         auto_awesome
                         </span>
                 </button> 
-                <button class="btn" id="camera_roll_button" title="Colorize image">
-                    <span class="material-symbols-outlined" id="icon_camera_roll">
+                <button class="btny" id="camera_roll_button" title="Colorize image">
+                    <span class="material-symbols-outlined" id="icon_camera_roll" onclick="getColorize()">
                         camera_roll
                         </span>
                 </button> 
@@ -583,9 +583,6 @@
             </div>
               <div class="middlepane">
                 <div class="wrapmiddlepane">
-                    <div style="position: relative; width: 500px; height: 500px; background-color: transparent;">
-                        <canvas id="my-canvas" width="500" height="500" style="position: absolute; top: 0; left: 0; background-color: transparent;"></canvas>
-                      </div>
                     {% if filename %}
                     <img id="image-canvas" name="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
                     {% endif %}
@@ -830,7 +827,7 @@
                                     </div>
                                         <div class="wraprpbmiddle13">
                                             <div class="wraprpbmiddle14">
-                                                <input type="number" id="text-wrap" name="text-wrap" min="0" max="512" step="2" value="0" title="Single Word Spacing">
+                                                <input type="number" id="text-wrap" name="text-wrap" min="4" max="128" step="2" value="4" title="Single Word Spacing">
                                             </div>
                                             <div class="wraprpbmiddle18">
                                                 <span class="material-symbols-outlined">
@@ -883,7 +880,7 @@
                                     </div>
                                     <div class="wrapbbottondowninside2">
                                         <div class="wrapbbottomdowntext2">
-                                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2"  value="4">
+                                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2"  value="0">
                                         </div>
                                             <div class="wrapbbottondownicon2">
                                                 <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
@@ -923,18 +920,18 @@
                 is to offer image editor free of charge. Not Photoshop has since it was founded in 2022 in istanbul as project for 4th 
                 year student of computer engineering department at byekoz university.<br><br>
                 
-                <h style="text-decoration:none" href="https://github.com/yousefturin">
+                <a style="text-decoration:none" href="https://github.com/yousefturin">
                     <img src="/static/images/github.png" alt="buttonpng" id="img_github" style="width: 20px; height: 20px;">
-                </h>
-                        <h style="text-decoration:none" href="https://www.linkedin.com/in/yusef-rayyan-b82420199/">
+                </a>
+                        <a style="text-decoration:none" href="https://www.linkedin.com/in/yusef-rayyan-b82420199/">
                             <img src="/static/images/linkedin.png"  alt="buttonpng" id="img_linkedin" style="width: 20px; height: 20px;">
-                        </h>
-                                <h style="text-decoration:none" href="https://www.instagram.com/yusefturin/">
+                        </a>
+                                <a style="text-decoration:none" href="https://www.instagram.com/yusefturin/">
                                     <img src="/static/images/instagram.png"  alt="buttonpng" id="img_instaram" style="width: 20px; height: 20px;">
-                                </h>
+                                </a>
                             
                         <br><br>
-              Turkey | <h style="text-decoration:none;font-weight: bold;" href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@Scalorbost.com</h></p>
+              Turkey | <a style="text-decoration:none;font-weight: bold;" href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@Scalorbost.com</a></p>
 
         </div>
     
