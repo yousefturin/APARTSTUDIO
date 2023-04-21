@@ -10,6 +10,8 @@ formatButton.addEventListener("click", function() {
     var textFontSize = document.getElementById("text-size").value;
     var textFontWight = document.getElementById("font-type-selector").value;
     var textFontStyle = document.getElementById("font-selector").value;
+    var textFontSpace = document.getElementById("text-wrap").value;
+    var textFontRotation = document.getElementById("text-rotation").value;
     var textBoxWidth = textBox.offsetWidth;
     var textBoxHeight = textBox.offsetHeight;
     var textBoxX = textBox.offsetLeft - img.offsetLeft;
@@ -72,16 +74,14 @@ formatButton.addEventListener("click", function() {
     xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName,
        mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth,
         mappedHeight: mappedHeight, textBoxValue: textBoxValue, 
-      textFontSize: textFontSize, textFontWight: textFontWight, textFontStyle: textFontStyle}));
+      textFontSize: textFontSize, textFontWight: textFontWight, textFontStyle: textFontStyle,
+      textFontSpace: textFontSpace, textFontRotation: textFontRotation}));
     textBox.parentNode.removeChild(textBox);
     textBox = null; // reset textBox variable to null
   } else { // if textBox does not exist, add it
     textBox = addTextBoxToCanvas();
   }
 });
-
-
-
 
 function addTextBoxToCanvas() {
   // Get the canvas element
@@ -102,7 +102,7 @@ function addTextBoxToCanvas() {
   var xMax = canvasRect.right - textBox.offsetWidth - 20;
   var yMin = canvasRect.top + 20;
   var yMax = canvasRect.bottom - textBox.offsetHeight - 20;
-  
+         
   var x = Math.floor(Math.random() * (xMax - xMin + 1) + xMin);
   var y = Math.floor(Math.random() * (yMax - yMin + 1) + yMin);
   
@@ -215,21 +215,6 @@ fontSizeInput.addEventListener("input", () => {
   // set the font size of the textbox to the value of the input element
   textBox.style.fontSize = `${fontSizeInput.value}px`;
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function updateSize() {
   var image = document.getElementById("image-canvas");
   var widthInput = document.getElementById("imageaspwidth");
@@ -245,8 +230,6 @@ function updateSize() {
     });
   }
 }
-
-
 function shareImageOnTwitter() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -326,8 +309,6 @@ if (!img || !img.src) {
 
   img.src = imageSrc;
 }
-
-
 function getContrast() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -388,8 +369,6 @@ function getContrast() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
 }
-
-
 function getHighlight() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -450,7 +429,6 @@ function getHighlight() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
 }
-
 function getShadow() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -572,9 +550,6 @@ function getWhite() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
 }
-
-
-
 function getBlack() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -635,8 +610,6 @@ function getBlack() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
 }
-
-
 function getExposure() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -697,7 +670,67 @@ function getExposure() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, exposureValue: exposureValue }));
 }
-
+function getColorize() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/colorize', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL;       // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas   
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
+      camera_roll_button.classList.remove("clicked", "spinner");
+      overlay_colorizing.remove();
+      document.body.style.overflow = 'auto';
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
+}
 
 function getTemp() {
   var imageSrc = document.getElementById('image-canvas').src;
@@ -1500,13 +1533,16 @@ grainBtn.addEventListener('click', () => {
 closegrainBtn.addEventListener('click', () => {
   overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
 });
+var overlay_colorizing = document.createElement("div");
+overlay_colorizing.classList.add("overlay_colorizing");
 
-
-
-
-
-
-
+var camera_roll_button = document.getElementById("camera_roll_button");
+camera_roll_button.addEventListener("click", function() {
+  camera_roll_button.classList.add("clicked", "spinner");
+  document.body.appendChild(overlay_colorizing); 
+  document.body.style.overflow = 'hidden';
+  // add the "clicked" and "spinner" classes to the saveBtnBlur button
+});
 
 var buttons = document.getElementsByClassName("btn");
 
@@ -1564,6 +1600,7 @@ overlaygrain.addEventListener('click', (event) => {
       buttons[i].classList.remove("clicked");
     }
 });
+
 
 
 
