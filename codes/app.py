@@ -3,9 +3,18 @@ sys.path.append('C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/c
 from DeOldify.deoldify import device
 from DeOldify.deoldify._device import DeviceId
 from DeOldify.deoldify.visualize import *
-from pathlib import Path
-#choices:  CPU, GPU0...GPU7
 device.set(device=DeviceId.GPU1)
+import torch
+import RRDBNet_arch as arch
+# Load the ESRGAN model
+model_path = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/models/RRDB_ESRGAN_x4.pth'
+device = torch.device('cpu')
+model = arch.RRDBNet(3, 3, 64, 23, gc=32)
+model.load_state_dict(torch.load(model_path), strict=True)
+model.eval()
+model = model.to(device)
+#choices:  CPU, GPU0...GPU7
+
 import os
 import base64
 import cv2
@@ -13,6 +22,7 @@ import numpy as np
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
+
 RESULT_PATH = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/result_images'
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
 LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
@@ -862,6 +872,30 @@ def colorize():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/enhance', methods=['POST'])
+def enhance():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
+        # Load the input image
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        image = image * 1.0 / 255
+        image = torch.from_numpy(np.transpose(image[:, :, [2, 1, 0]], (2, 0, 1))).float()
+        image = image.unsqueeze(0)
+        image = image.to(device)
+        with torch.no_grad():
+            image = model(image).data.squeeze().float().cpu().clamp_(0, 1).numpy()
+        image = np.transpose(image[[2, 1, 0], :, :], (1, 2, 0))
+        image = (image * 255.0).round()
+        cv2.imwrite(new_image_path, image)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
 
 
 
