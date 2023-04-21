@@ -1,55 +1,31 @@
-import sys
-sys.path.append('C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/DeOldify')
-from DeOldify.deoldify import device
-from DeOldify.deoldify._device import DeviceId
-from DeOldify.deoldify.visualize import *
-device.set(device=DeviceId.GPU1)
-import torch
-import RRDBNet_arch as arch
-# Load the ESRGAN model
-model_path = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/models/RRDB_ESRGAN_x4.pth'
-device = torch.device('cpu')
-model = arch.RRDBNet(3, 3, 64, 23, gc=32)
-model.load_state_dict(torch.load(model_path), strict=True)
-model.eval()
-model = model.to(device)
-#choices:  CPU, GPU0...GPU7
 
 import os
 import base64
+
+import torch
+import arch 
 import cv2
 import numpy as np
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
 
-RESULT_PATH = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/result_images'
-DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
-LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
-UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
-ARIAL = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/arial/'
-BOOKMAN = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Bookman/'
-CALIBRI = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Calibri/'
-CAMBRIA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Cambria/'
-CENTURY_GOTHIC = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Century_Gothic/'
-COMIC_SANS_MS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Comic_Sans_MS/'
-CONSOLAS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Consolas/'
-COURIER_NEW = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Courier_New/'
-FRANKLIN_GOTHIC_MEDIUM = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Franklin_Gothic_Medium/'
-GARAMOND = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Garamond/'
-GEORGIA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Georgia/'
-HELVETICA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/helvetica/'
-IMPACT = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Impact/'
-LUCIDA_SANS_UNICODE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Lucida_Sans_Unicode/'
-PALATINO = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Palatino/'
-SEGOE_UI = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Segoe_UI/'
-TAHOMA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Tahoma/'
-TIMES_NEW_ROMAN = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Times_New_Roman/'
-TREBUCHET_MS = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Trebuchet_MS/'
-VERDANA = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/fonts/Verdana/'
+import deoldify_path
+from DeOldify.deoldify import device
+from DeOldify.deoldify._device import DeviceId
+from DeOldify.deoldify.visualize import *
+import RRDBNet_arch as arch
 
+from systemPath import *
+
+device.set(device=DeviceId.GPU1)
+device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
+model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
+model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
+model.eval()
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
 app = Flask(__name__)
 
 
@@ -105,7 +81,6 @@ def upload_image():
                 if file and allowed_file(file.filename):
                     try:
                         filename = secure_filename(file.filename)
-                        print("1:",filename)
                         app.logger.info(f'{filename}')
                         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                         return render_template('main.html', filename=filename)
@@ -138,8 +113,6 @@ def adjust_contrast():
         # Get the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
-        print("2, IMAGE NAME:",image_name)
-        print(contrast_value)
         # Open the image and apply contrast adjustment
         image = Image.open(image_path)
         # Apply contrast adjustment
@@ -162,8 +135,6 @@ def adjust_highlight():
         # Get the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
-        print("2, IMAGE NAME:",image_name)
-        print(highlight_value)
         # Open the image and apply contrast adjustment
         image = Image.open(image_path)
         # Apply contrast adjustment
@@ -181,7 +152,6 @@ def adjust_shadow():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         shadow_value = int(request.json['shadowValue'])
-        print(shadow_value)
         # Get the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
@@ -212,7 +182,6 @@ def adjust_white():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         white_value = int(request.json['whiteValue'])
-        print(white_value)
         # Swaping the value to combine it UI
         # white_value = white_value * -1
         # Geting the image path from the form data
@@ -247,7 +216,6 @@ def adjust_black():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         black_value = int(request.json['blackValue'])
-        print(black_value)
         # Swap the value to combine it UI
         black_value = black_value * -1
         # Getting the image path from the form data
@@ -282,10 +250,8 @@ def adjust_exposure():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         exposure_value = float(request.json['exposureValue'])
-        print(exposure_value)
         # Scale the value to fit in cv2 method from 0 - 1 
         exposure_scaled = float((exposure_value + 4.9) / 10.0)
-        print(exposure_scaled)
         # Getting the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
@@ -315,7 +281,6 @@ def adjust_temp():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         temp_value = int(request.json['tempValue'])
-        print(temp_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -327,12 +292,10 @@ def adjust_temp():
         # Compute the shift in blue and yellow values based on the temp value
         if temp_value < 26000:
             shift_blue = 0.0006 * (temp_value - 26000)
-            print(shift_blue)
             shift_yellow = 0
         elif temp_value >= 26000 and temp_value <= 50000:
             shift_blue = 0
             shift_yellow = 0.0004 * (temp_value - 26000)
-            print(shift_yellow)
         else:
              shift_yellow = 0
              shift_blue = 0
@@ -356,7 +319,6 @@ def adjust_tint():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         tint_value = int(request.json['tintValue'])
-        print(tint_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -394,10 +356,8 @@ def adjust_text():
         new_image_name = request.json['newImageName']
         text_value = int(request.json['textValue'])
         text_value = text_value / 100.0
-        print("text_value",text_value)
         # Compute the sign of the input value
         text_sign = np.sign(text_value)
-        print("text_sign",text_sign)
         # Compute the amount as the square of the rescaled input value
         if text_value > 0:
             text_value = text_value * -1
@@ -405,11 +365,9 @@ def adjust_text():
             weight = text_sign * amount 
             weight = weight * -1
         else:
-            print("im here on else")
             amount = 0.2 * text_value
             weight = 0.5 * text_sign * amount 
-        print("amount",amount)
-        print("weight",weight)
+
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -458,10 +416,8 @@ def adjust_clar():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         clar_value = int(request.json['clarValue'])
-        print(clar_value)
         clar_value = clar_value * -1 
         alpha = clar_value / 100
-        print("alpha",alpha)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -485,7 +441,6 @@ def adjust_deh():
         new_image_name = request.json['newImageName']
         deh_value = int(request.json['dehValue'])
         deh_value = deh_value/100
-        print(deh_value)
         gamma = 1.2
         w = 0.95
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
@@ -533,13 +488,11 @@ def adjust_sat():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         sat_value = int(request.json['satValue'])
-        print(sat_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = Image.open(image_path)
         # Convert the value to a float between 0 and 2
         sat_value = (sat_value + 100) / 100.0
-        print(sat_value)
         # Modify the image
         if sat_value <= 0.0:
             # Reduce the color intensity
@@ -561,7 +514,6 @@ def adjust_vir():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         vir_value = int(request.json['virValue'])
-        print(vir_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -597,7 +549,6 @@ def adjust_blur():
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         blur_value = float(request.json['blurValue'])
-        print(blur_value)
         sigma = 0
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
@@ -608,7 +559,6 @@ def adjust_blur():
         else:
             kernel_size = int(blur_value)* 2  + 1
         # Apply the blur using a Gaussian kernel
-        print(kernel_size)
         blurred_img = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
 
         result = blurred_img
@@ -899,17 +849,12 @@ def enhance():
 
 
 
-
-
-
-
 @app.route('/adjust_grain', methods=['POST'])
 def adjust_grain():
     if request.method == 'POST':
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
         grain_value = float(request.json['grainValue'])
-        print(grain_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
@@ -942,8 +887,6 @@ def adjust_asp():
         new_image_name = request.json['newImageName']
         width_value = int(request.json['widthAspValue'])
         height_value = int(request.json['heightAspValue'])
-        print(width_value)
-        print(height_value)
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = Image.open(image_path)
@@ -969,17 +912,14 @@ def adjust_asp():
 def download_file(filename):
         if request.method == 'POST':
             new_filename_html = request.form.get('image_name')
-            print(new_filename_html)
             filename = new_filename_html
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             if file_path == '':
                 raise ResourceNotFoundError("Image Resource could not be retuned")  
             if file_path != '':
-                print(file_path)
                 new_filename = request.form.get('textfilename')
                 image_format = request.form.get('image_format_selector').lower()
                 image_quality = request.form.get('image_quality_selector')
-                print(new_filename_html)
                 if new_filename == '':
                     new_filename = "Your_image_from" + "_NotPHOTOSHOP"
                 else:
