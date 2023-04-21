@@ -3,8 +3,8 @@
     padding: 0;
     box-sizing: border-box;
     font-family: "Poppins", sans-serif;
+    
 }
-
 body{
     height: auto;
     align-items: center;
@@ -22,7 +22,7 @@ body{
 
 
 ::-webkit-scrollbar-thumb {
-  background-color: 595858;
+  background-color: #595858;
   border-radius: 1px;
 }
 
@@ -156,7 +156,6 @@ body{
     #topbuttoms{
       position:relative;
       padding: 4px;
-      padding-bottom: 30px;
       right: 10px;
       bottom: 3px;
     }
@@ -190,29 +189,80 @@ body{
    
   }
   .wrap-buttoms{
+    width: 100%;
+    height: 100%;
     display: flex;
-    justify-content: center;
+    justify-content:flex-start;
     align-items: stretch;
     position: relative;
     flex-direction: column;
-    flex-wrap:nowrap;
+    flex-wrap: nowrap;
     align-content: center;
+    text-align: center;
   }
   .btn{
     background-color: transparent;
     box-shadow: 0.2px 0.2px 1px 0.2px inset rgb(37, 37, 37);
     cursor: pointer;
     border-radius: 5px;
+    height: 5%;
   }
   .btn.clicked {
     background-color: #4c4b4b;
     box-shadow: -10px -10px 5px -10px inset rgb(109, 109, 109);
     border-radius: 5px;
 }
+.btny{
+  background-color: transparent;
+  box-shadow: 0.2px 0.2px 1px 0.2px inset rgb(37, 37, 37);
+  cursor: pointer;
+  border-radius: 5px;
+  height: 5%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+}
+.overlay_colorizing {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+  z-index: 9999; /* Make sure it appears above everything else */
+  pointer-events: none; /* Allow clicks to pass through to elements below */
+}
+
+.btny.clicked.spinner:before {
+  content: "";
+  background-color: #4c4b4b;
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  margin-right: 8px;
+  border-radius: 50%;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  visibility: visible;
+}
+
+.btny.clicked.spinner > span {
+  visibility: hidden;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
     #icon_drag_pan,#icon_crop_rotate,#icon_aspect_ratio,#icon_auto_fix_high,
     #icon_auto_awesome,#icon_blur_on,#icon_brush,#icon_grain,#icon_camera_roll,
     #icon_eraser,#icon_format{
       font-size: 200%;
+      justify-content: center;
+      display: flex;
+      align-items: center;
+      align-content: center;
     }
   
   .middlepane {
@@ -2575,3 +2625,7 @@ input[type = "number"]{
   border-radius: 5px;
 
 }
+
+
+
+
