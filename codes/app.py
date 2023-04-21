@@ -1,3 +1,11 @@
+import sys
+sys.path.append('C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/DeOldify')
+from DeOldify.deoldify import device
+from DeOldify.deoldify._device import DeviceId
+from DeOldify.deoldify.visualize import *
+from pathlib import Path
+#choices:  CPU, GPU0...GPU7
+device.set(device=DeviceId.GPU1)
 import os
 import base64
 import cv2
@@ -5,6 +13,7 @@ import numpy as np
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
+RESULT_PATH = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/result_images'
 DOWNLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/download/'
 LOGO_COPYWRITE = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/images/img_icons.png'
 UPLOAD_FOLDER = 'C:/Users/youse/OneDrive/Documents/unviversity/4th_Year_second/codes/static/uploads'
@@ -39,7 +48,7 @@ class ResourceNotFoundError(Exception):
 
 class InternalServerError(Exception):
     pass
-
+app.config['RESULT_PATH'] = RESULT_PATH
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
@@ -64,10 +73,11 @@ def allowed_file(filename):
 @app.route('/')
 def home():
         try:
-                return render_template('main.html')
+            return render_template('main.html')
         except:
-                raise ResourceNotFoundError("Resource page not found")
-                
+            raise ResourceNotFoundError("Resource page not found")
+
+
 
 @app.route('/upload',methods=['GET','POST'])
 def upload_image():
@@ -814,7 +824,7 @@ def add_text():
                 else:
                     textFontCombo = SEGOE_UI + 'Segoe_UI-normal.ttf'
             else:
-                textFontCombo = ARIAL + 'arial-normal.ttf'                                                                                                                                          
+                    textFontCombo = ARIAL + 'arial-normal.ttf'                                                                                                                                     
 
             image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
             new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
@@ -830,6 +840,32 @@ def add_text():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/colorize', methods=['POST'])
+def colorize():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
+        new_result_path = os.path.join(app.config['RESULT_PATH'], image_name)
+        # Load the image
+        colorizer = get_image_colorizer(artistic=True)
+        # Create the colorizer
+        render_factor = 35
+        colorizer.plot_transformed_image(path=image_path, render_factor=render_factor, compare=True)
+        image = Image.open(new_result_path)
+        image.save(new_image_path)
+        toBeRemovedPath = os.path.join(app.config['RESULT_PATH'], image_name)
+        os.remove(toBeRemovedPath)
+        # Save the colorized image
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+
 
 
 
