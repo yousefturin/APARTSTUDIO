@@ -10,23 +10,27 @@ from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
 
-import deoldify_path
+app = Flask(__name__)
+
+import utils.deoldify_path as deoldify_path
 from DeOldify.deoldify import device
 from DeOldify.deoldify._device import DeviceId
 from DeOldify.deoldify.visualize import *
-import RRDBNet_arch as arch
-
-from systemPath import *
-
+import utils.RRDBNet_arch as arch
+from utils.systemPath import *
 device.set(device=DeviceId.GPU1)
-device = torch.device('cuda:1') if torch.cuda.is_available() else torch.device('cpu')
+device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+print("PyTorch version:", torch.__version__)
+print("CUDA version:", torch.version.cuda)
+print("Device used:", device)
+#device_1 = torch.device('cpu')
 model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
 model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
 model.eval()
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-app = Flask(__name__)
+
 
 
 class ResourceNotFoundError(Exception):
@@ -37,6 +41,7 @@ class InternalServerError(Exception):
 app.config['RESULT_PATH'] = RESULT_PATH
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['DEBUG'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 app.secret_key = "teqi-Eest1-iold4"
 
@@ -800,6 +805,10 @@ def add_text():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+# Run time 18.5s  --> widht:851px, height:1277px
+# Run time 22.87s --> width:1280px, height:854px
+# Run time 18.33s --> width:1920px, height:1280px
+# Run time 26,73  --> width:6720px, height:4480px -----!
 
 @app.route('/colorize', methods=['POST'])
 def colorize():
@@ -813,9 +822,10 @@ def colorize():
         colorizer = get_image_colorizer(artistic=True)
         # Create the colorizer
         render_factor = 35
-        colorizer.plot_transformed_image(path=image_path, render_factor=render_factor, compare=True)
+        colorizer.plot_transformed_image(path=image_path, render_factor=render_factor, compare=False)
         image = Image.open(new_result_path)
         image.save(new_image_path)
+        # clean the output image to free space in Disk
         toBeRemovedPath = os.path.join(app.config['RESULT_PATH'], image_name)
         os.remove(toBeRemovedPath)
         # Save the colorized image
@@ -823,7 +833,7 @@ def colorize():
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
-
+# This function needs more 2GB of CUDA, so it will run out of space but it works on CPU 
 @app.route('/enhance', methods=['POST'])
 def enhance():
     if request.method == 'POST':
@@ -968,4 +978,4 @@ def download_file(filename):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)
