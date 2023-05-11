@@ -30,7 +30,7 @@ https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/6768ddb8-0af9-4c05-
 UPLOAD_FOLDER =  "C:/Users/name/your/path/to/this/directory/UL_ph_1/input/"
 ```
 # Colorizing Image
-![black-and-white-movie-0819](https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/4b4e1150-2f36-4051-92ec-766bfcb5a56b)
 ![black-and-white-movie-0897](https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/1f8cb417-3be3-4622-92ed-4972eb2c2a19)
+![black-and-white-movie-4306](https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/9ea8c110-43a3-48ee-9f96-37af6926fdd3)
 
 
