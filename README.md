@@ -35,3 +35,13 @@ UPLOAD_FOLDER =  "C:/Users/name/your/path/to/this/directory/UL_ph_1/input/"
 
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/83941011-a99f-4117-b7f7-827d4b305dd5" width="500" height="500">
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/2815c444-f8e4-4520-9c02-60254cb77f85" width="500" height="500">
+
+
+# Blur and Grin Image
+<img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/7326629c-55af-40b0-a5f7-7dcc70e5d123" width="300" height="250">
+<img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/1f0f34cb-9ba7-48ed-a900-ada31edfd00a" width="300" height="250">
+<img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/a53255a5-5d32-41bf-9f7d-ca22c9174d80" width="300" height="250">
+
+
+
+
