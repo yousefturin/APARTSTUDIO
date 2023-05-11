@@ -5,14 +5,31 @@
 It's a web application written in Python using the Flask framework and it allows users to editor images where users can upload there pictures and edit them using different tools and methods that program provide, such as:
 > 
 >- Apply filters
+>- Histogram Visualization and Equalization
 >- Fix white-balance
->- Fixe the Tone
+>- Fix Exposure
+>- Fix Contrast
+>- Fix Highlights
+>- Fix Shadows
+>- Fix White
+>- Fix Black
+>- Add Texture
+>- Add Claruty
+>- Add Dehaze
+>- Set Vibrance
+>- Set Saturation
+>- Clip The colors "Red/Orange/Yellow/Green/Sky-Blue/Blue/Purpul/Pink" and Adjust (Hue, Saturation, Luminance)
 >- Use different brushes
->- Add text and customize it 
+>- Add text and customize it with (Font size, Rotation, Color, Font Type, Font View, Font Spacing) 
 >- Remove unwanted subject
->- Colorize images using DeOldif model
->- Enhance images using  model
-
+>- Add Blur
+>- Add Grin
+>- Crop The image with rotation
+>- Resize the image using **SCALORBUST**
+>- Colorize images using **DeOldif** model
+>- Enhance images using **ESRGAN** model
+>- Download The image in any Quality (100%, 75%, 50%, 25%). Any format (.jpg, .jpeg, .png). Any DPI(300dpi, 150dpi, 96dpi, 72dpi)
+>- Share The image on any platform with one click
 https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/6768ddb8-0af9-4c05-a8a6-533c86644735
 
 
