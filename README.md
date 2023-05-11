@@ -1,5 +1,5 @@
 # What is  **Not PHOTOSHOP**
-<img title="a title" alt="Alt text" src="code/static/images/img_icons.png">
+
 
 It's a web application written in Python using the Flask framework and it allows users to editor images where users can upload there pictures and edit them using different tools and methods that program provide, such as:
 > 
