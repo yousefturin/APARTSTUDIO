@@ -30,6 +30,8 @@ It's a web application written in Python using the Flask framework and it allows
 >- Enhance images using **ESRGAN** model
 >- Download The image in any Quality (100%, 75%, 50%, 25%). Any format (.jpg, .jpeg, .png). Any DPI(300dpi, 150dpi, 96dpi, 72dpi)
 >- Share The image on any platform with one click
+
+
 https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/6768ddb8-0af9-4c05-a8a6-533c86644735
 
 
