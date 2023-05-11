@@ -36,19 +36,7 @@ https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/6768ddb8-0af9-4c05-
 
 
 
-# Change this inside the **main.html** for editing the code
-## CSS file Path
-```
-<link rel= "stylesheet" href= "{{ url_for('static', filename='styles/style.css')">
-```            
-## JS file Path     
-```
-<script src="{{url_for('static', filename='styles/slider.js')}}"></script>                    
-```            
-# Change this inside the **app.py** for editing the code
-```
-UPLOAD_FOLDER =  "C:/Users/name/your/path/to/this/directory/UL_ph_1/input/"
-```
+
 # Colorizing Image
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/9ea8c110-43a3-48ee-9f96-37af6926fdd3" width="500" height="400">
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/1f8cb417-3be3-4622-92ed-4972eb2c2a19" width="500" height="400">
