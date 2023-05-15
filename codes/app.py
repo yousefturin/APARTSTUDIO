@@ -1,3088 +1,1380 @@
-var cropButton = document.getElementById("crop_rotate_button");
-var textBox = null; // initialize textBox variable to null
-
-cropButton.addEventListener("click", function() {
-  if (textBox) { // if textBox exists, remove it
-    var img = document.getElementById('image-canvas');
-      // Get the size of the textBox element
-    var textBoxWidth = textBox.offsetWidth;
-    var textBoxHeight = textBox.offsetHeight;
-    var textBoxX = textBox.offsetLeft - img.offsetLeft;
-    var textBoxY = textBox.offsetTop - img.offsetTop;
-    // Get the natural width and height of the image
-    var naturalWidth = img.naturalWidth;
-    var naturalHeight = img.naturalHeight;
-    // Map the position and size of the textBox to the natural width and height of the image
-    var mappedX = textBoxX * naturalWidth / img.offsetWidth;
-    var mappedY = textBoxY * naturalHeight / img.offsetHeight;
-    var mappedWidth = textBoxWidth * naturalWidth / img.offsetWidth;
-    var mappedHeight = textBoxHeight * naturalHeight / img.offsetHeight;
-    console.log(mappedX);
-    console.log(mappedY);
-    console.log(mappedWidth);
-    console.log(mappedHeight);
-    var imageSrc = document.getElementById('image-canvas').src;
-    document.getElementById("imageurl").innerHTML = imageSrc;
-    var img1 = document.getElementById('image-canvas1'); 
-    var img2 = document.getElementById('image-canvas2');
-    var img3 = document.getElementById('image-canvas3');
-    var img4 = document.getElementById('image-canvas4');
-    var img5 = document.getElementById('image-canvas5');
-    var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-    var imageExt = imageName.split('.').pop();
-    var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-    var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.open('POST', '/crop_image', true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        // Decode the Base64-encoded image data
-        var imgData = xhr.response['image'];
-        var byteCharacters = atob(imgData);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (var i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        var byteArray = new Uint8Array(byteNumbers);
-        // Create a blob with the byte array and create an object URL
-        var blob = new Blob([byteArray], { type: 'image/png' });
-        var blobURL = URL.createObjectURL(blob);
-        // Get the image name from the URL and construct the new URL
-        var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-        var newURL = '/static/uploads/' + newImageName;
-        // Set the new image source
-        img.src = newURL;
-        img1.src = newURL;
-        img2.src = newURL;
-        img3.src = newURL;
-        img4.src = newURL;// new canvas
-        img5.src = newURL;
-        // Revoke the old object URL to free up memory
-        URL.revokeObjectURL(blobURL);
-        const imgSrc = img.src;
-        const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-        // set the value of the hidden input field to the filename
-        document.getElementById('image_name').value = imgName;
-        document.getElementById("imageurl").innerHTML = imageSrc;
-      }
-    };
-    xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName,
-       mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth,
-        mappedHeight: mappedHeight}));
-        textBox.parentNode.removeChild(textBox);
-        textBox = null; // reset textBox variable to null
-  } else { // if textBox does not exist, add it
-    textBox = addcropBoxToCanvas();
-  }
-});
-
-
-
-function addcropBoxToCanvas() {
-  // Get the canvas element
-  var canvas = document.getElementById("image-canvas");
-  // Create a new text box element
-  var textBox = document.createElement("textarea");
-  textBox.style.position = "absolute";
-  textBox.style.width = canvas.offsetWidth - 200 + "px";
-  textBox.style.height = canvas.offsetHeight - 200  + "px";
-  textBox.style.outline = "4px solid white";
-  textBox.style.backgroundColor = "transparent";
-  textBox.style.color = "black";
-  textBox.readOnly = true;
-
-  var canvasRect = canvas.getBoundingClientRect();
-  var canvasCenterX = canvasRect.left + canvasRect.width / 2;
-  var canvasCenterY = canvasRect.top + canvasRect.height / 2;
-  
-  var textBoxWidth = parseInt(textBox.style.width);
-  var textBoxHeight = parseInt(textBox.style.height);
-  
-  textBox.style.left = canvasCenterX - textBoxWidth / 2 + "px";
-  textBox.style.top = canvasCenterY - textBoxHeight / 2 + "px";
-
-
-  // Add event listeners for moving the text box
-  var isDragging = false;
-  var startX, startY;
-  textBox.addEventListener("mousedown", function(event) {
-    isDragging = true;
-    startX = event.clientX - parseInt(textBox.style.left);
-    startY = event.clientY - parseInt(textBox.style.top);
-  });
-  textBox.addEventListener("mouseup", function(event) {
-    isDragging = false;
-    textBox.style.cursor = "grab"; // Change cursor back to grab
-  });
-  textBox.addEventListener("mousemove", function(event) {
-    if (isDragging) {
-      var xMin = canvasRect.left + 75;
-      var xMax = canvasRect.right - textBox.offsetWidth - 75;
-      var yMin = canvasRect.top + 75;
-      var yMax = canvasRect.bottom - textBox.offsetHeight - 75;
-      
-      var x = event.clientX - startX;
-      var y = event.clientY - startY;
-  
-      x = Math.min(Math.max(x, xMin), xMax);
-      y = Math.min(Math.max(y, yMin), yMax);
-      
-      textBox.style.left = x + "px";
-      textBox.style.top = y + "px";
-    }
-  });
-  // Change cursor to grab when hovering over the text area
-  textBox.addEventListener("mouseenter", function(event) {
-    textBox.style.cursor = "grab";
-  });
-  // Stop moving the text box when the mouse leaves it
-  textBox.addEventListener("mouseleave", function(event) {
-    isDragging = false;
-    textBox.style.cursor = "default";
-  });
-
-
-  // Add event listeners for resizing the text box
-  var isResizing = false;
-  var startWidth, startHeight, startX, startY;
-  var resizer = document.createElement("div");
-  resizer.style.width = "10px";
-  resizer.style.height = "10px";
-  resizer.style.position = "absolute";
-  resizer.style.bottom = 0;
-  resizer.style.right = 0;
-  textBox.appendChild(resizer);
-  resizer.addEventListener("mousedown", function(event) {
-    isResizing = true;
-    startWidth = parseInt(textBox.style.width);
-    startHeight = parseInt(textBox.style.height);
-    startX = event.clientX;
-    startY = event.clientY;
-  });
-  textBox.addEventListener("mouseup", function(event) {
-    isResizing = false;
-  });
-  textBox.addEventListener("mousemove", function(event) {
-    if (isResizing) {
-      var width = startWidth + (event.clientX - startX);
-      var height = startHeight + (event.clientY - startY);
-      textBox.style.width = width + "px";
-      textBox.style.height = height + "px";
-      resizer.style.right = -width/2 + "px";
-      resizer.style.bottom = -height/2 + "px";
-      // Change cursor to "nwse-resize" when hovering over the resizer element
-      if (event.target === resizer || event.target.parentNode === resizer) {
-        textBox.style.cursor = "nwse-resize";
-      } else {
-        textBox.style.cursor = "auto";
-      }
-    }
-  });
-
-  // Stop resizing the text box when the mouse leaves it
-  textBox.addEventListener("mouseleave", function(event) {
-    isResizing = false;
-  });
-
-  // Add the text box element to the canvas element
-  canvas.parentNode.appendChild(textBox);
-  return textBox;
-}
-
-
-
-const colorButtons = document.querySelectorAll('.ColorBtn');
-const colorDivs = document.querySelectorAll('.ColorDiv');
-
-colorButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    if (!button.classList.contains('clicked')) {
-      // Remove 'clicked' class from all other buttons
-      colorButtons.forEach((btn) => {
-        if (btn !== button && btn.classList.contains('clicked')) {
-          btn.classList.remove('clicked');
-        }
-      });
-
-      // Toggle 'clicked' class on clicked button
-      button.classList.add('clicked');
-
-      // Hide all color divs
-      colorDivs.forEach((div) => {
-        div.classList.remove('active');
-      });
-
-      // Show corresponding color div
-      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
-      colorDiv.classList.add('active');
-    } else {
-      // Toggle 'clicked' class on clicked button
-      button.classList.remove('clicked');
-
-      // Hide corresponding color div
-      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
-      colorDiv.classList.remove('active');
-    }
-  });
-});
-
-
-
-
-var formatButton = document.getElementById("format_button");
-var textBox = null; // initialize textBox variable to null
-
-formatButton.addEventListener("click", function() {
-  if (textBox) { // if textBox exists, remove it
-    var img = document.getElementById('image-canvas');
-      // Get the size of the textBox element
-    var textBoxValue = textBox.value;
-    var textFontSize = document.getElementById("text-size").value;
-    var textFontWight = document.getElementById("font-type-selector").value;
-    var textFontStyle = document.getElementById("font-selector").value;
-    var textFontSpace = document.getElementById("text-wrap").value;
-    var textFontRotation = document.getElementById("text-rotation").value;
-    var textColor = document.getElementById("colorpicker").value;
-    console.log(textColor);
-    console.log(textFontRotation);
-    var textBoxWidth = textBox.offsetWidth;
-    var textBoxHeight = textBox.offsetHeight;
-    var textBoxX = textBox.offsetLeft - img.offsetLeft;
-    var textBoxY = textBox.offsetTop - img.offsetTop;
-    // Get the natural width and height of the image
-    var naturalWidth = img.naturalWidth;
-    var naturalHeight = img.naturalHeight;
-    // Map the position and size of the textBox to the natural width and height of the image
-    var mappedX = textBoxX * naturalWidth / img.offsetWidth;
-    var mappedY = textBoxY * naturalHeight / img.offsetHeight;
-    var mappedWidth = textBoxWidth * naturalWidth / img.offsetWidth;
-    var mappedHeight = textBoxHeight * naturalHeight / img.offsetHeight;
-    console.log(mappedX);
-    console.log(mappedY);
-    console.log(mappedWidth);
-    console.log(mappedHeight);
-    var imageSrc = document.getElementById('image-canvas').src;
-    document.getElementById("imageurl").innerHTML = imageSrc;
-    var img1 = document.getElementById('image-canvas1'); 
-    var img2 = document.getElementById('image-canvas2');
-    var img3 = document.getElementById('image-canvas3');
-    var img4 = document.getElementById('image-canvas4');
-    var img5 = document.getElementById('image-canvas5');
-    var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-    var imageExt = imageName.split('.').pop();
-    var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-    var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-    var xhr = new XMLHttpRequest();
-    xhr.responseType = 'json';
-    xhr.open('POST', '/add_text', true);
-    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-    xhr.onload = function() {
-      if (xhr.status === 200) {
-        // Decode the Base64-encoded image data
-        var imgData = xhr.response['image'];
-        var byteCharacters = atob(imgData);
-        var byteNumbers = new Array(byteCharacters.length);
-        for (var i = 0; i < byteCharacters.length; i++) {
-            byteNumbers[i] = byteCharacters.charCodeAt(i);
-        }
-        var byteArray = new Uint8Array(byteNumbers);
-        // Create a blob with the byte array and create an object URL
-        var blob = new Blob([byteArray], { type: 'image/png' });
-        var blobURL = URL.createObjectURL(blob);
-        // Get the image name from the URL and construct the new URL
-        var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-        var newURL = '/static/uploads/' + newImageName;
-        // Set the new image source
-        img.src = newURL;
-        img1.src = newURL;
-        img2.src = newURL;
-        img3.src = newURL;
-        img4.src = newURL;// new canvas
-        img5.src = newURL;
-        // Revoke the old object URL to free up memory
-        URL.revokeObjectURL(blobURL);
-        const imgSrc = img.src;
-        const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-        // set the value of the hidden input field to the filename
-        document.getElementById('image_name').value = imgName;
-        document.getElementById("imageurl").innerHTML = imageSrc;
-      }
-    };
-    xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName,
-       mappedX: mappedX, mappedY: mappedY, mappedWidth: mappedWidth,
-        mappedHeight: mappedHeight, textBoxValue: textBoxValue, 
-      textFontSize: textFontSize, textFontWight: textFontWight, textFontStyle: textFontStyle,
-      textFontSpace: textFontSpace, textFontRotation: textFontRotation, textColor:textColor}));
-    textBox.parentNode.removeChild(textBox);
-    textBox = null; // reset textBox variable to null
-  } else { // if textBox does not exist, add it
-    textBox = addTextBoxToCanvas();
-  }
-});
-
-
-function addTextBoxToCanvas() {
-  // Get the canvas element
-  var canvas = document.getElementById("image-canvas");
-
-  // Create a new text box element
-  var textBox = document.createElement("textarea");
-  textBox.placeholder = "Type your text here";
-  textBox.style.position = "absolute";
-  textBox.style.width = "100px";
-  textBox.style.height = "50px";
-  textBox.style.border = "none";
-  textBox.style.backgroundColor = "transparent";
-  textBox.style.color = "black";
-  textBox.style.cssText += "::placeholder {color: black;}";
-  
-  var canvasRect = canvas.getBoundingClientRect();
-  var canvasCenterX = canvasRect.left + canvasRect.width / 2;
-  var canvasCenterY = canvasRect.top + canvasRect.height / 2;
-  
-  var textBoxWidth = parseInt(textBox.style.width);
-  var textBoxHeight = parseInt(textBox.style.height);
-  
-  textBox.style.left = canvasCenterX - textBoxWidth / 2 + "px";
-  textBox.style.top = canvasCenterY - textBoxHeight / 2 + "px";
-
-
-  // Add event listeners for moving the text box
-  var isDragging = false;
-  var startX, startY;
-  textBox.addEventListener("mousedown", function(event) {
-    isDragging = true;
-    startX = event.clientX - parseInt(textBox.style.left);
-    startY = event.clientY - parseInt(textBox.style.top);
-  });
-  textBox.addEventListener("mouseup", function(event) {
-    isDragging = false;
-    textBox.style.cursor = "grab"; // Change cursor back to grab
-  });
-  textBox.addEventListener("mousemove", function(event) {
-    if (isDragging) {
-      var xMin = canvasRect.left + 20;
-      var xMax = canvasRect.right - textBox.offsetWidth - 20;
-      var yMin = canvasRect.top + 20;
-      var yMax = canvasRect.bottom - textBox.offsetHeight - 20;
-      
-      var x = event.clientX - startX;
-      var y = event.clientY - startY;
-  
-      x = Math.min(Math.max(x, xMin), xMax);
-      y = Math.min(Math.max(y, yMin), yMax);
-      
-      textBox.style.left = x + "px";
-      textBox.style.top = y + "px";
-    }
-  });
-  // Change cursor to grab when hovering over the text area
-  textBox.addEventListener("mouseenter", function(event) {
-    textBox.style.cursor = "grab";
-  });
-  // Stop moving the text box when the mouse leaves it
-  textBox.addEventListener("mouseleave", function(event) {
-    isDragging = false;
-    textBox.style.cursor = "default";
-  });
-
-
-  // Add event listeners for resizing the text box
-  var isResizing = false;
-  var startWidth, startHeight, startX, startY;
-  var resizer = document.createElement("div");
-  resizer.style.width = "10px";
-  resizer.style.height = "10px";
-  resizer.style.position = "absolute";
-  resizer.style.bottom = 0;
-  resizer.style.right = 0;
-  textBox.appendChild(resizer);
-  resizer.addEventListener("mousedown", function(event) {
-    isResizing = true;
-    startWidth = parseInt(textBox.style.width);
-    startHeight = parseInt(textBox.style.height);
-    startX = event.clientX;
-    startY = event.clientY;
-  });
-  textBox.addEventListener("mouseup", function(event) {
-    isResizing = false;
-  });
-  textBox.addEventListener("mousemove", function(event) {
-    if (isResizing) {
-      var width = startWidth + (event.clientX - startX);
-      var height = startHeight + (event.clientY - startY);
-      textBox.style.width = width + "px";
-      textBox.style.height = height + "px";
-      resizer.style.right = -width/2 + "px";
-      resizer.style.bottom = -height/2 + "px";
-      // Change cursor to "nwse-resize" when hovering over the resizer element
-      if (event.target === resizer || event.target.parentNode === resizer) {
-        textBox.style.cursor = "nwse-resize";
-      } else {
-        textBox.style.cursor = "auto";
-      }
-    }
-  });
-
-  // Stop resizing the text box when the mouse leaves it
-  textBox.addEventListener("mouseleave", function(event) {
-    isResizing = false;
-  });
-
-  // Add the text box element to the canvas element
-  canvas.parentNode.appendChild(textBox);
-  return textBox;
-}
-
-const selectorFont = document.getElementById("font-selector");
-
-selectorFont.addEventListener("change", (event) => {
-  const selectorFont = event.target.value;
-  textBox.style.fontFamily = selectorFont;
-});
-
-
-const fontWeightStyle = document.getElementById("font-type-selector");
-
-// Add an event listener to the font-type-selector element
-fontWeightStyle.addEventListener("change", function() {
-  // Get the selected font type
-  const fontType = fontWeightStyle.value;
-  
-  // Set the font style based on the selected font type
-  if (fontType === "Bold") {
-    textBox.style.fontWeight = "bold";
-    textBox.style.fontStyle = "normal";
-  } else if (fontType === "Italic") {
-    textBox.style.fontStyle = "italic";
-    textBox.style.fontWeight = "normal";
-  } else {
-    textBox.style.fontWeight = "normal";
-    textBox.style.fontStyle = "normal";
-  }
-});
-
-
-const fontSizeInput = document.getElementById("text-size");
-const dpi = window.devicePixelRatio * 96;
-const rotationInput = document.getElementById("text-rotation");
-const fontColorInput = document.getElementById("colorpicker");
-fontColorInput.addEventListener("input",() =>{
-  const SelectedColor = fontColorInput.value;
-  textBox.style.color = SelectedColor;
-
-})
-
-fontSizeInput.addEventListener("input", () => {
-  // set the font size of the textbox to the value in px
-  textBox.style.fontSize = `${fontSizeInput.value / 2 }px`;
-});
-
-
-rotationInput.addEventListener("input", () => {
-  // get the rotation angle from the input element
-  const rotationAngle = rotationInput.value;
-
-  // set the rotation transform of the textbox
-  textBox.style.transform = `rotate(${rotationAngle}deg)`;
-});
-
-function updateSize() {
-  var image = document.getElementById("image-canvas");
-  var widthInput = document.getElementById("imageaspwidth");
-  var heightInput = document.getElementById("imageaspheight");
-  
-  if (image.complete) {
-    widthInput.value = image.naturalWidth;
-    heightInput.value = image.naturalHeight;
-  } else {
-    image.addEventListener("load", function() {
-      widthInput.value = image.naturalWidth;
-      heightInput.value = image.naturalHeight;
-    });
-  }
-}
-
-
-function shareImageOnTwitter() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  const imageUrl = imageSrc ; // replace with the URL of the image you want to share
-  window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(imageUrl)}`);
-  console.log(imageUrl);
-}
-function shareImageOnFacebook() {
-    var imageSrc = document.getElementById('image-canvas').src;
-    console.log(imageSrc);
-    const imageUrl = imageSrc ;
-    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(imageUrl)}`);
-}
-function shareImageOnInstagram() {
-    var imageSrc = document.getElementById('image-canvas').src;
-    console.log(imageSrc);
-    const imageUrl = imageSrc ;
-    window.open(`https://www.instagram.com/create/story/image/?url=${encodeURIComponent(imageUrl)}`);
-}
-function shareImageOnLinkedIn() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  const imageUrl = imageSrc ;
-  window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(imageUrl)}`);
-}
-function shareImageOnPinterest() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  const imageUrl = imageSrc ;
-  window.open(`https://www.pinterest.com/pin/create/button/?url=${encodeURIComponent(imageUrl)}`);
-}
-
-
-const img = document.getElementById('image-canvas');
-// Check first if there is an image and it has an src then do the function if not just skip it
-if (!img || !img.src) {
-  console.log('Image source not found');
-} else {
-  const imageSrc = img.src;
-  console.log(imageSrc)
-  document.getElementById("imageurl").innerHTML = imageSrc;
-
-  const canvas = document.getElementById('histogram-canvas');
-  const ctx = canvas.getContext('2d', { willReadFrequently: true });
-
-  img.onload = function() {
-    canvas.width = img.width;
-    canvas.height = img.height;
-    ctx.drawImage(img, 0, 0, img.width, img.height);
-
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-
-    const histogram = Array(256).fill(0);
-    const pixels = imageData.data;
-
-    for (let i = 0; i < pixels.length; i += 4) {
-      const r = pixels[i];
-      const g = pixels[i + 1];
-      const b = pixels[i + 2];
-      const luma = Math.round(r * 0.2126 + g * 0.7152 + b * 0.0722);
-      histogram[luma]++;
-    }
-
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-    const barWidth = canvas.width / histogram.length;
-    const barHeight = canvas.height / Math.max(...histogram);
-
-    for (let i = 0; i < histogram.length; i++) {
-      const x = i * barWidth;
-      const y = canvas.height - histogram[i] * barHeight;
-      const width = barWidth;
-      const height = histogram[i] * barHeight;
-      ctx.fillStyle = '#000';
-      ctx.fillRect(x, y, width, height);
-    }
-  };
-
-  img.src = imageSrc;
-}
-
-
-
-function getRedHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var RedColorHueValue = document.getElementById('RedHue').value;
-  console.log(RedColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_RedHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, RedColorHueValue: RedColorHueValue }));
-}
-
-function getOrangeHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var OrangeColorHueValue = document.getElementById('OrangeHue').value;
-  console.log(OrangeColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_OrangeHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, OrangeColorHueValue: OrangeColorHueValue }));
-}
-
-function getYellowHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var YellowColorHueValue = document.getElementById('YellowHue').value;
-  console.log(YellowColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_YellowHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, YellowColorHueValue: YellowColorHueValue }));
-}
-
-function getGreenHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var GreenColorHueValue = document.getElementById('GreenHue').value;
-  console.log(GreenColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_GreenHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, GreenColorHueValue: GreenColorHueValue }));
-}
-
-function getMagentaHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var MagentaColorHueValue = document.getElementById('MagentaHue').value;
-  console.log(MagentaColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_MagentaHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, MagentaColorHueValue: MagentaColorHueValue }));
-}
-
-
-function getBlueHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var BlueColorHueValue = document.getElementById('BlueHue').value;
-  console.log(BlueColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_BlueHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, BlueColorHueValue: BlueColorHueValue }));
-}
-
-
-function getPurpulHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var PurpulColorHueValue = document.getElementById('PurpulHue').value;
-  console.log(PurpulColorHueValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_PurpulHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PurpulColorHueValue: PurpulColorHueValue }));
-}
-
-
-
-
-function getPinkHueColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var PinkColorHueValue = document.getElementById('PinkHue').value;
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_PinkHueColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PinkColorHueValue: PinkColorHueValue }));
-}
-
-
-
-function getPinkSatColor() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var PinkColorSatValue = document.getElementById('PinkSat').value;
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_PinkSatColor', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PinkColorSatValue: PinkColorSatValue }));
-}
-
-function getContrast() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1'); 
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var contrastValue = document.getElementById('CONT').value;
-  console.log(contrastValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_contrast', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL;
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, contrastValue: contrastValue }));
-}
-
-
-function getHighlight() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var highlightValue = document.getElementById('HIGH').value;
-  console.log(highlightValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_highlight', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, highlightValue: highlightValue }));
-}
-
-
-function getShadow() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');  
-  var img5 = document.getElementById('image-canvas5');
-  var shadowValue = document.getElementById('SHAD').value;
-  console.log(shadowValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_shadow', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, shadowValue: shadowValue }));
-}
-
-
-function getWhite() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var whiteValue = document.getElementById('WHITE').value;
-  console.log(whiteValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_white', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, whiteValue: whiteValue }));
-}
-
-
-function getBlack() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');  
-  var img5 = document.getElementById('image-canvas5');
-  var blackValue = document.getElementById('BLACK').value;
-  console.log(blackValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_black', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas   
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blackValue: blackValue }));
-}
-
-
-function getExposure() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4'); 
-  var img5 = document.getElementById('image-canvas5'); 
-  var exposureValue = document.getElementById('EXPO').value;
-  console.log(exposureValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_exposure', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;     
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, exposureValue: exposureValue }));
-}
-
-
-function getColorize() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/colorize', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL;       // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas   
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-      camera_roll_button.classList.remove("clicked", "spinner");
-      overlay_colorizing.remove();
-      document.body.style.overflow = 'auto';
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
-}
-function getEnhance() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/enhance', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL;       // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas   
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-      auto_awesome_button.classList.remove("clicked", "spinner");
-      overlay_colorizing.remove();
-      document.body.style.overflow = 'auto';
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
-}
-
-function getTemp() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var tempValue = document.getElementById('TEMP').value;
-  console.log(tempValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_temp', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL;       // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas   
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, tempValue: tempValue }));
-}
-
-function getTint() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');  
-  var img5 = document.getElementById('image-canvas5');
-  var tintValue = document.getElementById('TINT').value;
-  console.log(tintValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_tint', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas  
-      img5.src = newURL;    
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, tintValue: tintValue }));
-}
-
-
-function getText() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var textValue = document.getElementById('TEXT').value;
-  console.log(textValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_text', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, textValue: textValue }));
-}
-
-
-function getClar() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var clarValue = document.getElementById('CLAR').value;
-  console.log(clarValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_clar', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas  
-      img5.src = newURL;    
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, clarValue: clarValue }));
-}
-
-
-function getDeh() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');  
-  var dehValue = document.getElementById('DEH').value;
-  console.log(dehValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_deh', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas   
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, dehValue: dehValue }));
-}
-
-
-function getSat() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4'); 
-  var img5 = document.getElementById('image-canvas5'); 
-  var satValue = document.getElementById('SAT').value;
-  console.log(satValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_sat', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;     
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imageSrc;
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, satValue: satValue }));
-}
-
-
-function getVir() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4'); 
-  var img5 = document.getElementById('image-canvas5'); 
-  var virValue = document.getElementById('VIR').value;
-  console.log(virValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_vir', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;      
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, virValue: virValue }));
-}
-
-
-function getBlur() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var blurValue = document.getElementById('blurslider').value;
-  console.log(blurValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_blur', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL;
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas
-      img5.src = newURL;
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, blurValue: blurValue }));
-}
-
-
-function getGrain() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var grainValue = document.getElementById('grainslider').value;
-  console.log(grainValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_grain', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, grainValue: grainValue }));
-}
-
-
-// Send JOSN to get the aspict ratio 
-function getAsp() {
-  var imageSrc = document.getElementById('image-canvas').src;
-  console.log(imageSrc);
-  document.getElementById("imageurl").innerHTML = imageSrc;
-  var img = document.getElementById('image-canvas');
-  var img1 = document.getElementById('image-canvas1');
-  var img2 = document.getElementById('image-canvas2');
-  var img3 = document.getElementById('image-canvas3');
-  var img4 = document.getElementById('image-canvas4');
-  var img5 = document.getElementById('image-canvas5');
-  var widthAspValue = document.getElementById('imageaspwidth').value;
-  var heightAspValue = document.getElementById('imageaspheight').value;
-  console.log(widthAspValue);
-  console.log(heightAspValue);
-  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
-  console.log(imageName);
-  var imageExt = imageName.split('.').pop();
-  console.log(imageExt);
-  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
-  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
-  console.log(newImageName);
-  var xhr = new XMLHttpRequest();
-  xhr.responseType = 'json';
-  xhr.open('POST', '/adjust_asp', true);
-  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
-  xhr.onload = function() {
-    if (xhr.status === 200) {
-      // Decode the Base64-encoded image data
-      var imgData = xhr.response['image'];
-      var byteCharacters = atob(imgData);
-      var byteNumbers = new Array(byteCharacters.length);
-      for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
-      }
-      var byteArray = new Uint8Array(byteNumbers);
-      // Create a blob with the byte array and create an object URL
-      var blob = new Blob([byteArray], { type: 'image/png' });
-      var blobURL = URL.createObjectURL(blob);
-      // Get the image name from the URL and construct the new URL
-      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
-      console.log(imageName);
-      var newURL = '/static/uploads/' + newImageName;
-      // Set the new image source
-      img.src = newURL;
-      img1.src = newURL; // new canvas
-      img2.src = newURL;
-      img3.src = newURL;
-      img4.src = newURL;// new canvas 
-      img5.src = newURL;   
-      console.log(newURL);
-      // Revoke the old object URL to free up memory
-      URL.revokeObjectURL(blobURL);
-      const imgSrc = img.src;
-      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-      console.log(imgName)
-      // set the value of the hidden input field to the filename
-      document.getElementById('image_name').value = imgName;
-      document.getElementById("imageurl").innerHTML = imgSrc;
-
-    }
-  };
-  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, widthAspValue: widthAspValue, heightAspValue: heightAspValue}));
-}
-
-
-
-
-
-
-
-// Display the image that will be opened inside the open overlay
-const fileInput = document.getElementById("fileopen");
-const selectedImageName = document.querySelector(".wrapopenname p");
-const openscreenup = document.querySelector(".openscreenup");
-fileInput.addEventListener("change", function() {
-  const selectedFile = fileInput.files[0];
-  const selectedFileName = selectedFile ? selectedFile.name : "Select Image";
-  const label = document.querySelector("#fileopenlable");
-  label.textContent = selectedFileName;
-
-  if (selectedFile) {
-    // Create a new FileReader instance
-    const reader = new FileReader();
-
-    // Set up a callback function to run when the file is loaded
-    reader.onload = function() {
-      
-      // Create a new image element
-      const imagePreview = document.createElement("img");
-      imagePreview.src = reader.result;
-      imagePreview.style.padding = "1%";
-      imagePreview.style.maxWidth = "100%";
-      imagePreview.style.height = "auto";
-      imagePreview.style.objectFit = "contain";
-      imagePreview.style.maxHeight = "100%";
-      imagePreview.style.borderRadius = "9px";
-
-      // Add the image element to the openscreenup div
-      openscreenup.innerHTML = "";
-      openscreenup.appendChild(imagePreview);
-    };
-
-    // Read the selected file as a data URL
-    reader.readAsDataURL(selectedFile);
-  } else {
-    openscreenup.innerHTML = "";
-    selectedImageName.style.display = "none";
-  }
-});
-
-
-// Disable the quality for the .png format 
-const imageFormatSelector = document.querySelector("#image_format_selector");
-const imageQualitySelector = document.querySelector("#image_quality_selector");
-
-imageFormatSelector.addEventListener("change", function() {
-    if (this.value === ".png") {
-        imageQualitySelector.disabled = true;
-    } else {
-        imageQualitySelector.disabled = false;
-    }
-});
-
-
-const blurBtn = document.getElementById('blur_on_button');
-const overlayblur = document.getElementById('overlayblur');
-const saveBtnBlur = document.getElementById('savebtnforblur');
-
-blurBtn.addEventListener('click', () => {
-  overlayblur.classList.add('active'); // add the 'active' class to show the overlay
-});
-saveBtnBlur.addEventListener('click', () => {
-  overlayblur.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
-
-
-const aspBtn = document.getElementById('aspect_ratio_button');
-const overlayAsp = document.getElementById('overlayasp');
-const saveBtnAsp = document.getElementById('savebtnforasp');
-
-aspBtn.addEventListener('click', () => {
-  overlayAsp.classList.add('active');
-  updateSize(); // add the 'active' class to show the overlay
-});
-saveBtnAsp.addEventListener('click', () => {
-  overlayAsp.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
-
-
-const downloadBtn = document.getElementById('download');
-const overlay = document.getElementById('overlay');
-
-downloadBtn.addEventListener('click', () => {
-  overlay.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlay.addEventListener('click', (event) => {
-  if (event.target === overlay) {
-    overlay.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-const openBtn = document.getElementById('open');
-const overlay1 = document.getElementById('overlay1');
-
-openBtn.addEventListener('click', () => {
-  overlay1.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlay1.addEventListener('click', (event) => {
-  if (event.target === overlay1) {
-    overlay1.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-const infoBtn = document.getElementById('info');
-const overlay2 = document.getElementById('overlay2');
-const closeinfoBtn = document.getElementById('savebtnforinfo');
-
-infoBtn.addEventListener('click', () => {
-  overlay2.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlay2.addEventListener('click', (event) => {
-  if (event.target === overlay2) {
-    overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-closeinfoBtn.addEventListener('click', () => {
-  overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
-
-
-const premBtn = document.getElementById('premium');
-const overlay3 = document.getElementById('overlay3');
-const closepremBtn = document.getElementById('savebtnforpremium');
-
-premBtn.addEventListener('click', () => {
-  overlay3.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlay3.addEventListener('click', (event) => {
-  if (event.target === overlay3) {
-    overlay3.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-
-
-
-const shareBtn = document.getElementById('send');
-const overlay4 = document.getElementById('overlay4');
-const closeshareBtn = document.getElementById('savebtnforshare');
-
-shareBtn.addEventListener('click', () => {
-  overlay4.classList.add('active'); // add the 'active' class to show the overlay
-});
-overlay4.addEventListener('click', (event) => {
-  if (event.target === overlay4) {
-    overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-});
-closeshareBtn.addEventListener('click', () => {
-  overlay4.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
-
-
-// make event to chnage the color of button on the left side "grain" and to close the overlay
-const grainBtn = document.getElementById('grain_button');
-const overlaygrain = document.getElementById('overlaygrain');
-const closegrainBtn = document.getElementById('savebtnforgrain');
-
-grainBtn.addEventListener('click', () => {
-  overlaygrain.classList.add('active'); // add the 'active' class to show the overlay
-});
-closegrainBtn.addEventListener('click', () => {
-  overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
-
-
-
-var overlay_colorizing = document.createElement("div");
-overlay_colorizing.classList.add("overlay_colorizing");
-
-// Apply centering styles to the overlay_colorizing div
-overlay_colorizing.style.position = "fixed";
-
-
-// Add click event listeners to camera_roll_button and auto_awesome_button
-var camera_roll_button = document.getElementById("camera_roll_button");
-camera_roll_button.addEventListener("click", function() {
-  camera_roll_button.classList.add("clicked", "spinner");
-  document.body.appendChild(overlay_colorizing);
-  document.body.style.overflow = 'hidden';
-});
-
-var auto_awesome_button = document.getElementById("auto_awesome_button");
-auto_awesome_button.addEventListener("click", function() {
-  auto_awesome_button.classList.add("clicked", "spinner");
-  document.body.appendChild(overlay_colorizing);
-  document.body.style.overflow = 'hidden';
-});
-
-// Function to update the text every 2 seconds
-function updateText() {
-  var textArray = ["PLEASE WAIT THIS PROCESS MIGHT TAKE A FEW MOMENTS...", "GETTING THE IMAGE ANAYLIZED...", "BREAKING THE IMAGE DOWN...", "RECONSTRUCTION THE IMAGE...", "PLEASE BE PATION..."]; // Array of different texts
-  var randomIndex = Math.floor(Math.random() * textArray.length); // Get a random index
-  var newText = textArray[randomIndex]; // Get the text at the random index
-  overlay_colorizing.textContent = newText; // Set the new text as the content of the div
-    // Apply centering styles to the text content
-    overlay_colorizing.style.display = "flex";
-    overlay_colorizing.style.alignItems = "center";
-    overlay_colorizing.style.justifyContent = "center";
-    overlay_colorizing.style.textAlign = "center";
-    overlay_colorizing.style.fontWeight = "bold";
-    overlay_colorizing.style.fontSize = "50px";
-    overlay_colorizing.style.color = "rgb(255, 255, 255)";
-    overlay_colorizing.style.textShadow = "0.5px 0.5px 2px rgba(0, 0, 0, 0.2)"
-    overlay_colorizing.style.filter = "blur(1px)";
-}
-
-// Call the updateText function every 5.5 seconds
-setInterval(updateText, 5500);
-
-
-
-
-// change the state of buttons on the left side of page to clicked and unclicked
-var buttons = document.getElementsByClassName("btn");
-
-for (var i = 0; i < buttons.length; i++) {
-    buttons[i].addEventListener("click", function() {
-        if (this.classList.contains("clicked")) {
-            this.classList.remove("clicked");
-        } else {
-            for (var j = 0; j < buttons.length; j++) {
-                buttons[j].classList.remove("clicked");
-            }
-            this.classList.add("clicked");
-        }
-    });
-}
-
-// removing the button color if it was clicked from the left side of the page, since the have the overlays and okay button 
-saveBtnBlur.addEventListener("click", function() {
-  for (var j = 0; j < buttons.length; j++) {
-      buttons[j].classList.remove("clicked");
-  }
-});
-closegrainBtn.addEventListener("click", function() {
-  for (var j = 0; j < buttons.length; j++) {
-      buttons[j].classList.remove("clicked");
-  }
-});
-saveBtnAsp.addEventListener("click", function() {
-  for (var j = 0; j < buttons.length; j++) {
-      buttons[j].classList.remove("clicked");
-  }
-});
-overlayAsp.addEventListener('click', (event) => {
-  if (event.target === overlayAsp) {
-    overlayAsp.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-    // Remove the "clicked" class from all buttons
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove("clicked");
-    }
-});
-overlayblur.addEventListener('click', (event) => {
-  if (event.target === overlayblur) {
-    overlayblur.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-    // Remove the "clicked" class from all buttons
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove("clicked");
-    }
-});
-overlaygrain.addEventListener('click', (event) => {
-  if (event.target === overlaygrain) {
-    overlaygrain.classList.remove('active'); // remove the 'active' class to hide the overlay
-  }
-    // Remove the "clicked" class from all buttons
-    for (var i = 0; i < buttons.length; i++) {
-      buttons[i].classList.remove("clicked");
-    }
-});
-
-
-
-
-// displaying the style of the font selector in the font box
-const fontTypeSelector = document.querySelector('#font-type-selector');
-
-fontTypeSelector.addEventListener('change', () => {
-  const selectedOption = fontTypeSelector.options[fontTypeSelector.selectedIndex];
-
-  if (selectedOption.value === 'Bold' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'bold';
-  } 
-  if (selectedOption.value === 'Italic' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'italic';
-  }
-  if (selectedOption.value === 'Normal' && fontTypeSelector) {
-    fontTypeSelector.style.fontWeight = 'normal';
-  }
-});
-
-const fontSelector = document.querySelector('#font-selector');
-
-fontSelector.addEventListener('change', () => {
-  const selectedOption = fontSelector.options[fontSelector.selectedIndex];
-
-  if (selectedOption.value === 'Impact') {
-    document.execCommand('impact', true, 'Impact');
-  } 
-});
-
-
-
-// Check the initial font and set the selected value accordingly
-const selectedOption = fontSelector.options[fontSelector.selectedIndex];
-
-const tempSlider = document.querySelector('#TEMP');
-const tempRangeValue = document.querySelector('#rangeValueTEMP');
-
-tempSlider.addEventListener('input', () => {
-  tempRangeValue.innerText = tempSlider.value;
-});
-
-tempSlider.addEventListener('dblclick', () => {
-  tempSlider.value = 26000;
-  tempRangeValue.innerText = 26000;
-});
-
-
-const tintSlider = document.querySelector('#TINT');
-const tintRangeValue = document.querySelector('#rangeValueTINT');
-
-tintSlider.addEventListener('input', () => {
-  tintRangeValue.innerText = tintSlider.value;
-});
-
-tintSlider.addEventListener('dblclick', () => {
-  tintSlider.value = 0;
-  tintRangeValue.innerText = 0;
-});
-
-
-
-const expoSlider = document.querySelector('#EXPO');
-const expoRangeValue = document.querySelector('#rangeValueEXPO');
-
-expoSlider.addEventListener('input', () => {
-  expoRangeValue.innerText = expoSlider.value;
-});
-
-expoSlider.addEventListener('dblclick', () => {
-  expoSlider.value = 0;
-  expoRangeValue.innerText = 0;
-});
-
-
-const contSlider = document.querySelector('#CONT');
-const contRangeValue = document.querySelector('#rangeValueCONT');
-
-contSlider.addEventListener('input', () => {
-  contRangeValue.innerText = contSlider.value;
-});
-
-contSlider.addEventListener('dblclick', () => {
-  contSlider.value = 0;
-  contRangeValue.innerText = 0;
-});
-
-
-
-const highSlider = document.querySelector('#HIGH');
-const highRangeValue = document.querySelector('#rangeValueHIGH');
-
-highSlider.addEventListener('input', () => {
-  highRangeValue.innerText = highSlider.value;
-});
-
-highSlider.addEventListener('dblclick', () => {
-  highSlider.value = 0;
-  highRangeValue.innerText = 0;
-});
-
-
-const shadSlider = document.querySelector('#SHAD');
-const shadRangeValue = document.querySelector('#rangeValueSHAD');
-
-shadSlider.addEventListener('input', () => {
-  shadRangeValue.innerText = shadSlider.value;
-});
-
-shadSlider.addEventListener('dblclick', () => {
-  shadSlider.value = 0;
-  shadRangeValue.innerText = 0;
-});
-
-
-
-
-const whiteSlider = document.querySelector('#WHITE');
-const whiteRangeValue = document.querySelector('#rangeValueWHITE');
-
-whiteSlider.addEventListener('input', () => {
-  whiteRangeValue.innerText = whiteSlider.value;
-});
-
-whiteSlider.addEventListener('dblclick', () => {
-  whiteSlider.value = 0;
-  whiteRangeValue.innerText = 0;
-});
-
-
-const blackSlider = document.querySelector('#BLACK');
-const blackRangeValue = document.querySelector('#rangeValueBLACK');
-
-blackSlider.addEventListener('input', () => {
-  blackRangeValue.innerText = blackSlider.value;
-});
-
-blackSlider.addEventListener('dblclick', () => {
-  blackSlider.value = 0;
-  blackRangeValue.innerText = 0;
-});
-
-
-
-const textSlider = document.querySelector('#TEXT');
-const textRangeValue = document.querySelector('#rangeValueTEXT');
-
-textSlider.addEventListener('input', () => {
-  textRangeValue.innerText = textSlider.value;
-});
-
-textSlider.addEventListener('dblclick', () => {
-  textSlider.value = 0;
-  textRangeValue.innerText = 0;
-});
-
-
-
-const clarSlider = document.querySelector('#CLAR');
-const clarRangeValue = document.querySelector('#rangeValueCLAR');
-
-clarSlider.addEventListener('input', () => {
-  clarRangeValue.innerText = clarSlider.value;
-});
-
-clarSlider.addEventListener('dblclick', () => {
-  clarSlider.value = 0;
-  clarRangeValue.innerText = 0;
-});
-
-
-
-const dehSlider = document.querySelector('#DEH');
-const dehRangeValue = document.querySelector('#rangeValueDEH');
-
-dehSlider.addEventListener('input', () => {
-  dehRangeValue.innerText = dehSlider.value;
-});
-
-dehSlider.addEventListener('dblclick', () => {
-  dehSlider.value = 0;
-  dehRangeValue.innerText = 0;
-});
-
-
-
-const virSlider = document.querySelector('#VIR');
-const virRangeValue = document.querySelector('#rangeValueVIR');
-
-virSlider.addEventListener('input', () => {
-  virRangeValue.innerText = virSlider.value;
-});
-
-virSlider.addEventListener('dblclick', () => {
-  virSlider.value = 0;
-  virRangeValue.innerText = 0;
-});
-
-
-
-const satSlider = document.querySelector('#SAT');
-const satRangeValue = document.querySelector('#rangeValueSAT');
-
-satSlider.addEventListener('input', () => {
-    satRangeValue.innerText = satSlider.value;
-});
-  
-satSlider.addEventListener('dblclick', () => {
-    satSlider.value = 0;
-    satRangeValue.innerText = 0;
-});
-
-
-
-const RedHueSlider = document.querySelector('#RedHue');
-const rangeValueRedHue = document.querySelector('#rangeValueRedHue');
-
-RedHueSlider.addEventListener('input', () => {
-  rangeValueRedHue.innerText = RedHueSlider.value;
-});
-  
-RedHueSlider.addEventListener('dblclick', () => {
-  RedHueSlider.value = 0;
-  rangeValueRedHue.innerText = 0;
-});
-
-
-const RedSatSlider = document.querySelector('#RedSat');
-const rangeValueRedSat = document.querySelector('#rangeValueRedSat');
-
-RedSatSlider.addEventListener('input', () => {
-  rangeValueRedSat.innerText = RedSatSlider.value;
-});
-  
-RedSatSlider.addEventListener('dblclick', () => {
-  RedSatSlider.value = 0;
-  rangeValueRedSat.innerText = 0;
-});
-
-
-const RedLumSlider = document.querySelector('#RedLum');
-const rangeValueRedLum = document.querySelector('#rangeValueRedLum');
-
-RedLumSlider.addEventListener('input', () => {
-  rangeValueRedLum.innerText = RedLumSlider.value;
-});
-  
-RedLumSlider.addEventListener('dblclick', () => {
-  RedLumSlider.value = 0;
-  rangeValueRedLum.innerText = 0;
-});
-
-
-const OrangeHueSlider = document.querySelector('#OrangeHue');
-const rangeValueOrangeHue = document.querySelector('#rangeValueOrangeHue');
-
-OrangeHueSlider.addEventListener('input', () => {
-  rangeValueOrangeHue.innerText = OrangeHueSlider.value;
-});
-  
-OrangeHueSlider.addEventListener('dblclick', () => {
-  OrangeHueSlider.value = 0;
-  rangeValueOrangeHue.innerText = 0;
-});
-
-
-const OrangeSatSlider = document.querySelector('#OrangeSat');
-const rangeValueOrangeSat = document.querySelector('#rangeValueOrangeSat');
-
-OrangeSatSlider.addEventListener('input', () => {
-  rangeValueOrangeSat.innerText = OrangeSatSlider.value;
-});
-  
-OrangeSatSlider.addEventListener('dblclick', () => {
-  OrangeSatSlider.value = 0;
-  rangeValueOrangeSat.innerText = 0;
-});
-
-
-const OrangeLumlider = document.querySelector('#OrangeLum');
-const rangeValueOrangeLum = document.querySelector('#rangeValueOrangeLum');
-
-OrangeLumlider.addEventListener('input', () => {
-  rangeValueOrangeLum.innerText = OrangeLumlider.value;
-});
-  
-OrangeLumlider.addEventListener('dblclick', () => {
-  OrangeLumlider.value = 0;
-  rangeValueOrangeLum.innerText = 0;
-});
-
-
-
-
-const YellowHueSlider = document.querySelector('#YellowHue');
-const rangeValueYellowHue = document.querySelector('#rangeValueYellowHue');
-
-YellowHueSlider.addEventListener('input', () => {
-  rangeValueYellowHue.innerText = YellowHueSlider.value;
-});
-  
-YellowHueSlider.addEventListener('dblclick', () => {
-  YellowHueSlider.value = 0;
-  rangeValueYellowHue.innerText = 0;
-});
-
-
-const YellowSatSlider = document.querySelector('#YellowSat');
-const rangeValueYellowSat = document.querySelector('#rangeValueYellowSat');
-
-YellowSatSlider.addEventListener('input', () => {
-  rangeValueYellowSat.innerText = YellowSatSlider.value;
-});
-  
-YellowSatSlider.addEventListener('dblclick', () => {
-  YellowSatSlider.value = 0;
-  rangeValueYellowSat.innerText = 0;
-});
-
-
-const YellowLumlider = document.querySelector('#YellowLum');
-const rangeValueYellowLum = document.querySelector('#rangeValueYellowLum');
-
-YellowLumlider.addEventListener('input', () => {
-  rangeValueYellowLum.innerText = YellowLumlider.value;
-});
-  
-YellowLumlider.addEventListener('dblclick', () => {
-  YellowLumlider.value = 0;
-  rangeValueYellowLum.innerText = 0;
-});
-
-
-
-
-const GreenHueSlider = document.querySelector('#GreenHue');
-const rangeValueGreenHue = document.querySelector('#rangeValueGreenHue');
-
-GreenHueSlider.addEventListener('input', () => {
-  rangeValueGreenHue.innerText = GreenHueSlider.value;
-});
-  
-GreenHueSlider.addEventListener('dblclick', () => {
-  GreenHueSlider.value = 0;
-  rangeValueGreenHue.innerText = 0;
-});
-
-
-const GreenSatSlider = document.querySelector('#GreenSat');
-const rangeValueGreenSat = document.querySelector('#rangeValueGreenSat');
-
-GreenSatSlider.addEventListener('input', () => {
-  rangeValueGreenSat.innerText = GreenSatSlider.value;
-});
-  
-GreenSatSlider.addEventListener('dblclick', () => {
-  GreenSatSlider.value = 0;
-  rangeValueGreenSat.innerText = 0;
-});
-
-
-const GreenLumlider = document.querySelector('#GreenLum');
-const rangeValueGreenLum = document.querySelector('#rangeValueGreenLum');
-
-GreenLumlider.addEventListener('input', () => {
-  rangeValueGreenLum.innerText = GreenLumlider.value;
-});
-  
-GreenLumlider.addEventListener('dblclick', () => {
-  GreenLumlider.value = 0;
-  rangeValueGreenLum.innerText = 0;
-});
-
-
-
-const MagentaHueSlider = document.querySelector('#MagentaHue');
-const rangeValueMagentaHue = document.querySelector('#rangeValueMagentaHue');
-
-MagentaHueSlider.addEventListener('input', () => {
-  rangeValueMagentaHue.innerText = MagentaHueSlider.value;
-});
-  
-MagentaHueSlider.addEventListener('dblclick', () => {
-  MagentaHueSlider.value = 0;
-  rangeValueMagentaHue.innerText = 0;
-});
-
-
-const MagentaSatSlider = document.querySelector('#MagentaSat');
-const rangeValueMagentaSat = document.querySelector('#rangeValueMagentaSat');
-
-MagentaSatSlider.addEventListener('input', () => {
-  rangeValueMagentaSat.innerText = MagentaSatSlider.value;
-});
-  
-MagentaSatSlider.addEventListener('dblclick', () => {
-  MagentaSatSlider.value = 0;
-  rangeValueMagentaSat.innerText = 0;
-});
-
-
-const MagentaLumlider = document.querySelector('#MagentaLum');
-const rangeValueMagentaLum = document.querySelector('#rangeValueMagentaLum');
-
-MagentaLumlider.addEventListener('input', () => {
-  rangeValueMagentaLum.innerText = MagentaLumlider.value;
-});
-  
-MagentaLumlider.addEventListener('dblclick', () => {
-  MagentaLumlider.value = 0;
-  rangeValueMagentaLum.innerText = 0;
-});
-
-
-
-const BlueHueSlider = document.querySelector('#BlueHue');
-const rangeValueBlueHue = document.querySelector('#rangeValueBlueHue');
-
-BlueHueSlider.addEventListener('input', () => {
-  rangeValueBlueHue.innerText = BlueHueSlider.value;
-});
-  
-BlueHueSlider.addEventListener('dblclick', () => {
-  BlueHueSlider.value = 0;
-  rangeValueBlueHue.innerText = 0;
-});
-
-
-const BlueSatSlider = document.querySelector('#BlueSat');
-const rangeValueBlueSat = document.querySelector('#rangeValueBlueSat');
-
-BlueSatSlider.addEventListener('input', () => {
-  rangeValueBlueSat.innerText = BlueSatSlider.value;
-});
-  
-BlueSatSlider.addEventListener('dblclick', () => {
-  BlueSatSlider.value = 0;
-  rangeValueBlueSat.innerText = 0;
-});
-
-
-const BlueLumlider = document.querySelector('#BlueLum');
-const rangeValueBlueLum = document.querySelector('#rangeValueBlueLum');
-
-BlueLumlider.addEventListener('input', () => {
-  rangeValueBlueLum.innerText = BlueLumlider.value;
-});
-  
-BlueLumlider.addEventListener('dblclick', () => {
-  BlueLumlider.value = 0;
-  rangeValueBlueLum.innerText = 0;
-});
-
-
-
-
-const PurpulHueSlider = document.querySelector('#PurpulHue');
-const rangeValuePurpulHue = document.querySelector('#rangeValuePurpulHue');
-
-PurpulHueSlider.addEventListener('input', () => {
-  rangeValuePurpulHue.innerText = PurpulHueSlider.value;
-});
-  
-PurpulHueSlider.addEventListener('dblclick', () => {
-  PurpulHueSlider.value = 0;
-  rangeValuePurpulHue.innerText = 0;
-});
-
-
-const PurpulSatSlider = document.querySelector('#PurpulSat');
-const rangeValuePurpulSat = document.querySelector('#rangeValuePurpulSat');
-
-PurpulSatSlider.addEventListener('input', () => {
-  rangeValuePurpulSat.innerText = PurpulSatSlider.value;
-});
-  
-PurpulSatSlider.addEventListener('dblclick', () => {
-  PurpulSatSlider.value = 0;
-  rangeValuePurpulSat.innerText = 0;
-});
-
-
-const PurpulLumlider = document.querySelector('#PurpulLum');
-const rangeValuePurpulLum = document.querySelector('#rangeValuePurpulLum');
-
-PurpulLumlider.addEventListener('input', () => {
-  rangeValuePurpulLum.innerText = PurpulLumlider.value;
-});
-  
-PurpulLumlider.addEventListener('dblclick', () => {
-  PurpulLumlider.value = 0;
-  rangeValuePurpulLum.innerText = 0;
-});
-
-
-
-
-const PinkHueSlider = document.querySelector('#PinkHue');
-const rangeValuePinkHue = document.querySelector('#rangeValuePinkHue');
-
-PinkHueSlider.addEventListener('input', () => {
-  rangeValuePinkHue.innerText = PinkHueSlider.value;
-});
-  
-PinkHueSlider.addEventListener('dblclick', () => {
-  PinkHueSlider.value = 0;
-  rangeValuePinkHue.innerText = 0;
-});
-
-
-const PinkSatlider = document.querySelector('#PinkSat');
-const rangeValuePinkSat = document.querySelector('#rangeValuePinkSat');
-
-PinkSatlider.addEventListener('input', () => {
-  rangeValuePinkSat.innerText = PinkSatlider.value;
-});
-  
-PinkSatlider.addEventListener('dblclick', () => {
-  PinkSatlider.value = 0;
-  rangeValuePinkSat.innerText = 0;
-});
-
-
-const PinkLumlider = document.querySelector('#PinkLum');
-const rangeValuePinkLum = document.querySelector('#rangeValuePinkLum');
-
-PinkLumlider.addEventListener('input', () => {
-  rangeValuePinkLum.innerText = PinkLumlider.value;
-});
-  
-PinkLumlider.addEventListener('dblclick', () => {
-  PinkLumlider.value = 0;
-  rangeValuePinkLum.innerText = 0;
-});
+
+import os
+import base64
+
+import torch
+import arch 
+import cv2
+import numpy as np
+from PIL import Image, ImageEnhance, ImageDraw, ImageFont 
+from flask import Flask, flash, request, render_template, redirect, url_for, send_file
+from werkzeug.utils import secure_filename
+
+app = Flask(__name__)
+
+#import utils.deoldify_path as deoldify_path
+#from DeOldify.deoldify import device
+#from DeOldify.deoldify._device import DeviceId
+#from DeOldify.deoldify.visualize import *
+#import utils.RRDBNet_arch as arch
+from utils.systemPath import *
+#device.set(device=DeviceId.GPU1)
+#device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+#print("PyTorch version:", torch.__version__)
+#print("CUDA version:", torch.version.cuda)
+#print("Device used:", device)
+#device_1 = torch.device('cpu')
+#model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
+#model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
+#model.eval()
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+
+
+
+class ResourceNotFoundError(Exception):
+    pass
+
+class InternalServerError(Exception):
+    pass
+app.config['RESULT_PATH'] = RESULT_PATH
+app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+#app.config['DEBUG'] = False
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
+app.secret_key = "teqi-Eest1-iold4"
+
+
+@app.errorhandler(ResourceNotFoundError)
+def handle_resource_not_found(e):
+    return render_template('error.html', error=e), 404
+
+@app.errorhandler(InternalServerError)
+def handle_internal_server_error(e):
+    return render_template('error.html', error=e), 500
+
+
+
+# checking if the file are under the allowed format
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+
+@app.route('/')
+def home():
+        try:
+            return render_template('main.html')
+        except:
+            raise ResourceNotFoundError("Resource page not found")
+
+
+
+@app.route('/upload',methods=['GET','POST'])
+def upload_image():
+    if request.method == 'POST':
+        file = request.files['file'] 
+
+        if 'file' not in request.files:
+             flash('No Image Part')
+             return redirect(request.url)
+        else:
+            if file.filename == '':
+                flash('No Selected Image')
+                return redirect(request.url)
+            if file.filename != '':
+                if file and allowed_file(file.filename):
+                    try:
+                        filename = secure_filename(file.filename)
+                        app.logger.info(f'{filename}')
+                        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                        return render_template('main.html', filename=filename)
+                    except:
+                        raise ResourceNotFoundError("Image Resource could not be processed") 
+                                 
+                elif file.filename not in ALLOWED_EXTENSIONS :
+                    flash('Allowed image types are \n (png, jpg, jpeg, gif)')
+                    return redirect(request.url)           
+                else:
+                    raise ResourceNotFoundError("Image Resource could not be retuned") 
+            else:
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
+    else:
+             return render_template('main.html')
+
+
+@app.route('/display/<filename>')
+def display_image(filename):
+        return redirect(url_for('static', filename='uploads/'+ filename), code=301)
+
+@app.route('/adjust_contrast', methods=['POST'])
+def adjust_contrast():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        # Get the slider value from the form data
+        contrast_value = float(request.json['contrastValue'])
+        contrast = (contrast_value / 100) + 1.0
+        # Get the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        # Open the image and apply contrast adjustment
+        image = Image.open(image_path)
+        # Apply contrast adjustment
+        enhancer = ImageEnhance.Contrast(image)
+        image = enhancer.enhance(contrast)
+        image.save(new_image_path)
+        
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_highlight', methods=['POST'])
+def adjust_highlight():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        highlight_value = float(request.json['highlightValue'])
+        highlight = (highlight_value / 100) + 1.0
+        # Get the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        # Open the image and apply contrast adjustment
+        image = Image.open(image_path)
+        # Apply contrast adjustment
+        enhancer = ImageEnhance.Brightness(image)
+        image = enhancer.enhance(highlight) # Increase brightness by 20%
+        image.save(new_image_path)
+
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_shadow', methods=['POST'])
+def adjust_shadow():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        shadow_value = int(request.json['shadowValue'])
+        # Get the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+    # Apply the shadow effect to the input image using the add_shadow function
+        with Image.open(image_path) as image:
+            # Put the image to three chanels mode (RED, GREEN, BLUE)       
+            image = image.convert('RGB')
+            # Split the image into separate red, green, and blue channels
+            r, g, b = image.split()
+            # Create a darkened copy of the image to use as a shadow layer
+            shadow_image = Image.merge('RGB', (r.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
+                                            g.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
+                                            b.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0)))))
+            # Calculate the alpha value based on the shadow intensity
+            alpha = abs(shadow_value) / 100.0
+            # Blend the shadow image with the original image using the alpha value
+            output_image = Image.blend(image, shadow_image, alpha=alpha)
+            # Save the output image
+            output_image.save(new_image_path)
+
+        img_base64 = base64.b64encode(output_image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_white', methods=['POST'])
+def adjust_white():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        white_value = int(request.json['whiteValue'])
+        # Swaping the value to combine it UI
+        # white_value = white_value * -1
+        # Geting the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Converting the image to the HSV color space
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # Spliting the image into its Hue, Saturation, and Value channels
+        h, s, v = cv2.split(hsv)
+        # Adjust the Value channel by adding the brightness adjustment value
+        v_adjusted = v + white_value
+        # Cliping the pixel values in the adjusted Value channel 
+        v_adjusted = np.clip(v_adjusted, 0, 200)
+        # Converting the adjusted Value channel back to uint8 data type
+        v_adjusted = np.uint8(v_adjusted)
+        # Merging the adjusted Hue, Saturation, and Value channels into a single image
+        hsv_adjusted = cv2.merge((h, s, v_adjusted))
+        # Converting the image back to the RGB color space
+        result = cv2.cvtColor(hsv_adjusted, cv2.COLOR_HSV2BGR)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_black', methods=['POST'])
+def adjust_black():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        black_value = int(request.json['blackValue'])
+        # Swap the value to combine it UI
+        black_value = black_value * -1
+        # Getting the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Converting the image to the HSV color space
+        hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # Spliting the image into its Hue, Saturation, and Value channels
+        h, s, v = cv2.split(hsv)
+        # Adjusting the Value channel to add the brightness adjustment value
+        v_adjusted = v + black_value
+        # Cliping the pixel values in the adjusted Value channel 
+        v_adjusted = np.clip(v_adjusted, 0, 255)
+        # Converting the adjusted Value channel back to uint8 data type
+        v_adjusted = np.uint8(v_adjusted)
+        # Merging the adjusted Hue, Saturation, and Value into a single image
+        hsv_adjusted = cv2.merge((h, s, v_adjusted))
+        # Converting the image back to the RGB color space
+        result = cv2.cvtColor(hsv_adjusted, cv2.COLOR_HSV2BGR)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+# there is logic error here double check it the alpha must be connevted to the input value so that it will change 
+@app.route('/adjust_exposure', methods=['POST'])
+def adjust_exposure():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        exposure_value = float(request.json['exposureValue'])
+        # Scale the value to fit in cv2 method from 0 - 1 
+        exposure_scaled = float((exposure_value + 4.9) / 10.0)
+        # Getting the image path from the form data
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Determine whether the exposure value is positive or negative
+        if exposure_value >= 0:
+            # If the exposure value is positive, set alpha to a value greater than 1.0 to make the image brighter
+            alpha = 1.0 + exposure_scaled * 0.9
+        else:
+            # If the exposure value is negative, set alpha to a value less than 1.0 to make the image darker
+            alpha = exposure_scaled * 0.5
+        # Apply the exposure adjustment to the image
+        image = cv2.convertScaleAbs(image, alpha=(alpha/exposure_scaled), beta=0)
+        # Converting the name
+        result = image
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_temp', methods=['POST'])
+def adjust_temp():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        temp_value = int(request.json['tempValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert the image to the LAB color space
+        lab_image = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        # Compute the average blue and yellow values of the image
+        mean_a = lab_image[:, :, 1].mean()
+        mean_b = lab_image[:, :, 2].mean()
+        # Compute the shift in blue and yellow values based on the temp value
+        if temp_value < 26000:
+            shift_blue = 0.0006 * (temp_value - 26000)
+            shift_yellow = 0
+        elif temp_value >= 26000 and temp_value <= 50000:
+            shift_blue = 0
+            shift_yellow = 0.0004 * (temp_value - 26000)
+        else:
+             shift_yellow = 0
+             shift_blue = 0
+        # Apply the shift to the blue and yellow channels
+        lab_image[:, :, 1] = lab_image[:, :, 1] - ((mean_a - 128) * (shift_yellow - shift_blue))
+        lab_image[:, :, 2] = lab_image[:, :, 2] + ((mean_b - 128) * (shift_yellow + shift_blue))
+        # Convert the image back to the BGR color space
+        corrected_image = cv2.cvtColor(lab_image, cv2.COLOR_LAB2BGR)
+        # Converting the  image name
+        result = corrected_image
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_tint', methods=['POST'])
+def adjust_tint():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        tint_value = int(request.json['tintValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert the input image to the LAB color space
+        lab_img = cv2.cvtColor(image, cv2.COLOR_BGR2LAB)
+        # Split the LAB channels
+        L, A, B = cv2.split(lab_img)
+        # Adjust the A and B channels based on the tint value
+        if tint_value < 0:
+            B = np.float32(B)
+            B += abs(tint_value) * 255 / 150 # fade to green
+            B[B > 255] = 255 # cap at 255
+            B = np.uint8(B)
+        elif tint_value > 0:
+            A = np.float32(A)
+            A += tint_value * 255 / 150 # fade to pink
+            A[A > 255] = 255 # cap at 255
+            A = np.uint8(A)
+        # Merge the LAB channels back together
+        lab_img = cv2.merge((L, A, B))
+        # Convert the LAB image back to the original color space
+        result = cv2.cvtColor(lab_img, cv2.COLOR_LAB2BGR)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_text', methods=['POST'])
+def adjust_text():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        text_value = int(request.json['textValue'])
+        text_value = text_value / 100.0
+        # Compute the sign of the input value
+        text_sign = np.sign(text_value)
+        # Compute the amount as the square of the rescaled input value
+        if text_value > 0:
+            text_value = text_value * -1
+            amount = 0.2 * text_value
+            weight = text_sign * amount 
+            weight = weight * -1
+        else:
+            amount = 0.2 * text_value
+            weight = 0.5 * text_sign * amount 
+
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Split the image into color channels
+        b, g, r = cv2.split(image)
+        # Apply a bilateral filter to each color channel
+        b_smoothed = cv2.bilateralFilter(b, 30, 100, 100)
+        g_smoothed = cv2.bilateralFilter(g, 30, 100, 100)
+        r_smoothed = cv2.bilateralFilter(r, 30, 100, 100)
+        # Compute the high-pass filtered image for each color channel
+        b_high_pass = cv2.subtract(b, b_smoothed)
+        g_high_pass = cv2.subtract(g, g_smoothed)
+        r_high_pass = cv2.subtract(r, r_smoothed)
+        # Compute the weights for blending the high-pass filtered image with the original color image
+        if text_value > 0:
+            b_weight = 10 / (np.mean(b_high_pass) + text_value)
+            g_weight = 10 / (np.mean(g_high_pass) + text_value)
+            r_weight = 10 / (np.mean(r_high_pass) + text_value)
+        else:
+            b_weight = 10 / (np.mean(b_high_pass) - text_value)
+            g_weight = 10 / (np.mean(g_high_pass) - text_value)
+            r_weight = 10 / (np.mean(r_high_pass) - text_value)
+        # Normalize the high-pass filtered image for each color channel to the range [0, 255]
+        cv2.normalize(b_high_pass, b_high_pass, 0, 255, cv2.NORM_MINMAX)
+        cv2.normalize(g_high_pass, g_high_pass, 0, 255, cv2.NORM_MINMAX)
+        cv2.normalize(r_high_pass, r_high_pass, 0, 255, cv2.NORM_MINMAX)
+        b_high_pass = b_high_pass.astype(np.uint8)
+        g_high_pass = g_high_pass.astype(np.uint8)
+        r_high_pass = r_high_pass.astype(np.uint8)
+        # Blend the high-pass filtered image with the original color image using the computed weights
+        b_output = cv2.addWeighted(b, 1, b_high_pass, -text_sign * amount * b_weight, 0)
+        g_output = cv2.addWeighted(g, 1, g_high_pass, -text_sign * amount * g_weight, 0)
+        r_output = cv2.addWeighted(r, 1, r_high_pass, -text_sign * amount * r_weight, 0)
+        # Merge the color channels back into a single image
+        result = cv2.merge([b_output, g_output, r_output])
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_clar', methods=['POST'])
+def adjust_clar():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        clar_value = int(request.json['clarValue'])
+        clar_value = clar_value * -1 
+        alpha = clar_value / 100
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        if clar_value > 0:
+            lowpass = cv2.blur(image, (5, 5))
+            result = cv2.addWeighted(image, 1 - alpha, lowpass, alpha, 0)
+        if clar_value < 0:
+            lowpass = cv2.blur(image, (5, 5))
+            result = cv2.addWeighted(image, 1 - alpha, lowpass, alpha, 0)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_deh', methods=['POST'])
+def adjust_deh():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        deh_value = int(request.json['dehValue'])
+        deh_value = deh_value/100
+        gamma = 1.2
+        w = 0.95
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Apply dark channel prior
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        kernel_size = max(int(min(image.shape[:2]) / 100), 1)
+        dark = cv2.erode(gray, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
+        dc = 255 - cv2.dilate(dark, cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size)))
+        # Estimate atmosphere light
+        num_pixels = dc.size
+        num_sample = int(num_pixels * 0.001)
+        sample_pixels = np.random.choice(num_pixels, num_sample, replace=False)
+        sample_values = np.sort(image.flatten()[sample_pixels])
+        athmosphere_light = np.mean(sample_values[-num_sample // 10:])
+        # Compute transmission
+        transmission = 1 - w * dc / athmosphere_light
+        # Apply soft matting
+        radius = max(int(min(image.shape[:2]) / 100), 1)
+        epsilon = 0.001
+        guided = cv2.blur(transmission, (radius, radius))
+        guided_filter = np.zeros_like(image, dtype=np.float64)
+        for c in range(image.shape[2]):
+            guided_filter[:, :, c] = cv2.filter2D(image[:, :, c], -1, guided, borderType=cv2.BORDER_REFLECT_101)
+        var = np.var(image)
+        transmission = (transmission - guided) / (np.maximum(var, np.mean(var)) + epsilon) + guided
+        # Apply dehazing
+        t = np.maximum(transmission, 1 - deh_value)
+        result = np.zeros_like(image, dtype=np.float64)
+        for c in range(image.shape[2]):
+            result[:, :, c] = (image[:, :, c] - athmosphere_light) / t + athmosphere_light
+        result = np.clip((result / 255 + 1e-6) ** gamma * 255, 0, 255)
+        result =  result.astype(np.uint8)
+        # Saving the adjusted image to the new file path
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_sat', methods=['POST'])
+def adjust_sat():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        sat_value = int(request.json['satValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        # Convert the value to a float between 0 and 2
+        sat_value = (sat_value + 100) / 100.0
+        # Modify the image
+        if sat_value <= 0.0:
+            # Reduce the color intensity
+            enhancer = ImageEnhance.Color(image)
+            image = enhancer.enhance(sat_value)
+        if sat_value > 0.0:
+            # Increase the color intensity
+            enhancer = ImageEnhance.Color(image)
+            image = enhancer.enhance(sat_value)
+        image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_vir', methods=['POST'])
+def adjust_vir():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        vir_value = int(request.json['virValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Convert image to HSV color space
+        hsv_image = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+        # Split the HSV image into separate channels
+        h_channel, s_channel, v_channel = cv2.split(hsv_image)
+        # Determine whether to add or subtract saturation
+        if vir_value < 0:
+            # Subtract saturation adjustment from the saturation channel
+            s_adjust = -1 * vir_value
+            s_channel = cv2.subtract(s_channel, s_adjust)
+        else:
+            # Add saturation adjustment to the saturation channel
+            s_adjust = vir_value
+            s_channel = cv2.add(s_channel, s_adjust)
+        # Clip the pixel values to the valid range of 0-255
+        s_channel = np.clip(s_channel, 0, 255)
+
+        # Merge the HSV channels back together
+        hsv_image = cv2.merge([h_channel, s_channel, v_channel])
+
+        # Convert the HSV image back to BGR color space
+        result = cv2.cvtColor(hsv_image, cv2.COLOR_HSV2BGR)
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(result.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_blur', methods=['POST'])
+def adjust_blur():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        blur_value = float(request.json['blurValue'])
+        sigma = 0
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        # Check for minimum input value of 0.1 and set kernel size to 1
+        if blur_value < 0.2:
+            kernel_size = 1
+        else:
+            kernel_size = int(blur_value)* 2  + 1
+        # Apply the blur using a Gaussian kernel
+        blurred_img = cv2.GaussianBlur(image, (kernel_size, kernel_size), sigma)
+
+        result = blurred_img
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+# this function need to download all font to make them work correctly with the ui/ux
+@app.route('/add_text', methods=['POST'])
+def add_text():
+    if request.method == 'POST':
+        image_name = request.json['imageName'] # image name
+        new_image_name = request.json['newImageName'] # image new name to be stored
+        textBoxValue = request.json['textBoxValue'] # text in the box to be added to image
+        textFontStyle = request.json['textFontWight'].lower() # font wight, bold, italic, normal
+        textFontName = request.json['textFontStyle'].lower() # font stly, arial, impact...
+        position_x = float(request.json['mappedX']) # position of box in X scale
+        position_y = float(request.json['mappedY']) # position of box in Y scale
+        textFontSize= int(request.json['textFontSize'])# font size 14, 16,20...
+        textFontRotation = int(request.json['textFontRotation']) * -1 
+        textColor = request.json['textColor']
+        textColor = textColor.strip("#")
+        r= int(textColor[0:2],16)
+        g= int(textColor[2:4],16)
+        b= int(textColor[4:6],16)
+        print(r ,g, b)
+        print(textFontRotation)
+        if textBoxValue == ' ': 
+            image = Image.open(image_path)
+            image.save(new_image_path)
+        else:
+            if textFontName == 'arial':
+                if textFontStyle == 'bold':
+                    textFontCombo = ARIAL + 'arial-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = ARIAL + 'arial-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = ARIAL + 'arial-normal.ttf'
+                else:
+                    textFontCombo = ARIAL + 'arial-normal.ttf'
+
+            elif textFontName == 'helvetica':
+                if textFontStyle == 'bold':
+                    textFontCombo = HELVETICA + 'Helvetica-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = HELVETICA + 'Helvetica-italic.otf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = HELVETICA + 'Helvetica-normal.otf'
+                else:
+                    textFontCombo = HELVETICA + 'Helvetica-normal.otf'
+            elif textFontName == 'times new roman':
+                if textFontStyle == 'bold':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-normal.ttf'
+                else:
+                    textFontCombo = TIMES_NEW_ROMAN + 'Times_New-Roman-normal.ttf'
+
+            elif textFontName == 'courier new':
+                if textFontStyle == 'bold':
+                    textFontCombo = COURIER_NEW + 'Courier_New-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = COURIER_NEW + 'Courier_New-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = COURIER_NEW + 'Courier_New-normal.ttf'
+                else:
+                    textFontCombo = COURIER_NEW + 'Courier_New-normal.ttf' 
+
+            elif textFontName == 'verdana':
+                if textFontStyle == 'bold':
+                    textFontCombo = VERDANA + 'Verdana-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = VERDANA + 'Verdana-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = VERDANA + 'Verdana-normal.ttf'
+                else:
+                    textFontCombo = VERDANA + 'Verdana-normal.ttf'
+
+            elif textFontName == 'georgia':
+                if textFontStyle == 'bold':
+                    textFontCombo = GEORGIA + 'Georgia-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = GEORGIA + 'Georgia-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = GEORGIA + 'Georgia-normal.ttf'
+                else:
+                    textFontCombo = GEORGIA + 'Georgia-normal.ttf' 
+
+            elif textFontName == 'palatino':
+                if textFontStyle == 'bold':
+                    textFontCombo = PALATINO + 'Palatino-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = PALATINO + 'Palatino-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = PALATINO + 'Palatino-normal.ttf'
+                else:
+                    textFontCombo = PALATINO + 'Palatino-normal.ttf'
+
+            elif textFontName == 'Garamond':
+                if textFontStyle == 'bold':
+                    textFontCombo = GARAMOND + 'Garamond-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = GARAMOND + 'Garamond-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = GARAMOND + 'Garamond-normal.TTF'
+                else:
+                    textFontCombo = GARAMOND + 'Garamond-normal.TTF' 
+
+            elif textFontName == 'Bookman':
+                if textFontStyle == 'bold':
+                    textFontCombo = BOOKMAN + 'bookman-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = BOOKMAN + 'bookman-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = BOOKMAN + 'bookman-normal.TTF'
+                else:
+                    textFontCombo = BOOKMAN + 'bookman-normal.TTF'
+
+            elif textFontName == 'comic sans ms':
+                if textFontStyle == 'bold':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-normal.ttf'
+                else:
+                    textFontCombo = COMIC_SANS_MS + 'Comic_Sans_MS-normal.ttf' 
+
+            elif textFontName == 'impact':
+                if textFontStyle == 'bold':
+                    textFontCombo = IMPACT + 'impact-bold.otf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = IMPACT + 'impact-italic.otf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = IMPACT + 'impact-normal.ttf'
+                else:
+                    textFontCombo = IMPACT + 'impact-normal.ttf'
+
+            elif textFontName == 'lucida sans unicode':
+                if textFontStyle == 'bold':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-normal.ttf'
+                else:
+                    textFontCombo = LUCIDA_SANS_UNICODE + 'Lucida_Sans_Unicode-normal.ttf' 
+
+            elif textFontName == 'tahoma':
+                if textFontStyle == 'bold':
+                    textFontCombo = TAHOMA + 'Tahoma-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TAHOMA + 'Tahoma-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TAHOMA + 'Tahoma-normal.ttf'
+                else:
+                    textFontCombo = TAHOMA + 'Tahoma-normal.ttf'
+
+            elif textFontName == 'trebuchet ms':
+                if textFontStyle == 'bold':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-normal.ttf'
+                else:
+                    textFontCombo = TREBUCHET_MS + 'Trebuchet_MS-normal.ttf'
+
+            elif textFontName == 'century gothic':
+                if textFontStyle == 'bold':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-italic.TTF'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-normal.TTF'
+                else:
+                    textFontCombo = CENTURY_GOTHIC + 'Century_Gothic-normal.TTF'
+
+            elif textFontName == 'consolas':
+                if textFontStyle == 'bold':
+                    textFontCombo = CONSOLAS + 'Consolas-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CONSOLAS + 'Consolas-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CONSOLAS + 'Consolas-normal.ttf'
+                else:
+                    textFontCombo = CONSOLAS + 'Consolas-normal.ttf' 
+
+            elif textFontName == 'calibri':
+                if textFontStyle == 'bold':
+                    textFontCombo = CALIBRI + 'calibri-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CALIBRI + 'calibri-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CALIBRI + 'calibri-normal.ttf'
+                else:
+                    textFontCombo = CALIBRI + 'calibri-normal.ttf'
+
+            elif textFontName == 'cambria':
+                if textFontStyle == 'bold':
+                    textFontCombo = CAMBRIA + 'cambria-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = CAMBRIA + 'cambria-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = CAMBRIA + 'cambria-normal.ttc'# it might be not supported check the documintation
+                else:
+                    textFontCombo = CAMBRIA + 'Helvetica-normal.ttc' 
+
+            elif textFontName == 'franklin gothic medium':
+                if textFontStyle == 'bold':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-bold.TTF'
+                elif textFontStyle == 'italic':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-normal.ttf'
+                else:
+                    textFontCombo = FRANKLIN_GOTHIC_MEDIUM + 'Franklin_Gothic_Medium-normal.ttf'
+
+            elif textFontName == 'segoe ui':
+                if textFontStyle == 'bold':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-bold.ttf'
+                elif textFontStyle == 'italic':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-italic.ttf'
+                elif textFontStyle == 'normal':
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-normal.ttf'
+                else:
+                    textFontCombo = SEGOE_UI + 'Segoe_UI-normal.ttf'
+            else:
+                    textFontCombo = ARIAL + 'arial-normal.ttf'                                                                                                                                     
+
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+            new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+            image = Image.open(image_path)
+            draw = ImageDraw.Draw(image)
+            # need to download all .ttf folders for font's to make the bold or italic work!!!!!! be aware of it
+            font = ImageFont.truetype(textFontCombo, textFontSize)
+            text = textBoxValue
+            x, y = position_x, position_y
+            text_width, text_height = draw.textsize(text, font=font)
+            # Create a new image for the rotated text
+            rotated_text_image = Image.new("RGBA", (text_width, text_height), (0, 0, 0, 0))
+            rotated_text_draw = ImageDraw.Draw(rotated_text_image)
+
+            # Draw the text on the rotated image
+            rotated_text_draw.text((0, 0), text, font=font, fill=(r, g, b))
+
+            # Rotate the text image around its center
+            rotated_text_image = rotated_text_image.rotate(textFontRotation, resample=Image.BICUBIC, expand=True)
+
+            # Calculate the position for pasting the rotated text
+            paste_x =  int(x -(rotated_text_image.width - text_width) / 2)
+            paste_y =  int(y -(rotated_text_image.height - text_height) / 2)
+
+            # Paste the rotated text onto the original image
+            image.paste(rotated_text_image, (paste_x, paste_y), mask=rotated_text_image)
+            dpi = 300
+            image.save(new_image_path,  dpi=(dpi, dpi))
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+# Run time 18.5s  --> widht:851px, height:1277px
+# Run time 22.87s --> width:1280px, height:854px
+# Run time 18.33s --> width:1920px, height:1280px
+# Run time 26,73  --> width:6720px, height:4480px -----!
+'''
+@app.route('/colorize', methods=['POST'])
+def colorize():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
+        new_result_path = os.path.join(app.config['RESULT_PATH'], image_name)
+        # Load the image
+        colorizer = get_image_colorizer(artistic=True)
+        # Create the colorizers
+        render_factor = 35
+        colorizer.plot_transformed_image(path=image_path, render_factor=render_factor, compare=False, watermarked=False)
+        image = Image.open(new_result_path)
+        image.save(new_image_path)
+        # clean the output image to free space in Disk
+        toBeRemovedPath = os.path.join(app.config['RESULT_PATH'], image_name)
+        os.remove(toBeRemovedPath)
+        # Save the colorized image
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+# This function needs more 2GB of CUDA, so it will run out of space but it works on CPU 
+@app.route('/enhance', methods=['POST'])
+def enhance():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
+        # Load the input image
+        image = cv2.imread(image_path, cv2.IMREAD_COLOR)
+        image = image * 1.0 / 255
+        image = torch.from_numpy(np.transpose(image[:, :, [2, 1, 0]], (2, 0, 1))).float()
+        image = image.unsqueeze(0)
+        image = image.to(device)
+        with torch.no_grad():
+            image = model(image).data.squeeze().float().cpu().clamp_(0, 1).numpy()
+        image = np.transpose(image[[2, 1, 0], :, :], (1, 2, 0))
+        image = (image * 255.0).round()
+        cv2.imwrite(new_image_path, image)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+#'''
+
+
+@app.route('/crop_image', methods=['POST'])
+def crop_image():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        position_x = float(request.json['mappedX'])   # position of box in X scale
+        position_y = float(request.json['mappedY'])  # position of box in Y scale
+        width = float(request.json['mappedWidth']) + 200 # position of box in X scale
+        height = float(request.json['mappedHeight']) + 200 # position of box in Y scale
+        print(position_x, position_y, width, height)
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        
+        # Crop the image based on the provided coordinates and dimensions
+        image = image.crop((position_x, position_y, position_x + width, position_y + height))
+        image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_grain', methods=['POST'])
+def adjust_grain():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        grain_value = float(request.json['grainValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = cv2.imread(image_path)
+        if grain_value <= 0.1:
+            result = image 
+        else:
+            # Get the height and width of the image
+            h, w, c = image.shape
+            # Calculate the standard deviation for the Gaussian noise.
+            std_dev = 255/(100.0/ grain_value)
+            # Generate the random noise matrix with the same shape as the image.
+            noise = np.zeros((h, w), dtype=np.uint8)
+            cv2.randn(noise, 0, std_dev)
+            # Create a grayscale version of the noise
+            noise_gray = cv2.cvtColor(noise, cv2.COLOR_GRAY2RGB)
+            noisy_image = np.uint8(noise_gray)
+            noisy_image = np.clip(image + noise_gray, 0, 255)
+            noisy_image = np.uint8(noisy_image)
+            result = noisy_image
+        cv2.imwrite(new_image_path, result)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_asp', methods=['POST'])
+def adjust_asp():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        width_value = int(request.json['widthAspValue'])
+        height_value = int(request.json['heightAspValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        img_width, img_height = image.size
+        # Calculate the scaling factor for the target width
+        scaling_factor_width = width_value / img_width
+        # Calculate the scaling factor for the target height 
+        scaling_factor_height = height_value / img_height
+        # Choose the smallest scaling factor
+        scaling_factor = min(scaling_factor_width, scaling_factor_height)
+        # Calculate the new width and height of the image
+        new_width = int(img_width* scaling_factor)
+        new_height = int(img_height * scaling_factor)
+        image = image.resize((new_width, new_height), resample=Image.LANCZOS)
+        image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_RedHueColor', methods=['POST'])
+def adjust_RedHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        RedColorHueValue = int(request.json['RedColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if RedColorHueValue <= -100:
+            target_hue = 0  # Set target hue to 0 (dark red)
+        elif RedColorHueValue >= 100:
+            target_hue = 20  # Set target hue to 30 (max orange)
+        else:
+            target_hue = 0 + ((20 - 0) / 200) * (RedColorHueValue + 100)  # Map RedColorHueValue to range [0, 30]
+
+        red_mask = ((h_arr >= 0) & (h_arr <= 10)) | ((h_arr >= 156) & (h_arr <= 180))  # Define a mask for red pixels
+        red_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the red pixels
+        red_pixels[red_mask] = True  # Set the values of the red pixels to True
+
+        h_red = h_arr.copy()  # Create a copy of the hue channel
+        h_red[red_pixels] = target_hue  # Set red pixels to the target hue value
+        h_red_img = Image.fromarray(h_red, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_red = Image.merge('HSV', (h_red_img, s, v))  # Merge channels back together
+        adjusted_image = image_hsv_red.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_OrangeHueColor', methods=['POST'])
+def adjust_OrangeHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        orange_color_value = int(request.json['OrangeColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if orange_color_value <= -100:
+            target_hue = 8  # Set target hue to 8 (dark orange)
+        elif orange_color_value >= 100:
+            target_hue = 30  # Set target hue to 22 (maximum orange)
+        else:
+            target_hue = int(8 + ((30 - 8) / 200) * (orange_color_value + 100))  # Map orange_color_value to range [8, 22]
+
+        orange_mask = (h_arr >= 8) & (h_arr <= 22)  # Define a mask for orange pixels
+        orange_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the orange pixels
+        orange_pixels[orange_mask] = True  # Set the values of the orange pixels to True
+
+        h_orange = h_arr.copy()  # Create a copy of the hue channel
+        h_orange[~orange_pixels] = h_arr[~orange_pixels]  # Set non-orange pixels to their original hue value
+        h_orange[orange_pixels] = target_hue  # Set hue value of orange pixels to the target value
+        h_orange_img = Image.fromarray(h_orange, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_orange = Image.merge('HSV', (h_orange_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_orange.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_YellowHueColor', methods=['POST'])
+def adjust_YellowHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        yellow_color_value = int(request.json['YellowColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if yellow_color_value <= -100:
+            target_hue = 30  # Set target hue to 30 (dark yellow)
+        elif yellow_color_value >= 100:
+            target_hue = 50  # Set target hue to 50 (maximum yellow)
+        else:
+            target_hue = int(30 + ((50 -30) / 200) * (yellow_color_value + 100))  # Map yellow_color_value to range [30, 50]
+
+        yellow_mask = (h_arr >= 20) & (h_arr <= 40)  # Define a mask for yellow pixels
+        yellow_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the yellow pixels
+        yellow_pixels[yellow_mask] = True  # Set the values of the yellow pixels to True
+
+        h_yellow = h_arr.copy()  # Create a copy of the hue channel
+        h_yellow[~yellow_pixels] = h_arr[~yellow_pixels]  # Set non-yellow pixels to their original hue value
+        h_yellow[yellow_pixels] = target_hue  # Set hue value of yellow pixels to the target value
+        h_yellow_img = Image.fromarray(h_yellow, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_yellow = Image.merge('HSV', (h_yellow_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_yellow.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_GreenHueColor', methods=['POST'])
+def adjust_GreenHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        green_color_value = int(request.json['GreenColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if green_color_value <= -100:
+            target_hue = 75  # Set target hue to 75 (dark green)
+        elif green_color_value >= 100:
+            target_hue = 105  # Set target hue to 90 (maximum green)
+        else:
+            target_hue = int(75 + ((105  - 75) / 200) * (green_color_value + 100))  # Map green_color_value to range [75, 90]
+
+        green_mask = ((h_arr >= 60) & (h_arr <= 120))  # Define a mask for green pixels
+        green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the green pixels
+        green_pixels[green_mask] = True  # Set the values of the green pixels to True
+
+        h_green = h_arr.copy()  # Create a copy of the hue channel
+        h_green[~green_pixels] = h_arr[~green_pixels]  # Set non-green pixels to their original hue value
+        h_green[green_pixels] = target_hue  # Set hue value of green pixels to the target value
+        h_green_img = Image.fromarray(h_green, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_green = Image.merge('HSV', (h_green_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_MagentaHueColor', methods=['POST'])
+def adjust_MagentaHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        Magenta_color_value = int(request.json['MagentaColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if Magenta_color_value <= -100:
+            target_hue = 90  # Set target hue to 75 (dark green)
+        elif Magenta_color_value >= 100:
+            target_hue = 180  # Set target hue to 105 (maximum green with a bluish tint)
+        else:
+            target_hue = int(90 + ((180 - 90) / 200) * (Magenta_color_value + 100))  # Map green_color_value to range [75, 105]
+
+        magenta_mask = ((h_arr >= 90) & (h_arr <= 140))  # Define a mask for magenta_mask pixels
+        magenta_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the green pixels
+        magenta_pixels[magenta_mask] = True  # Set the values of the green pixels to True
+
+        h_magenta = h_arr.copy()  # Create a copy of the hue channel
+        h_magenta[~magenta_pixels] = h_arr[~magenta_pixels]  # Set non-green pixels to their original hue value
+        h_magenta[magenta_pixels] = target_hue  # Set hue value of green pixels to the target value
+        h_magenta_img = Image.fromarray(h_magenta, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_magenta = Image.merge('HSV', (h_magenta_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_magenta.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_BlueHueColor', methods=['POST'])
+def adjust_BlueHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        blue_color_value = int(request.json['BlueColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if blue_color_value <= -100:
+            target_hue = 120  # Set target hue to 75 (dark green)
+        elif blue_color_value >= 100:
+            target_hue = 180  # Set target hue to 260 (maximum blue with a purplish tint)
+        else:
+            target_hue = int(120 + ((180 - 120) / 200) * (blue_color_value + 100))  # Map light_green_color_value to range [75, 260]
+
+        light_green_mask = ((h_arr >= 130) & (h_arr <= 180))  # Define a mask for light green pixels
+        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
+        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+
+        h_light_green = h_arr.copy()  # Create a copy of the hue channel
+        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
+        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
+        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_PurpulHueColor', methods=['POST'])
+def adjust_PurpulHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        purpul_color_value = int(request.json['PurpulColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if purpul_color_value <= -100:
+            target_hue = 170  # Set target hue to 75 (dark green)
+        elif purpul_color_value >= 100:
+            target_hue = 190  # Set target hue to 260 (maximum blue with a purplish tint)
+        else:
+            target_hue = int(170 + ((190 - 170) / 200) * (purpul_color_value + 100))  # Map light_green_color_value to range [75, 260]
+
+        light_green_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for light green pixels
+        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
+        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+
+        h_light_green = h_arr.copy()  # Create a copy of the hue channel
+        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
+        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
+        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+
+@app.route('/adjust_PinkHueColor', methods=['POST'])
+def adjust_PinkHueColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        pink_color_value = int(request.json['PinkColorHueValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if pink_color_value <= -100:
+            target_hue = 200  # Set target hue to 75 (purpul)
+        elif pink_color_value >= 100:
+            target_hue = 250  # Set target hue to 260 (maximum pink with a redish tint)
+        else:
+            target_hue = int(200 + ((250 - 200) / 200) * (pink_color_value + 100))  # Map  to range [75, 260]
+
+        light_green_mask = ((h_arr >= 200) & (h_arr <= 240))  # Define a mask for pixels
+        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
+        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+
+        h_light_green = h_arr.copy()  # Create a copy of the hue channel
+        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
+        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
+        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_PinkSatColor', methods=['POST'])
+def adjust_PinkSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        pink_color_value = int(request.json['PinkColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if pink_color_value <= -100:
+            target_saturation = 50  # Set target saturation to 50 (low saturation)
+        elif pink_color_value >= 100:
+            target_saturation = 255  # Set target saturation to 255 (maximum saturation)
+        else:
+            target_saturation = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        pink_mask = ((h_arr >= 200) | (h_arr <= 250))  # Define a mask for pink pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 199))  # Exclude green and blue color ranges
+        pink_mask = pink_mask & ~exclude_mask
+
+        pink_pixels = pink_mask & (s_arr > 100)  # Refine the mask to target pixels with high saturation
+
+        s_pink = s_arr.copy()  # Create a copy of the saturation channel
+        s_pink[~pink_pixels] = s_arr[~pink_pixels]  # Set non-pink pixels to their original saturation value
+        s_pink[pink_pixels] = target_saturation  # Set saturation value of pink pixels to the target value
+        s_pink_img = Image.fromarray(s_pink, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_pink = Image.merge('HSV', (h, s_pink_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_pink.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/download/<filename>', methods=['GET', 'POST'])
+def download_file(filename):
+        if request.method == 'POST':
+            new_filename_html = request.form.get('image_name')
+            filename = new_filename_html
+            file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            if file_path == '':
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
+            if file_path != '':
+                new_filename = request.form.get('textfilename')
+                image_format = request.form.get('image_format_selector').lower()
+                image_quality = request.form.get('image_quality_selector')
+                image_dpi = request.form.get('image_dpi_selector')
+                print(image_dpi)
+                if new_filename == '':
+                    new_filename = "Your_image_from" + "_NotPHOTOSHOP"
+                else:
+                    new_filename = new_filename
+                # Split the image format 
+                os.path.splitext(filename)
+                # Add the new name and format to the image
+                filename = new_filename + image_format
+                # Join the image 
+                output_path = os.path.join(app.config['DOWNLOAD_FOLDER'], filename)
+                # Reading the end-user image
+                img = Image.open(file_path)
+                # Convert the image to RGB mode
+                img = img.convert('RGB')
+                # Reading the logo image and converting it to RGB
+                logo = Image.open(LOGO_COPYWRITE).convert('RGBA')
+                # Calcualting the scaling factor to keep the aspict ratio 
+                logo_width, logo_height = logo.size
+                scaling_factor_width = 200 / logo_width
+                # Calculate the scaling factor for the target height
+                scaling_factor_height = 200 / logo_height
+                # Choose the smallest scaling factor
+                scaling_factor = min(scaling_factor_width, scaling_factor_height)
+                # Calculate the new width and height of the logo
+                new_logo_width = int(logo_width * scaling_factor)
+                new_logo_height = int(logo_height * scaling_factor)
+                logo = logo.resize((new_logo_width, new_logo_height), resample=Image.LANCZOS)
+                # Create a new blank image with the same size as the big image
+                result_image = Image.new("RGB", img.size, (255, 255, 255))
+                # Paste the big image onto the new image
+                result_image.paste(img, (0, 0))
+                # Paste the small image onto the new image in the bottom left corner
+                small_icon_position = (15, result_image.size[1] - new_logo_height)
+                result_image.paste(logo, small_icon_position, logo)
+                # Save the new image
+                if image_quality is None:
+                    new_quality = int(100)
+                else:
+                    new_quality = int(image_quality.strip('%'))
+                dpi =  int(image_dpi.strip('dpi'))
+                output_img = result_image.save(output_path, quality=new_quality, dpi=(dpi, dpi))
+            else:
+                raise ResourceNotFoundError("Image Resource could not be retuned")  
+        return send_file(output_path, output_img, as_attachment=True)
+
+
+
+
+if __name__ == "__main__":
+    app.run(debug=True)
