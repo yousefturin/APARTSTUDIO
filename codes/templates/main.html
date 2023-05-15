@@ -203,6 +203,17 @@
                                                 <option value=".jpeg" id="JPEG">jpeg</option>
                                             </select>
                                         </div>
+                                        <div class="downloaddpitextwrap">
+                                            <div class="dpidpitext">
+                                                <n>DPI</n>
+                                            </div>
+                                            <select id="image_dpi_selector" name="image_dpi_selector" title=" Image Dot Per Inch Selector">
+                                                <option value="300" id="highQuality">300dpi</option>
+                                                <option value="150" id="generalQuality">150dpi</option>
+                                                <option value="96" id="standerQuality">96dpi</option>
+                                                <option value="72" id="lowQuality">72dpi</option>
+                                            </select>
+                                        </div>
                                             <div class="downloadqualitywrap">
                                                 <div class="qualityqualitytext">
                                                     <n>Quality</n>
@@ -226,7 +237,7 @@
                                         <input type="text" id="textfilename" name="textfilename" placeholder="Enter File name">
                                     </div>
                                         <div class="downloadokay">
-                                            <button class="material-symbols-outlined" title="Premium" id="savebtnfordownload">
+                                            <button class="material-symbols-outlined" title="Download" id="savebtnfordownload">
                                                 done
                                             </button>
                                         </div>
@@ -271,7 +282,7 @@
                                 <div class="openscreendownleft">
                                         <form method="POST" action="/upload" enctype="multipart/form-data" id="form_open" >
                                             <div class="wrapopenname">
-                                                <input type="file" name="file"  id="fileopen" style="display: none;">
+                                                <input type="file" name="file"  id="fileopen" style="display: none;"accept=".png, .jpeg, .jpg">
                                                 <label for="fileopen" id="fileopenlable">Select Image</label>
                                             </div>
 
@@ -342,33 +353,51 @@
                 <div class="premscreen">
                     <div class="premscreentitle">
                         <a>
-                            Premium
+                            Plan
                         </a>
                     </div>
                         <div class="premscreenup">
                             <div class="wrapdownpremscreenpreview">
+                                <div class="freeplanwrapper">
+                                    <a>
+                                        Free Plan
+                                    </a>
+                                    <hr>
+                                    <div class="wrapPointsofFree">
+                                        <li>Basic Image Editing.</li>
+                                        <li>Watermark.</li>
+                                        <li>Slower Procces.</li>
+                                        <li>Colorize Not Available.</li>
+                                        <li>Enhance  Not Available.</li>
+                                        <li>1 GB Cloud Storage</li>
+                                        <li>Download only in JPG.</li>
+                                    </div>
+                                    <hr>
 
+
+                                </div>
+                                <div class="payedplanewrapper">
+                                    <a>
+                                        Premium Plan
+                                    </a>
+                                    <hr>
+                                    <div class="wrapPointsofPremium">
+                                        <li>Advance Image Editing.</li>
+                                        <li>No Watermark.</li>
+                                        <li>Faster Procces.</li>
+                                        <li>Colorize Available.</li>
+                                        <li>Enhance  Available.</li>
+                                        <li>10 GB Cloud Storage</li>
+                                        <li>Download in any Format.</li>
+                                    </div>
+                                    <hr>
+
+                                </div>
                             </div>
 
                         </div>
 
-                            <div class="downloadscreendown">
-                                <div class="downloadscreendownwrap">
-                                    <div class="downloadscreendownleft">
-                                        <div class="downloadname">
-                                        </div>
-                                            <div class="downloadokay">
-                                                <button class="material-symbols-outlined" title="Premium" id="savebtnforpremium">
-                                                    done
-                                                </button>
-                                            </div>
-                                    </div>
-                                        <div class="downloadscreendownright">
-
-                                        </div>
-                                </div>
-
-                            </div>
+ 
 
                     </div>
                 </div>
@@ -446,7 +475,7 @@
                                             </div>
                                         </div>
                                             <div class="downloadokay">
-                                                <button class="material-symbols-outlined" title="Premium" id="savebtnforshare">
+                                                <button class="material-symbols-outlined" title="Close" id="savebtnforshare">
                                                     done
                                                 </button>
                                             </div>
@@ -471,7 +500,7 @@
                     <div class="toppanewrapleft">
                         <div class="wraplogo">
                             <a href="/"> 
-                                <img src="/static/images/img_icons.png" alt="logo" class="image-style" title="Non of your Business, Keep Going Bro and Remove Your Pointer From Me">
+                                <img src="/static/images/img_icons.png" alt="logo" class="image-style" title="Non of your Business, Keep Going Bro and Remove Your Pointer From Me" style="cursor: pointer;">
                                             </a>
                         </div>
                     </div>
@@ -500,7 +529,7 @@
                                     <div class="leftbuttompanewrapstar">
                                         <button class="material-symbols-outlined" id="premium" title="Premium">
                                         star
-                                        <h id="topbuttoms">Premium</h>
+                                        <h id="topbuttoms">Plan</h>
                                         </button>
                                     </div>
                                         <div class="leftbuttompanewrapdownload">
@@ -519,7 +548,7 @@
                             </div>
                 </div>
             </div>
-
+            
             <div class="d-flex">
 
               <div class="leftpane">
@@ -587,13 +616,15 @@
                     <img id="image-canvas" name="image-canvas" src="{{ url_for('display_image',filename=filename )}}" >
                     {% endif %}
                 </div>
+                <!--
                 <script>
                     const wrapDiv = document.querySelector('.wrapmiddlepane');
                     wrapDiv.addEventListener('contextmenu', (event) => {
                       event.preventDefault();
-                      alert('Right-click is disabled on this image.');
+                      //alert('Right-click is disabled on this image.');
                     });
                   </script>
+                  -->
               </div>
               <div class="rightpane"> 
                 <div class="rightdivider">
@@ -661,8 +692,10 @@
                                             <div class="wraprpmmiddle4">
                                                 <div class="wraprpmmiddle7">
                                                     <div class="wraprpmmiddle5">
+                                                        <form id="exposure-form">
                                                         <input type="range" min="-5.00" max="5.00" value="0" step="0.01" class="slider" 
                                                             id="EXPO"oninput="rangeValueEXPO.innerText = this.value" title="Exposure" onchange="getExposure()">
+                                                        </form>
                                                             <form id="contrast-form"> 
                                                             <input type="range" min="-100" max="100" value="0" class="slider" 
                                                                 id="CONT" name="CONT" oninput="rangeValueCONT.innerText = this.value" title="Contrast" onchange="getContrast()">
@@ -696,6 +729,7 @@
                                                 </div>    
                                             </div>
                                     </div>
+
                             </div> 
                         </div>
                     
@@ -738,6 +772,178 @@
                                                     </div>
                                                     
                                             </div>
+                                    </div>
+                                    <div class="colorpiker">
+                                        <div class="wrapcolorpiker">
+                                            <button class="ColorBtn clicked" id="redColorBtn"></button>
+                                            <button class="ColorBtn" id="orangeColorBtn"></button>
+                                            <button class="ColorBtn" id="yellowColorBtn"></button>
+                                            <button class="ColorBtn" id="greenColorBtn"></button>
+                                            <button class="ColorBtn" id="magentaColorBtn"></button>
+                                            <button class="ColorBtn" id="blueColorBtn"></button>
+                                            <button class="ColorBtn" id="purpuleColorBtn"></button>
+                                            <button class="ColorBtn" id="pinkColorBtn"></button>
+                                        </div>
+                                    </div>
+                                    <div class="ColorDiv active" id="redColorDiv">
+                                        <div class="wrapRedhue">
+                                            <p id="RedHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="RedHue" name="RedHue" oninput="rangeValueRedHue.innerText = this.value" title="Red Hue" onchange="getRedHueColor()">
+                                            <p id="rangeValueRedHue">0</p>
+                                        </div>
+                                        <div class="wrapRedSat">
+                                            <p id="RedSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="RedSat" name="RedSat" oninput="rangeValueRedSat.innerText = this.value" title="Red Sat">
+                                            <p id="rangeValueRedSat">0</p>
+                                        </div>
+                                        <div class="wrapRedLum">
+                                            <p id="RedLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="RedLum" name="RedLum" oninput="rangeValueRedLum.innerText = this.value" title="Red Lum">
+                                            <p id="rangeValueRedLum">0</p>
+                                        </div>                                    
+                                      </div>
+                                    <div class="ColorDiv" id="orangeColorDiv">
+                                        <div class="wrapOrangehue">
+                                            <p id="OrangeHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="OrangeHue" name="OrangeHue" oninput="rangeValueOrangeHue.innerText = this.value" title="Orange Hue" onchange="getOrangeHueColor()">
+                                            <p id="rangeValueOrangeHue">0</p>
+                                        </div>
+                                        <div class="wrapOrangeSat">
+                                            <p id="OrangeSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="OrangeSat" name="OrangeSat" oninput="rangeValueOrangeSat.innerText = this.value" title="Orange Sat">
+                                            <p id="rangeValueOrangeSat">0</p>
+                                        </div>
+                                        <div class="wrapOrangeLum">
+                                            <p id="OrangeLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="OrangeLum" name="OrangeLum" oninput="rangeValueOrangeLum.innerText = this.value" title="Orange Lum">
+                                            <p id="rangeValueOrangeLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="yellowColorDiv">
+                                        <div class="wrapYellowhue">
+                                            <p id="YellowHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="YellowHue" name="YellowHue" oninput="rangeValueYellowHue.innerText = this.value" title="Yellow Hue" onchange="getYellowHueColor()">
+                                            <p id="rangeValueYellowHue">0</p>
+                                        </div>
+                                        <div class="wrapYellowSat">
+                                            <p id="YellowSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="YellowSat" name="YellowSat" oninput="rangeValueYellowSat.innerText = this.value" title="Yellow Sat">
+                                            <p id="rangeValueYellowSat">0</p>
+                                        </div>
+                                        <div class="wrapYellowLum">
+                                            <p id="YellowLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="YellowLum" name="YellowLum" oninput="rangeValueYellowLum.innerText = this.value" title="Yellow Lum">
+                                            <p id="rangeValueYellowLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="greenColorDiv">
+                                        <div class="wrapGreenhue">
+                                            <p id="GreenHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="GreenHue" name="GreenHue" oninput="rangeValueGreenHue.innerText = this.value" title="Green Hue" onchange="getGreenHueColor()">
+                                            <p id="rangeValueGreenHue">0</p>
+                                        </div>
+                                        <div class="wrapGreenSat">
+                                            <p id="GreenSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="GreenSat" name="GreenSat" oninput="rangeValueGreenSat.innerText = this.value" title="Green Sat">
+                                            <p id="rangeValueGreenSat">0</p>
+                                        </div>
+                                        <div class="wrapGreenLum">
+                                            <p id="GreenLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="GreenLum" name="GreenLum" oninput="rangeValueGreenLum.innerText = this.value" title="Green Lum">
+                                            <p id="rangeValueGreenLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="magentaColorDiv">
+                                        <div class="wrapMagentahue">
+                                            <p id="MagentaHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="MagentaHue" name="MagentaHue" oninput="rangeValueMagentaHue.innerText = this.value" title="Magenta Hue" onchange="getMagentaHueColor()">
+                                            <p id="rangeValueMagentaHue">0</p>
+                                        </div>
+                                        <div class="wrapMagentaSat">
+                                            <p id="MagentaSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="MagentaSat" name="MagentaSat" oninput="rangeValueMagentaSat.innerText = this.value" title="Magenta Sat">
+                                            <p id="rangeValueMagentaSat">0</p>
+                                        </div>
+                                        <div class="wrapMagentaLum">
+                                            <p id="MagentaLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="MagentaLum" name="MagentaLum" oninput="rangeValueMagentaLum.innerText = this.value" title="Magenta Lum">
+                                            <p id="rangeValueMagentaLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="blueColorDiv">
+                                        <div class="wrapBluehue">
+                                            <p id="BlueHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="BlueHue" name="BlueHue" oninput="rangeValueBlueHue.innerText = this.value" title="Blue Hue" onchange="getBlueHueColor()">
+                                            <p id="rangeValueBlueHue">0</p>
+                                        </div>
+                                        <div class="wrapBlueSat">
+                                            <p id="BlueSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="BlueSat" name="BlueSat" oninput="rangeValueBlueSat.innerText = this.value" title="Blue Sat">
+                                            <p id="rangeValueBlueSat">0</p>
+                                        </div>
+                                        <div class="wrapBlueLum">
+                                            <p id="BlueLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="BlueLum" name="BlueLum" oninput="rangeValueBlueLum.innerText = this.value" title="Blue Lum">
+                                            <p id="rangeValueBlueLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="purpuleColorDiv">
+                                        <div class="wrapPurpulhue">
+                                            <p id="PurpulHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PurpulHue" name="PurpulHue" oninput="rangeValuePurpulHue.innerText = this.value" title="Purpul Hue" onchange="getPurpulHueColor()">
+                                            <p id="rangeValuePurpulHue">0</p>
+                                        </div>
+                                        <div class="wrapPurpulSat">
+                                            <p id="PurpulSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PurpulSat" name="PurpulSat" oninput="rangeValuePurpulSat.innerText = this.value" title="Purpul Sat">
+                                            <p id="rangeValuePurpulSat">0</p>
+                                        </div>
+                                        <div class="wrapPurpulLum">
+                                            <p id="PurpulLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PurpulLum" name="PurpulLum" oninput="rangeValuePurpulLum.innerText = this.value" title="Purpul Lum">
+                                            <p id="rangeValuePurpulLum">0</p>
+                                        </div>  
+                                    </div>
+                                    <div class="ColorDiv" id="pinkColorDiv">
+                                        <div class="wrapPinkhue">
+                                            <p id="PinkHueName">Hue</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PinkHue" name="PinkHue" oninput="rangeValuePinkHue.innerText = this.value" title="Pink Hue" onchange="getPinkHueColor()">
+                                            <p id="rangeValuePinkHue">0</p>
+                                        </div>
+                                        <div class="wrapPinkSat">
+                                            <p id="PinkSatName">Saturation</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PinkSat" name="PinkSat" oninput="rangeValuePinkSat.innerText = this.value" title="Pink Sat" onchange="getPinkSatColor()">
+                                            <p id="rangeValuePinkSat">0</p>
+                                        </div>
+                                        <div class="wrapPinkLum">
+                                            <p id="PinkLumName">Luminance</p>
+                                            <input type="range" min="-100" max="100" value="0" class="slider" 
+                                            id="PinkLum" name="PinkLum" oninput="rangeValuePinkLum.innerText = this.value" title="Pink Lum">
+                                            <p id="rangeValuePinkLum">0</p>
+                                        </div>  
                                     </div>
                             </div>
                         </div>
@@ -792,7 +998,7 @@
                                         <div class="wraprpbmiddle2">
                                             <div class="wraprpbmiddle19">
                                                 <div class="wraprpbniddle4">
-                                                    <input type="number" id="text-size" name="text-size" min="2" max="128" step="2" value="12"title="Font Size">
+                                                    <input type="number" id="text-size" name="text-size" min="2" max="512" step="2" value="24"title="Font Size">
                                                 </div>
                                                     <div class="wraprpbmiddle5">
                                                         <span class="material-symbols-outlined" id="icon-format_size" >
@@ -804,27 +1010,28 @@
                                             <div class="wraprpbmiddle3">
                                                 <div class="wraprpbmiddle20">
                                                     <div class="wraprpbmiddle6">
-                                                        <input type="number" id="text-upper-space" name="text-upper-space" min="14" max="128" step="2" value="14" title="Text Upper Spacing">
+                                                        <input type="color" name="colorpicker" id="colorpicker" value="#000000" title="Color Picker">
                                                     </div>
                                                         <div class="wraprpbmiddle7">
                                                             <span class="material-symbols-outlined">
-                                                                format_line_spacing
+                                                                palette
                                                                 </span>
                                                         </div>
                                                 </div>
                                             </div>
                                 </div>
                                 <div class="wraprpbmiddle11">
-                                    <div class="wraprpbmiddle12">
-                                        <div class="wraprpbmiddle16">
-                                            <input type="number" id="text-left-right-space" name="text-left-right-space" min="0" max="128" step="2" value="0" title="Word Spacing">
+                                    <div class="wrapbbottondowninside2">
+                                        <div class="wrapbbottomdowntext2">
+                                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2"  value="0">
                                         </div>
-                                            <div class="wraprpbmiddle17">
-                                                <span class="material-symbols-outlined">
-                                                    align_justify_space_between
+                                            <div class="wrapbbottondownicon2">
+                                                <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
+                                                    rotate_right
                                                     </span>
                                             </div>
                                     </div>
+
                                         <div class="wraprpbmiddle13">
                                             <div class="wraprpbmiddle14">
                                                 <input type="number" id="text-wrap" name="text-wrap" min="4" max="128" step="2" value="4" title="Single Word Spacing">
@@ -878,16 +1085,18 @@
                                                     </span>
                                             </div>
                                     </div>
-                                    <div class="wrapbbottondowninside2">
-                                        <div class="wrapbbottomdowntext2">
-                                            <input type="number" id="text-rotation" name="text-rotation" min="0" max="360" step="2"  value="0">
+                                    <div class="wraprpbmiddle12">
+                                        <div class="wraprpbmiddle16">
+                                            <input type="number" id="text-left-right-space" name="text-left-right-space" min="0" max="128" step="2" value="0" title="Word Spacing">
                                         </div>
-                                            <div class="wrapbbottondownicon2">
-                                                <span class="material-symbols-outlined" id="icon-text-rotation-rotation">
-                                                    rotate_right
+                                            <div class="wraprpbmiddle17">
+                                                <span class="material-symbols-outlined">
+                                                    align_justify_space_between
                                                     </span>
                                             </div>
                                     </div>
+
+
                                 </div>
                         </div>
                     </div>
@@ -900,17 +1109,26 @@
             </div>
           </div>
           <script 
+                src="https://cdnjs.cloudflare.com/ajax/libs/croppie/2.6.5/croppie.min.js">
+            </script>
+          <script 
                 src="{{url_for('static', filename='styles/slider.js')}}">
           </script>
           <!--<script src="slider.js"></script>-->
           <script>
             // get the filename from the "src" attribute of the "image-canvas" element on first 
             // page load so the user if uploaded image and did nothing to it and presses download it will get the original image 
-            const imgSrc = document.getElementById('image-canvas').src;
-            const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
-            console.log(imgName)
-            // set the value of the hidden input field to the filename
-            document.getElementById('image_name').value = imgName;
+            
+            const imgCanvas = document.getElementById('image-canvas');
+            if (imgCanvas && imgCanvas.src) {
+              const imgSrc = imgCanvas.src;
+              const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+              console.log(imgName)
+              // set the value of the hidden input field to the filename
+              document.getElementById('image_name').value = imgName;
+            } else {
+              console.log('Image source not found');
+            }
         </script>
           
     </body>
