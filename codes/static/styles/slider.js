@@ -1,3 +1,4 @@
+
 var cropButton = document.getElementById("crop_rotate_button");
 var textBox = null; // initialize textBox variable to null
 
@@ -190,43 +191,6 @@ function addcropBoxToCanvas() {
   canvas.parentNode.appendChild(textBox);
   return textBox;
 }
-
-
-
-const colorButtons = document.querySelectorAll('.ColorBtn');
-const colorDivs = document.querySelectorAll('.ColorDiv');
-
-colorButtons.forEach((button) => {
-  button.addEventListener('click', () => {
-    if (!button.classList.contains('clicked')) {
-      // Remove 'clicked' class from all other buttons
-      colorButtons.forEach((btn) => {
-        if (btn !== button && btn.classList.contains('clicked')) {
-          btn.classList.remove('clicked');
-        }
-      });
-
-      // Toggle 'clicked' class on clicked button
-      button.classList.add('clicked');
-
-      // Hide all color divs
-      colorDivs.forEach((div) => {
-        div.classList.remove('active');
-      });
-
-      // Show corresponding color div
-      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
-      colorDiv.classList.add('active');
-    } else {
-      // Toggle 'clicked' class on clicked button
-      button.classList.remove('clicked');
-
-      // Hide corresponding color div
-      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
-      colorDiv.classList.remove('active');
-    }
-  });
-});
 
 
 
@@ -504,6 +468,203 @@ function updateSize() {
     });
   }
 }
+
+
+
+const colorButtons = document.querySelectorAll('.ColorBtn');
+const colorDivs = document.querySelectorAll('.ColorDiv');
+const aspectButton = document.getElementById('aspect_ratio_button');
+const BlurButton = document.getElementById('blur_on_button');
+const GrainButton = document.getElementById('grain_button');
+const EnhanceButton = document.getElementById('auto_awesome_button');
+const BWButton = document.getElementById('camera_roll_button');
+colorButtons.forEach((button) => {
+  button.addEventListener('click', () => {
+    if (!button.classList.contains('clicked')) {
+      // Remove 'clicked' class from all other buttons
+      colorButtons.forEach((btn) => {
+        if (btn !== button && btn.classList.contains('clicked')) {
+          btn.classList.remove('clicked');
+        }
+      });
+
+      // Toggle 'clicked' class on clicked button
+      button.classList.add('clicked');
+
+      // Hide all color divs
+      colorDivs.forEach((div) => {
+        div.classList.remove('active');
+      });
+
+      // Show corresponding color div
+      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
+      colorDiv.classList.add('active');
+    } else {
+      // Toggle 'clicked' class on clicked button
+      button.classList.remove('clicked');
+
+      // Hide corresponding color div
+      const colorDiv = document.getElementById(`${button.id.replace('Btn', 'Div')}`);
+      colorDiv.classList.remove('active');
+    }
+  });
+});
+
+function handleKeyPress(event) {
+  const target = event.target;
+  
+  // Check if the event originated from an input element
+  const isTextInput = target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+  
+  // If it's a text input, exit the function and allow normal typing
+  if (isTextInput) {
+    return;
+  }
+  if (event.key === 't' || event.key === 'T') {
+    formatButton.click();
+  }else if (event.key === 'c' || event.key === 'C') {
+    cropButton.click();
+  }else if (event.key === 'a' || event.key === 'A') {
+    aspectButton.click();
+  }else if (event.key === 'b' || event.key === 'B') {
+    BlurButton.click();
+  }else if (event.key === 'g' || event.key === 'G') {
+    GrainButton.click();
+  }else if (event.key === 'e' || event.key === 'E') {
+    EnhanceButton.click();
+  }else if (event.key === 'w' || event.key === 'W') {
+    BWButton.click();
+  }
+  
+}
+
+document.addEventListener('keydown', handleKeyPress);
+
+
+const imageElement = document.getElementById('image-canvas');
+let zoomLevel = 1;
+let imagePositionX = 0;
+let imagePositionY = 0;
+let zoomDisplayTimeout = null;
+let zoomTimeout = null;
+let isDisplayVisible = false; 
+
+// Create the zoom percentage display element
+const zoomDisplay = document.createElement('div');
+zoomDisplay.style.position = 'fixed';
+zoomDisplay.style.top = '50%';
+zoomDisplay.style.left = '50%';
+zoomDisplay.style.transform = 'translate(-50%, -50%)';
+zoomDisplay.style.padding = '10px';
+zoomDisplay.style.background = 'rgba(0, 0, 0, 0.5)';
+zoomDisplay.style.color = '#fff';
+zoomDisplay.style.fontFamily = 'Arial, sans-serif';
+zoomDisplay.style.fontSize = '16px';
+zoomDisplay.style.lineHeight = '1';
+zoomDisplay.style.borderRadius = '5px';
+zoomDisplay.style.pointerEvents = 'none';
+zoomDisplay.style.display = 'none'; 
+document.body.appendChild(zoomDisplay);
+
+function showZoomPercentage() {
+  clearTimeout(zoomDisplayTimeout);
+  clearTimeout(zoomTimeout);
+
+  // Check if the zoom display is already visible
+  if (isDisplayVisible) {
+    return;
+  }
+
+  zoomDisplay.style.display = 'block';
+  zoomDisplay.style.opacity = '1';
+  isDisplayVisible = true;
+
+  // Show the zoom percentage display for 2 seconds
+  zoomDisplayTimeout = setTimeout(() => {
+    zoomDisplay.style.opacity = '0';
+    zoomDisplay.style.transition = 'opacity 1s';
+
+    zoomTimeout = setTimeout(() => {
+      zoomDisplay.style.display = 'none';
+      isDisplayVisible = false;
+    }, 1000);
+  }, 2000);
+}
+
+function updateZoomDisplay() {
+  zoomDisplay.textContent = `Zoom: ${Math.round(zoomLevel * 100)}%`;
+}
+function hideZoomDisplay() {
+  clearTimeout(zoomDisplayTimeout);
+  clearTimeout(zoomTimeout);
+  
+  if (!isDisplayVisible) {
+    return;
+  }
+  zoomDisplay.style.display = 'none';
+  isDisplayVisible = false;
+}
+
+function handleZoom(event) {
+  clearTimeout(zoomTimeout);
+
+  // Check if the mouse is over the image element
+  const isPlusKey = event.key === '=' && event.code === 'Equal';
+  const isMinusKey = event.key === '-' && event.code === 'Minus';
+
+  if (isPlusKey || isMinusKey) {
+    event.preventDefault(); // Prevent default zoom behavior
+    // Zoom in
+    if ((event.deltaY < 0) || isPlusKey) {
+      zoomLevel += 0.1;
+    }
+    // Zoom out
+    else if ((event.deltaY > 0) || isMinusKey) {
+      zoomLevel -= 0.1;
+      if (zoomLevel < 0.1) {
+        zoomLevel = 0.1;
+      }
+    }
+
+    imageElement.style.transform = `scale(${zoomLevel})`;
+    updateZoomDisplay();
+    showZoomPercentage();
+  }
+
+  // Check if the image is zoomed in
+  if (zoomLevel > 1) {
+    const arrowKeys = ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'];
+
+    // Move the image using arrow keys
+    if (arrowKeys.includes(event.key)) {
+      const moveStep = 10; // Adjust the move step as needed
+
+      if (event.key === 'ArrowUp') {
+        imagePositionY += moveStep;
+      } else if (event.key === 'ArrowLeft') {
+        imagePositionX += moveStep;
+      } else if (event.key === 'ArrowDown') {
+        imagePositionY -= moveStep;
+        event.preventDefault(); // Prevent default behavior for ArrowDown
+      } else if (event.key === 'ArrowRight') {
+        imagePositionX -= moveStep;
+      }
+
+      imageElement.style.transform = `scale(${zoomLevel}) translate(${imagePositionX}px, ${imagePositionY}px)`;
+    }
+
+    // Reset the timeout to hide the zoom display after 2 seconds
+    clearTimeout(zoomTimeout);
+    zoomTimeout = setTimeout(hideZoomDisplay, 2000);
+  } else {
+    hideZoomDisplay();
+  }
+}
+
+
+document.addEventListener('wheel', handleZoom);
+document.addEventListener('keydown', handleZoom);
+
 
 
 function shareImageOnTwitter() {
@@ -1151,6 +1312,949 @@ function getPinkSatColor() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PinkColorSatValue: PinkColorSatValue }));
 }
+
+function getPurpulSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var PurpulColorSatValue = document.getElementById('PurpulSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_PurpulSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PurpulColorSatValue: PurpulColorSatValue }));
+}
+
+
+function getBlueSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var BlueColorSatValue = document.getElementById('BlueSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_BlueSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, BlueColorSatValue: BlueColorSatValue }));
+}
+
+
+function getMagentaSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var MagentaColorSatValue = document.getElementById('MagentaSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_MagentaSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, MagentaColorSatValue: MagentaColorSatValue }));
+}
+
+
+function getGreenSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var GreenColorSatValue = document.getElementById('GreenSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_GreenSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, GreenColorSatValue: GreenColorSatValue }));
+}
+
+
+
+function getYellowSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var YellowColorSatValue = document.getElementById('YellowSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_YellowSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, YellowColorSatValue: YellowColorSatValue }));
+}
+
+
+
+
+function getOrangeSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var OrangeColorSatValue = document.getElementById('OrangeSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_OrangeSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, OrangeColorSatValue: OrangeColorSatValue }));
+}
+
+
+function getRedSatColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var RedColorSatValue = document.getElementById('RedSat').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_RedSatColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, RedColorSatValue: RedColorSatValue }));
+}
+
+
+function getPinkLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var PinkColorLumValue = document.getElementById('PinkLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_PinkLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PinkColorLumValue: PinkColorLumValue }));
+}
+
+
+function getPurpulLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var PurpulColorLumValue = document.getElementById('PurpulLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_PurpulLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, PurpulColorLumValue: PurpulColorLumValue }));
+}
+
+
+
+
+function getBlueLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var BlueColorLumValue = document.getElementById('BlueLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_BlueLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, BlueColorLumValue: BlueColorLumValue }));
+}
+
+
+
+function getMagentaLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var MagentaColorLumValue = document.getElementById('MagentaLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_MagentaLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, MagentaColorLumValue: MagentaColorLumValue }));
+}
+
+
+
+function getGreenLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var GreenColorLumValue = document.getElementById('GreenLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_GreenLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, GreenColorLumValue: GreenColorLumValue }));
+}
+
+
+
+
+function getYellowLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var YellowColorLumValue = document.getElementById('YellowLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_YellowLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, YellowColorLumValue: YellowColorLumValue }));
+}
+
+
+
+
+function getOrangeLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var OrangeColorLumValue = document.getElementById('OrangeLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_OrangeLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, OrangeColorLumValue: OrangeColorLumValue }));
+}
+
+
+
+function getRedLumColor() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var RedColorLumValue = document.getElementById('RedLum').value;
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/adjust_RedLumColor', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL; // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas 
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imgSrc;
+
+    }
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, RedColorLumValue: RedColorLumValue }));
+}
+
+
 
 function getContrast() {
   var imageSrc = document.getElementById('image-canvas').src;
