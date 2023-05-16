@@ -975,25 +975,121 @@ def adjust_RedHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if RedColorHueValue <= -100:
-            target_hue = 0  # Set target hue to 0 (dark red)
+            target_hue = 0  # Set target hue to 8 (dark red)
         elif RedColorHueValue >= 100:
-            target_hue = 20  # Set target hue to 30 (max orange)
+            target_hue = 20  # Set target hue to 22 (maximum red)
         else:
-            target_hue = 0 + ((20 - 0) / 200) * (RedColorHueValue + 100)  # Map RedColorHueValue to range [0, 30]
+            target_hue = int(0 + ((20 - 0) / 200) * (RedColorHueValue + 100))  # Map red to range [8, 22]
 
-        red_mask = ((h_arr >= 0) & (h_arr <= 10)) | ((h_arr >= 156) & (h_arr <= 180))  # Define a mask for red pixels
+        red_mask = (h_arr >= 0) & (h_arr <= 20)  # Define a mask for orange pixels
         red_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the red pixels
         red_pixels[red_mask] = True  # Set the values of the red pixels to True
 
         h_red = h_arr.copy()  # Create a copy of the hue channel
-        h_red[red_pixels] = target_hue  # Set red pixels to the target hue value
+        h_red[~red_pixels] = h_arr[~red_pixels]  # Set non-red pixels to their original hue value
+        h_red[red_pixels] = target_hue  # Set hue value of red pixels to the target value
         h_red_img = Image.fromarray(h_red, mode='L')  # Convert the modified hue array back to an Image object
         image_hsv_red = Image.merge('HSV', (h_red_img, s, v))  # Merge channels back together
+
         adjusted_image = image_hsv_red.convert('RGB')
         adjusted_image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_RedSatColor', methods=['POST'])
+def adjust_RedSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        red_color_value = int(request.json['RedColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if red_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif red_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (red_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (red_color_value + 100))
+
+        red_mask = ((h_arr >= 0) | (h_arr <= 20))  # Define a mask for pink pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 21) & (h_arr <= 330))  # Exclude green and blue color ranges
+        red_mask = red_mask & ~exclude_mask
+
+        low_saturation_pixels = red_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = red_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_red = s_arr.copy()  # Create a copy of the saturation channel
+        s_red[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_red[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+        s_red_img = Image.fromarray(s_red, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_red = Image.merge('HSV', (h, s_red_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_red.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_RedLumColor', methods=['POST'])
+def adjust_RedLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        red_color_value = int(request.json['RedColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if red_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif red_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((red_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        red_mask = ((h_arr >= 0) & (h_arr <= 20))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_red = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_red[red_mask] = np.clip(v_arr[red_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_red_img = Image.fromarray(v_red.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_red = Image.merge('HSV', (h, s, v_red_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_red.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
 
 
 @app.route('/adjust_OrangeHueColor', methods=['POST'])
@@ -1011,13 +1107,13 @@ def adjust_OrangeHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if orange_color_value <= -100:
-            target_hue = 8  # Set target hue to 8 (dark orange)
+            target_hue = 20  # Set target hue to 8 (dark orange)
         elif orange_color_value >= 100:
-            target_hue = 30  # Set target hue to 22 (maximum orange)
+            target_hue = 40  # Set target hue to 22 (maximum orange)
         else:
-            target_hue = int(8 + ((30 - 8) / 200) * (orange_color_value + 100))  # Map orange_color_value to range [8, 22]
+            target_hue = int(20 + ((40 - 20) / 200) * (orange_color_value + 100))  # Map orange_color_value to range [8, 22]
 
-        orange_mask = (h_arr >= 8) & (h_arr <= 22)  # Define a mask for orange pixels
+        orange_mask = (h_arr >= 20) & (h_arr <= 40)  # Define a mask for orange pixels
         orange_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the orange pixels
         orange_pixels[orange_mask] = True  # Set the values of the orange pixels to True
 
@@ -1032,6 +1128,102 @@ def adjust_OrangeHueColor():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_OrangeSatColor', methods=['POST'])
+def adjust_OrangeSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        orange_color_value = int(request.json['OrangeColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if orange_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif orange_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (orange_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (orange_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        orange_mask = ((h_arr >= 20) | (h_arr <= 40))  # Define a mask for orange pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 19))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 41) & (h_arr <= 330)) 
+        orange_mask = orange_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = orange_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = orange_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_orange = s_arr.copy()  # Create a copy of the saturation channel
+        s_orange[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_orange[high_saturation_pixels] = target_saturation_high 
+        s_orange_img = Image.fromarray(s_orange, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_orange = Image.merge('HSV', (h, s_orange_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_orange.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_OrangeLumColor', methods=['POST'])
+def adjust_OrangeLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        orange_color_value = int(request.json['OrangeColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if orange_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif orange_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((orange_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        orange_mask = ((h_arr >= 20) & (h_arr <= 40))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_orange = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_orange[orange_mask] = np.clip(v_arr[orange_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_orange_img = Image.fromarray(v_orange.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_orange = Image.merge('HSV', (h, s, v_orange_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_orange.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
 
 
 @app.route('/adjust_YellowHueColor', methods=['POST'])
@@ -1049,13 +1241,13 @@ def adjust_YellowHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if yellow_color_value <= -100:
-            target_hue = 30  # Set target hue to 30 (dark yellow)
+            target_hue = 40  # Set target hue to 30 (dark yellow)
         elif yellow_color_value >= 100:
-            target_hue = 50  # Set target hue to 50 (maximum yellow)
+            target_hue = 55  # Set target hue to 50 (maximum yellow)
         else:
-            target_hue = int(30 + ((50 -30) / 200) * (yellow_color_value + 100))  # Map yellow_color_value to range [30, 50]
+            target_hue = int(40 + ((55 -40) / 200) * (yellow_color_value + 100))  # Map yellow_color_value to range [30, 50]
 
-        yellow_mask = (h_arr >= 20) & (h_arr <= 40)  # Define a mask for yellow pixels
+        yellow_mask = (h_arr >= 40) & (h_arr <= 55)  # Define a mask for yellow pixels
         yellow_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the yellow pixels
         yellow_pixels[yellow_mask] = True  # Set the values of the yellow pixels to True
 
@@ -1070,6 +1262,99 @@ def adjust_YellowHueColor():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_YellowSatColor', methods=['POST'])
+def adjust_YellowSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        yellow_color_value = int(request.json['YellowColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if yellow_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif yellow_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (yellow_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (yellow_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        yellow_mask = ((h_arr >= 40) | (h_arr <= 55))  # Define a mask for yellow pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 39))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 56) & (h_arr <= 330)) 
+        yellow_mask = yellow_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = yellow_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = yellow_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_yellow = s_arr.copy()  # Create a copy of the saturation channel
+        s_yellow[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_yellow[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value # Set saturation value of yellow pixels to the target value
+        s_yellow_img = Image.fromarray(s_yellow, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_yellow = Image.merge('HSV', (h, s_yellow_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_yellow.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_YellowLumColor', methods=['POST'])
+def adjust_YellowLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        yellow_color_value = int(request.json['YellowColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if yellow_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif yellow_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((yellow_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        yellow_mask = ((h_arr >= 40) & (h_arr <= 55))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_yellow = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_yellow[yellow_mask] = np.clip(v_arr[yellow_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_yellow_img = Image.fromarray(v_yellow.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_yellow = Image.merge('HSV', (h, s, v_yellow_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_yellow.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
 
 @app.route('/adjust_GreenHueColor', methods=['POST'])
 def adjust_GreenHueColor():
@@ -1087,11 +1372,11 @@ def adjust_GreenHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if green_color_value <= -100:
-            target_hue = 75  # Set target hue to 75 (dark green)
+            target_hue = 60  # Set target hue to 75 (dark green)
         elif green_color_value >= 100:
-            target_hue = 105  # Set target hue to 90 (maximum green)
+            target_hue = 120  # Set target hue to 90 (maximum green)
         else:
-            target_hue = int(75 + ((105  - 75) / 200) * (green_color_value + 100))  # Map green_color_value to range [75, 90]
+            target_hue = int(60 + ((120  - 60) / 200) * (green_color_value + 100))  # Map green_color_value to range [75, 90]
 
         green_mask = ((h_arr >= 60) & (h_arr <= 120))  # Define a mask for green pixels
         green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the green pixels
@@ -1102,6 +1387,97 @@ def adjust_GreenHueColor():
         h_green[green_pixels] = target_hue  # Set hue value of green pixels to the target value
         h_green_img = Image.fromarray(h_green, mode='L')  # Convert the modified hue array back to an Image object
         image_hsv_green = Image.merge('HSV', (h_green_img, s, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_GreenSatColor', methods=['POST'])
+def adjust_GreenSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        green_color_value = int(request.json['GreenColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if green_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif green_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (green_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (green_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        green_mask = ((h_arr >= 50) | (h_arr <= 120))  # Define a mask for green pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 49))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 121) & (h_arr <= 330)) 
+        green_mask = green_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = green_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = green_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_green = s_arr.copy()  # Create a copy of the saturation channel
+        s_green[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_green[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+        s_green_img = Image.fromarray(s_green, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_green = Image.merge('HSV', (h, s_green_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_green.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_GreenLumColor', methods=['POST'])
+def adjust_GreenLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        green_color_value = int(request.json['GreenColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if green_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif green_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((green_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        green_mask = ((h_arr >= 50) & (h_arr <= 120))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_green = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_green[green_mask] = np.clip(v_arr[green_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_green_img = Image.fromarray(v_green.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_green = Image.merge('HSV', (h, s, v_green_img))  # Merge channels back together
 
         adjusted_image = image_hsv_green.convert('RGB')
         adjusted_image.save(new_image_path)
@@ -1127,19 +1503,19 @@ def adjust_MagentaHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if Magenta_color_value <= -100:
-            target_hue = 90  # Set target hue to 75 (dark green)
+            target_hue = 115  # Set target hue to 75 (dark green)
         elif Magenta_color_value >= 100:
-            target_hue = 180  # Set target hue to 105 (maximum green with a bluish tint)
+            target_hue = 150  # Set target hue to 105 (maximum green with a bluish tint)
         else:
-            target_hue = int(90 + ((180 - 90) / 200) * (Magenta_color_value + 100))  # Map green_color_value to range [75, 105]
+            target_hue = int(115 + ((150 - 115) / 200) * (Magenta_color_value + 100))  # Map Magenta_color_value to range [75, 105]
 
-        magenta_mask = ((h_arr >= 90) & (h_arr <= 140))  # Define a mask for magenta_mask pixels
+        magenta_mask = ((h_arr >= 115) & (h_arr <= 150))  # Define a mask for magenta_mask pixels
         magenta_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the green pixels
-        magenta_pixels[magenta_mask] = True  # Set the values of the green pixels to True
+        magenta_pixels[magenta_mask] = True  # Set the values of the magenta pixels to True
 
         h_magenta = h_arr.copy()  # Create a copy of the hue channel
-        h_magenta[~magenta_pixels] = h_arr[~magenta_pixels]  # Set non-green pixels to their original hue value
-        h_magenta[magenta_pixels] = target_hue  # Set hue value of green pixels to the target value
+        h_magenta[~magenta_pixels] = h_arr[~magenta_pixels]  # Set non-magenta pixels to their original hue value
+        h_magenta[magenta_pixels] = target_hue  # Set hue value of magenta pixels to the target value
         h_magenta_img = Image.fromarray(h_magenta, mode='L')  # Convert the modified hue array back to an Image object
         image_hsv_magenta = Image.merge('HSV', (h_magenta_img, s, v))  # Merge channels back together
 
@@ -1148,6 +1524,100 @@ def adjust_MagentaHueColor():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_MagentaSatColor', methods=['POST'])
+def adjust_MagentaSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        magenta_color_value = int(request.json['MagentaColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if magenta_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif magenta_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (magenta_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (magenta_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        magenta_mask = ((h_arr >= 115) | (h_arr <= 150))  # Define a mask for magenta pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 114))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 151) & (h_arr <= 300)) 
+        magenta_mask = magenta_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = magenta_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = magenta_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_magenta = s_arr.copy()  # Create a copy of the saturation channel
+        s_magenta[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_magenta[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+
+        s_magenta_img = Image.fromarray(s_magenta, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_magenta = Image.merge('HSV', (h, s_magenta_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_magenta.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_MagentaLumColor', methods=['POST'])
+def adjust_MagentaLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        magenta_color_value = int(request.json['MagentaColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if magenta_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif magenta_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((magenta_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        magenta_mask = ((h_arr >= 115) & (h_arr <= 150))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_magenta = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_magenta[magenta_mask] = np.clip(v_arr[magenta_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_magenta_img = Image.fromarray(v_magenta.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_magenta = Image.merge('HSV', (h, s, v_magenta_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_magenta.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
 
 
 @app.route('/adjust_BlueHueColor', methods=['POST'])
@@ -1166,28 +1636,121 @@ def adjust_BlueHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if blue_color_value <= -100:
-            target_hue = 120  # Set target hue to 75 (dark green)
+            target_hue = 150  # Set target hue to 75 (dark green)
         elif blue_color_value >= 100:
             target_hue = 180  # Set target hue to 260 (maximum blue with a purplish tint)
         else:
-            target_hue = int(120 + ((180 - 120) / 200) * (blue_color_value + 100))  # Map light_green_color_value to range [75, 260]
+            target_hue = int(150 + ((180 - 150) / 200) * (blue_color_value + 100))  # Map blue_color_value to range [75, 260]
 
-        light_green_mask = ((h_arr >= 130) & (h_arr <= 180))  # Define a mask for light green pixels
-        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
-        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+        blue_mask = ((h_arr >= 150) & (h_arr <= 180))  # Define a mask for light green pixels
+        blue_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the blue pixels
+        blue_pixels[blue_mask] = True  # Set the values of the blue pixels to True
 
-        h_light_green = h_arr.copy()  # Create a copy of the hue channel
-        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
-        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
-        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
-        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+        h_blue = h_arr.copy()  # Create a copy of the hue channel
+        h_blue[~blue_pixels] = h_arr[~blue_pixels]  # Set non-blue pixels to their original hue value
+        h_blue[blue_pixels] = target_hue  # Set hue value of blue pixels to the target value
+        h_blue_img = Image.fromarray(h_blue, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_blue = Image.merge('HSV', (h_blue_img, s, v))  # Merge channels back together
 
-        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image = image_hsv_blue.convert('RGB')
         adjusted_image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
+
+@app.route('/adjust_BlueSatColor', methods=['POST'])
+def adjust_BlueSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        blue_color_value = int(request.json['BlueColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if blue_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif blue_color_value >= 100:
+            target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_high = 255
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        blue_mask = ((h_arr >= 150) | (h_arr <= 180))  # Define a mask for blue pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 149))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 179) & (h_arr <= 300)) 
+        blue_mask = blue_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = blue_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = blue_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_blue = s_arr.copy()  # Create a copy of the saturation channel
+        s_blue[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_blue[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+
+        s_blue_img = Image.fromarray(s_blue, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_blue = Image.merge('HSV', (h, s_blue_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_blue.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+@app.route('/adjust_BlueLumColor', methods=['POST'])
+def adjust_BlueLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        blue_color_value = int(request.json['BlueColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if blue_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif blue_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((blue_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        blue_mask = ((h_arr >= 150) & (h_arr <= 180))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_blue = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_blue[blue_mask] = np.clip(v_arr[blue_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_blue_img = Image.fromarray(v_blue.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_blue = Image.merge('HSV', (h, s, v_blue_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_blue.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 
 @app.route('/adjust_PurpulHueColor', methods=['POST'])
@@ -1206,23 +1769,115 @@ def adjust_PurpulHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if purpul_color_value <= -100:
-            target_hue = 170  # Set target hue to 75 (dark green)
+            target_hue = 160  # Set target hue to 75 (dark purpul)
         elif purpul_color_value >= 100:
-            target_hue = 190  # Set target hue to 260 (maximum blue with a purplish tint)
+            target_hue = 200  # Set target hue to 260 (maximum purpul with a pinish tint)
         else:
-            target_hue = int(170 + ((190 - 170) / 200) * (purpul_color_value + 100))  # Map light_green_color_value to range [75, 260]
+            target_hue = int(160 + ((200 - 160) / 200) * (purpul_color_value + 100))  # Map purpul_color_value to range [75, 260]
 
-        light_green_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for light green pixels
-        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
-        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+        purpul_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for purpul pixels
+        purpul_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the purpul pixels
+        purpul_pixels[purpul_mask] = True  # Set the values of the purpul pixels to True
 
-        h_light_green = h_arr.copy()  # Create a copy of the hue channel
-        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
-        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
-        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
-        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+        h_purpul = h_arr.copy()  # Create a copy of the hue channel
+        h_purpul[~purpul_pixels] = h_arr[~purpul_pixels]  # Set non-purpul pixels to their original hue value
+        h_purpul[purpul_pixels] = target_hue  # Set hue value of purpul pixels to the target value
+        h_purpul_img = Image.fromarray(h_purpul, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_purpul = Image.merge('HSV', (h_purpul_img, s, v))  # Merge channels back together
 
-        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image = image_hsv_purpul.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_PurpulSatColor', methods=['POST'])
+def adjust_PurpulSatColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        purpul_color_value = int(request.json['PurpulColorSatValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+        s_arr = np.array(s)  # Convert s channel to a NumPy array
+
+        if purpul_color_value <= -100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        elif purpul_color_value >= 100:
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
+        else:
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
+
+
+        purpul_mask = ((h_arr >= 160) | (h_arr <= 200))  # Define a mask for pink pixels (adjust the hue range as needed)
+
+        # Exclude other color ranges by setting their corresponding mask values to False
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 159))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 201) & (h_arr <= 300)) 
+        purpul_mask = purpul_mask & ~exclude_mask & ~exclude_mask_2
+
+        low_saturation_pixels = purpul_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = purpul_mask & (s_arr > 100)  # Mask for pixels with high saturation
+
+        s_purpul = s_arr.copy()  # Create a copy of the saturation channel
+        s_purpul[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_purpul[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+
+        s_purpul_img = Image.fromarray(s_purpul, mode='L')  # Convert the modified saturation array back to an Image object
+        image_hsv_purpul = Image.merge('HSV', (h, s_purpul_img, v))  # Merge channels back together
+
+        adjusted_image = image_hsv_purpul.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+@app.route('/adjust_PurpulLumColor', methods=['POST'])
+def adjust_PurpulLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        purpul_color_value = int(request.json['PurpulColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if purpul_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif purpul_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((purpul_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        purpul_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_purpul = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_purpul[purpul_mask] = np.clip(v_arr[purpul_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_purpul_img = Image.fromarray(v_purpul.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_purpul = Image.merge('HSV', (h, s, v_purpul_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_purpul.convert('RGB')
         adjusted_image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
@@ -1253,22 +1908,21 @@ def adjust_PinkHueColor():
         else:
             target_hue = int(200 + ((250 - 200) / 200) * (pink_color_value + 100))  # Map  to range [75, 260]
 
-        light_green_mask = ((h_arr >= 200) & (h_arr <= 240))  # Define a mask for pixels
-        light_green_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the light green pixels
-        light_green_pixels[light_green_mask] = True  # Set the values of the light green pixels to True
+        pink_mask = ((h_arr >= 200) & (h_arr <= 250))  # Define a mask for pixels
+        pink_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the pink pixels
+        pink_pixels[pink_mask] = True  # Set the values of the pink pixels to True
 
-        h_light_green = h_arr.copy()  # Create a copy of the hue channel
-        h_light_green[~light_green_pixels] = h_arr[~light_green_pixels]  # Set non-light green pixels to their original hue value
-        h_light_green[light_green_pixels] = target_hue  # Set hue value of light green pixels to the target value
-        h_light_green_img = Image.fromarray(h_light_green, mode='L')  # Convert the modified hue array back to an Image object
-        image_hsv_light_green = Image.merge('HSV', (h_light_green_img, s, v))  # Merge channels back together
+        h_pink = h_arr.copy()  # Create a copy of the hue channel
+        h_pink[~pink_pixels] = h_arr[~pink_pixels]  # Set non-pink pixels to their original hue value
+        h_pink[pink_pixels] = target_hue  # Set hue value of pink pixels to the target value
+        h_pink_img = Image.fromarray(h_pink, mode='L')  # Convert the modified hue array back to an Image object
+        image_hsv_pink = Image.merge('HSV', (h_pink_img, s, v))  # Merge channels back together
 
-        adjusted_image = image_hsv_light_green.convert('RGB')
+        adjusted_image = image_hsv_pink.convert('RGB')
         adjusted_image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
-
 
 
 @app.route('/adjust_PinkSatColor', methods=['POST'])
@@ -1287,12 +1941,14 @@ def adjust_PinkSatColor():
         s_arr = np.array(s)  # Convert s channel to a NumPy array
 
         if pink_color_value <= -100:
-            target_saturation = 50  # Set target saturation to 50 (low saturation)
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
         elif pink_color_value >= 100:
-            target_saturation = 255  # Set target saturation to 255 (maximum saturation)
+            target_saturation_low = 0  # Set target saturation to 50 (low saturation)
+            target_saturation_high = 0
         else:
-            target_saturation = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
-
+            target_saturation_low = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
 
         pink_mask = ((h_arr >= 200) | (h_arr <= 250))  # Define a mask for pink pixels (adjust the hue range as needed)
 
@@ -1300,19 +1956,68 @@ def adjust_PinkSatColor():
         exclude_mask = ((h_arr >= 0) & (h_arr <= 199))  # Exclude green and blue color ranges
         pink_mask = pink_mask & ~exclude_mask
 
-        pink_pixels = pink_mask & (s_arr > 100)  # Refine the mask to target pixels with high saturation
+
+        low_saturation_pixels = pink_mask & (s_arr <= 100)  # Mask for pixels with low saturation
+        high_saturation_pixels = pink_mask & (s_arr > 100)  # Mask for pixels with high saturation
 
         s_pink = s_arr.copy()  # Create a copy of the saturation channel
-        s_pink[~pink_pixels] = s_arr[~pink_pixels]  # Set non-pink pixels to their original saturation value
-        s_pink[pink_pixels] = target_saturation  # Set saturation value of pink pixels to the target value
+        s_pink[low_saturation_pixels] = target_saturation_low  # Set low saturation pixels to the target low saturation value
+        s_pink[high_saturation_pixels] = target_saturation_high  # Set high saturation pixels to the target high saturation value
+
         s_pink_img = Image.fromarray(s_pink, mode='L')  # Convert the modified saturation array back to an Image object
-        image_hsv_pink = Image.merge('HSV', (h, s_pink_img, v))  # Merge channels back together
+        image_hsv_pink = Image.merge('HSV', (h, s_pink_img, v)) 
 
         adjusted_image = image_hsv_pink.convert('RGB')
         adjusted_image.save(new_image_path)
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
+
+
+@app.route('/adjust_PinkLumColor', methods=['POST'])
+def adjust_PinkLumColor():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        pink_color_value = int(request.json['PinkColorLumValue'])
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+
+        image = Image.open(image_path)
+        image_hsv = image.convert('HSV')  # Convert to HSV color space
+        h, s, v = image_hsv.split()  # Split into individual channels
+
+        h_arr = np.array(h)  # Convert h channel to a NumPy array
+
+        if pink_color_value <= -100:
+            luminosity_adjustment = -50  # Set luminosity adjustment to -100 (make color darker)
+        elif pink_color_value >= 100:
+            luminosity_adjustment = 50  # Set luminosity adjustment to 100 (make color lighter)
+        else:
+            luminosity_adjustment = int(-50 + ((pink_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
+
+        pink_mask = ((h_arr >= 200) & (h_arr <= 250))  # Define a mask for pink pixels
+
+        v_arr = np.array(v)  # Convert v channel to a NumPy array
+        v_pink = v_arr.copy()  # Create a copy of the value channel for pink pixels
+        # Calculate the luminosity adjustment factor based on the adjustment value
+        luminosity_factor = 1 + (luminosity_adjustment / 100)
+
+        # Apply the luminosity adjustment to the pink pixels
+        v_pink[pink_mask] = np.clip(v_arr[pink_mask] * luminosity_factor, 0, 255)  # Adjust the luminosity based on the adjustment value
+
+        # Create new value channel with adjusted luminosity for pink pixels
+        v_pink_img = Image.fromarray(v_pink.astype(np.uint8), mode='L')  # Convert the modified value array back to an Image object
+
+        image_hsv_pink = Image.merge('HSV', (h, s, v_pink_img))  # Merge channels back together
+
+        adjusted_image = image_hsv_pink.convert('RGB')
+        adjusted_image.save(new_image_path)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
+
 
 @app.route('/download/<filename>', methods=['GET', 'POST'])
 def download_file(filename):
