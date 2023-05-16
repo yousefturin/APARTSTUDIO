@@ -558,12 +558,12 @@
                         drag_pan
                         </span>
                 </button> 
-                <button class="btn" id="crop_rotate_button" title="Crop">
+                <button class="btn" id="crop_rotate_button" title="Crop (C)">
                     <span class="material-symbols-outlined" id="icon_crop_rotate">
                         crop_rotate
                         </span>
                 </button> 
-                <button class="btn" id="aspect_ratio_button" title="Aspect Ratio">
+                <button class="btn" id="aspect_ratio_button" title="Aspect Ratio (A)">
                     <span class="material-symbols-outlined" id="icon_aspect_ratio">
                         aspect_ratio
                         </span>
@@ -573,7 +573,7 @@
                         auto_fix_high
                         </span>
                 </button> 
-                <button class="btn" id="format_button" title="Add Text">
+                <button class="btn" id="format_button" title="Add Text (T)">
                     <span class="material-symbols-outlined" id="icon_format">
                         format_shapes
                         </span>
@@ -588,22 +588,22 @@
                         pen_size_5
                         </span>
                 </button>
-                <button class="btn" id="blur_on_button" title="Add Blur">
+                <button class="btn" id="blur_on_button" title="Add Blur (B)">
                     <span class="material-symbols-outlined" id="icon_blur_on">
                         blur_on
                         </span>
                 </button> 
-                <button class="btn" id="grain_button" title="Add Grain">
+                <button class="btn" id="grain_button" title="Add Grain (G)">
                     <span class="material-symbols-outlined" id="icon_grain">
                         grain
                         </span>
                 </button> 
-                <button class="btny" id="auto_awesome_button" title="Ehnace Image" onclick="getEnhance()">
+                <button class="btny" id="auto_awesome_button" title="Ehnace Image (E)" onclick="getEnhance()">
                     <span class="material-symbols-outlined" id="icon_auto_awesome">
                         auto_awesome
                         </span>
                 </button> 
-                <button class="btny" id="camera_roll_button" title="Colorize image">
+                <button class="btny" id="camera_roll_button" title="Colorize image (W)">
                     <span class="material-symbols-outlined" id="icon_camera_roll" onclick="getColorize()">
                         camera_roll
                         </span>
@@ -795,13 +795,13 @@
                                         <div class="wrapRedSat">
                                             <p id="RedSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="RedSat" name="RedSat" oninput="rangeValueRedSat.innerText = this.value" title="Red Sat">
+                                            id="RedSat" name="RedSat" oninput="rangeValueRedSat.innerText = this.value" title="Red Sat" onchange="getRedSatColor()">
                                             <p id="rangeValueRedSat">0</p>
                                         </div>
                                         <div class="wrapRedLum">
                                             <p id="RedLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="RedLum" name="RedLum" oninput="rangeValueRedLum.innerText = this.value" title="Red Lum">
+                                            id="RedLum" name="RedLum" oninput="rangeValueRedLum.innerText = this.value" title="Red Lum" onchange="getRedLumColor()">
                                             <p id="rangeValueRedLum">0</p>
                                         </div>                                    
                                       </div>
@@ -815,13 +815,13 @@
                                         <div class="wrapOrangeSat">
                                             <p id="OrangeSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="OrangeSat" name="OrangeSat" oninput="rangeValueOrangeSat.innerText = this.value" title="Orange Sat">
+                                            id="OrangeSat" name="OrangeSat" oninput="rangeValueOrangeSat.innerText = this.value" title="Orange Sat" onchange="getOrangeSatColor()">
                                             <p id="rangeValueOrangeSat">0</p>
                                         </div>
                                         <div class="wrapOrangeLum">
                                             <p id="OrangeLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="OrangeLum" name="OrangeLum" oninput="rangeValueOrangeLum.innerText = this.value" title="Orange Lum">
+                                            id="OrangeLum" name="OrangeLum" oninput="rangeValueOrangeLum.innerText = this.value" title="Orange Lum" onchange="getOrangeLumColor()"> 
                                             <p id="rangeValueOrangeLum">0</p>
                                         </div>  
                                     </div>
@@ -835,13 +835,13 @@
                                         <div class="wrapYellowSat">
                                             <p id="YellowSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="YellowSat" name="YellowSat" oninput="rangeValueYellowSat.innerText = this.value" title="Yellow Sat">
+                                            id="YellowSat" name="YellowSat" oninput="rangeValueYellowSat.innerText = this.value" title="Yellow Sat" onchange="getYellowSatColor()">
                                             <p id="rangeValueYellowSat">0</p>
                                         </div>
                                         <div class="wrapYellowLum">
                                             <p id="YellowLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="YellowLum" name="YellowLum" oninput="rangeValueYellowLum.innerText = this.value" title="Yellow Lum">
+                                            id="YellowLum" name="YellowLum" oninput="rangeValueYellowLum.innerText = this.value" title="Yellow Lum" onchange="getYellowLumColor()">
                                             <p id="rangeValueYellowLum">0</p>
                                         </div>  
                                     </div>
@@ -855,13 +855,13 @@
                                         <div class="wrapGreenSat">
                                             <p id="GreenSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="GreenSat" name="GreenSat" oninput="rangeValueGreenSat.innerText = this.value" title="Green Sat">
+                                            id="GreenSat" name="GreenSat" oninput="rangeValueGreenSat.innerText = this.value" title="Green Sat" onchange="getGreenSatColor()">
                                             <p id="rangeValueGreenSat">0</p>
                                         </div>
                                         <div class="wrapGreenLum">
                                             <p id="GreenLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="GreenLum" name="GreenLum" oninput="rangeValueGreenLum.innerText = this.value" title="Green Lum">
+                                            id="GreenLum" name="GreenLum" oninput="rangeValueGreenLum.innerText = this.value" title="Green Lum" onchange="getGreenLumColor()">
                                             <p id="rangeValueGreenLum">0</p>
                                         </div>  
                                     </div>
@@ -875,13 +875,13 @@
                                         <div class="wrapMagentaSat">
                                             <p id="MagentaSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="MagentaSat" name="MagentaSat" oninput="rangeValueMagentaSat.innerText = this.value" title="Magenta Sat">
+                                            id="MagentaSat" name="MagentaSat" oninput="rangeValueMagentaSat.innerText = this.value" title="Magenta Sat" onchange="getMagentaSatColor()">
                                             <p id="rangeValueMagentaSat">0</p>
                                         </div>
                                         <div class="wrapMagentaLum">
                                             <p id="MagentaLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="MagentaLum" name="MagentaLum" oninput="rangeValueMagentaLum.innerText = this.value" title="Magenta Lum">
+                                            id="MagentaLum" name="MagentaLum" oninput="rangeValueMagentaLum.innerText = this.value" title="Magenta Lum" onchange="getMagentaLumColor()">
                                             <p id="rangeValueMagentaLum">0</p>
                                         </div>  
                                     </div>
@@ -895,13 +895,13 @@
                                         <div class="wrapBlueSat">
                                             <p id="BlueSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="BlueSat" name="BlueSat" oninput="rangeValueBlueSat.innerText = this.value" title="Blue Sat">
+                                            id="BlueSat" name="BlueSat" oninput="rangeValueBlueSat.innerText = this.value" title="Blue Sat" onchange="getBlueSatColor()">
                                             <p id="rangeValueBlueSat">0</p>
                                         </div>
                                         <div class="wrapBlueLum">
                                             <p id="BlueLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="BlueLum" name="BlueLum" oninput="rangeValueBlueLum.innerText = this.value" title="Blue Lum">
+                                            id="BlueLum" name="BlueLum" oninput="rangeValueBlueLum.innerText = this.value" title="Blue Lum" onchange="getBlueLumColor()">
                                             <p id="rangeValueBlueLum">0</p>
                                         </div>  
                                     </div>
@@ -915,13 +915,13 @@
                                         <div class="wrapPurpulSat">
                                             <p id="PurpulSatName">Saturation</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="PurpulSat" name="PurpulSat" oninput="rangeValuePurpulSat.innerText = this.value" title="Purpul Sat">
+                                            id="PurpulSat" name="PurpulSat" oninput="rangeValuePurpulSat.innerText = this.value" title="Purpul Sat" onchange="getPurpulSatColor()">
                                             <p id="rangeValuePurpulSat">0</p>
                                         </div>
                                         <div class="wrapPurpulLum">
                                             <p id="PurpulLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="PurpulLum" name="PurpulLum" oninput="rangeValuePurpulLum.innerText = this.value" title="Purpul Lum">
+                                            id="PurpulLum" name="PurpulLum" oninput="rangeValuePurpulLum.innerText = this.value" title="Purpul Lum" onchange="getPurpulLumColor()">
                                             <p id="rangeValuePurpulLum">0</p>
                                         </div>  
                                     </div>
@@ -941,7 +941,7 @@
                                         <div class="wrapPinkLum">
                                             <p id="PinkLumName">Luminance</p>
                                             <input type="range" min="-100" max="100" value="0" class="slider" 
-                                            id="PinkLum" name="PinkLum" oninput="rangeValuePinkLum.innerText = this.value" title="Pink Lum">
+                                            id="PinkLum" name="PinkLum" oninput="rangeValuePinkLum.innerText = this.value" title="Pink Lum" onchange="getPinkLumColor()">
                                             <p id="rangeValuePinkLum">0</p>
                                         </div>  
                                     </div>
