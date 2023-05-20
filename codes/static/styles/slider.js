@@ -1,4 +1,3 @@
-
 var cropButton = document.getElementById("crop_rotate_button");
 var textBox = null; // initialize textBox variable to null
 
@@ -2645,6 +2644,7 @@ function getColorize() {
   var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
   var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
   console.log(newImageName);
+
   var xhr = new XMLHttpRequest();
   xhr.responseType = 'json';
   xhr.open('POST', '/colorize', true);
@@ -2656,7 +2656,7 @@ function getColorize() {
       var byteCharacters = atob(imgData);
       var byteNumbers = new Array(byteCharacters.length);
       for (var i = 0; i < byteCharacters.length; i++) {
-          byteNumbers[i] = byteCharacters.charCodeAt(i);
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
       }
       var byteArray = new Uint8Array(byteNumbers);
       // Create a blob with the byte array and create an object URL
@@ -2671,7 +2671,7 @@ function getColorize() {
       img1.src = newURL;       // new canvas
       img2.src = newURL;
       img3.src = newURL;
-      img4.src = newURL;// new canvas   
+      img4.src = newURL;       // new canvas   
       img5.src = newURL;   
       console.log(newURL);
       // Revoke the old object URL to free up memory
@@ -2685,8 +2685,22 @@ function getColorize() {
       camera_roll_button.classList.remove("clicked", "spinner");
       overlay_colorizing.remove();
       document.body.style.overflow = 'auto';
+    } else {
+      console.error('Error:', xhr.status);
+      // Print error message on screen
+      alert('There was an error processing the request. Please try again.');
+      camera_roll_button.classList.remove("clicked", "spinner");
+      overlay_colorizing.remove();
+      document.body.style.overflow = 'auto';
     }
   };
+
+  xhr.onerror = function() {
+    console.error('Request failed');
+    // Print error message on screen
+    alert('There was an error processing the request. Please try again.');
+  };
+
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
 }
 function getEnhance() {
@@ -2746,7 +2760,20 @@ function getEnhance() {
       auto_awesome_button.classList.remove("clicked", "spinner");
       overlay_colorizing.remove();
       document.body.style.overflow = 'auto';
+    }else {
+      console.error('Error:', xhr.status);
+      // Print error message on screen
+      alert('There was an error processing the request. Please try again.');
+      auto_awesome_button.classList.remove("clicked", "spinner");
+      overlay_colorizing.remove();
+      document.body.style.overflow = 'auto';
     }
+  };
+
+  xhr.onerror = function() {
+    console.error('Request failed');
+    // Print error message on screen
+    alert('There was an error processing the request. Please try again.');
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
 }
@@ -3371,7 +3398,18 @@ function getAsp() {
       document.getElementById('image_name').value = imgName;
       document.getElementById("imageurl").innerHTML = imgSrc;
 
+    } else {
+      console.error('Error:', xhr.status);
+      // Print error message on screen
+      alert('There was an error processing the request. Please try again.');
+
     }
+  };
+  xhr.onerror = function() {
+    console.error('Request failed');
+    // Print error message on screen
+    alert('There was an error processing the request. Please try again.');
+
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName, widthAspValue: widthAspValue, heightAspValue: heightAspValue}));
 }
@@ -3574,7 +3612,7 @@ auto_awesome_button.addEventListener("click", function() {
 
 // Function to update the text every 2 seconds
 function updateText() {
-  var textArray = ["PLEASE WAIT THIS PROCESS MIGHT TAKE A FEW MOMENTS...", "GETTING THE IMAGE ANAYLIZED...", "BREAKING THE IMAGE DOWN...", "RECONSTRUCTION THE IMAGE...", "PLEASE BE PATION..."]; // Array of different texts
+  var textArray = ["PLEASE WAIT THIS PROCESS MIGHT TAKE A FEW MOMENTS...", "GETTING THE IMAGE ANALYZED...", "BREAKING THE IMAGE DOWN...", "RECONSTRUCTING THE IMAGE...", "PLEASE BE PATIENT..."]; // Array of different texts
   var randomIndex = Math.floor(Math.random() * textArray.length); // Get a random index
   var newText = textArray[randomIndex]; // Get the text at the random index
   overlay_colorizing.textContent = newText; // Set the new text as the content of the div
@@ -3584,7 +3622,7 @@ function updateText() {
     overlay_colorizing.style.justifyContent = "center";
     overlay_colorizing.style.textAlign = "center";
     overlay_colorizing.style.fontWeight = "bold";
-    overlay_colorizing.style.fontSize = "50px";
+    overlay_colorizing.style.fontSize = "30px";
     overlay_colorizing.style.color = "rgb(255, 255, 255)";
     overlay_colorizing.style.textShadow = "0.5px 0.5px 2px rgba(0, 0, 0, 0.2)"
     overlay_colorizing.style.filter = "blur(1px)";
