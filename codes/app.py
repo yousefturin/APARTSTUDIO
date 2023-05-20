@@ -156,7 +156,7 @@ def adjust_shadow():
     if request.method == 'POST':
         image_name = request.json['imageName']
         new_image_name = request.json['newImageName']
-        shadow_value = int(request.json['shadowValue'])
+        shadow_value = -int(request.json['shadowValue'])
         # Get the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
@@ -166,14 +166,20 @@ def adjust_shadow():
             image = image.convert('RGB')
             # Split the image into separate red, green, and blue channels
             r, g, b = image.split()
-            # Create a darkened copy of the image to use as a shadow layer
-            shadow_image = Image.merge('RGB', (r.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
-                                            g.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0))),
-                                            b.point(lambda x: x * (1.0 - (abs(shadow_value) / 100.0)))))
+            # Increase shadow intensity for negative shadow_value
+            shadow_intensity = (((shadow_value + 100) / 100.0))
             # Calculate the alpha value based on the shadow intensity
-            alpha = abs(shadow_value) / 100.0
+            alpha = 1.0 - shadow_intensity
+            # Create a darkened copy of the image to use as a shadow layer
+            shadow_image = Image.merge('RGB', (r.point(lambda x: x * (1.0 - (abs(alpha)))),
+                                            g.point(lambda x: x * (1.0 - (abs(alpha)))),
+                                            b.point(lambda x: x * (1.0 - (abs(alpha))))))
+
+
+               
             # Blend the shadow image with the original image using the alpha value
             output_image = Image.blend(image, shadow_image, alpha=alpha)
+
             # Save the output image
             output_image.save(new_image_path)
 
@@ -256,18 +262,20 @@ def adjust_exposure():
         new_image_name = request.json['newImageName']
         exposure_value = float(request.json['exposureValue'])
         # Scale the value to fit in cv2 method from 0 - 1 
-        exposure_scaled = float((exposure_value + 4.9) / 10.0)
+        
         # Getting the image path from the form data
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
         image = cv2.imread(image_path)
         # Determine whether the exposure value is positive or negative
-        if exposure_value >= 0:
+        if exposure_value > 0:
+            exposure_scaled = float((exposure_value - 4.99) / 10.0) 
             # If the exposure value is positive, set alpha to a value greater than 1.0 to make the image brighter
-            alpha = 1.0 + exposure_scaled * 0.9
-        else:
+            alpha = 1.0 + exposure_scaled
+        elif exposure_value < 0 :
+            exposure_scaled = float((-exposure_value + 4.99) / 10.0) 
             # If the exposure value is negative, set alpha to a value less than 1.0 to make the image darker
-            alpha = exposure_scaled * 0.5
+            alpha = (1.5-exposure_scaled) *0.5
         # Apply the exposure adjustment to the image
         image = cv2.convertScaleAbs(image, alpha=(alpha/exposure_scaled), beta=0)
         # Converting the name
@@ -981,7 +989,7 @@ def adjust_RedHueColor():
         else:
             target_hue = int(0 + ((20 - 0) / 200) * (RedColorHueValue + 100))  # Map red to range [8, 22]
 
-        red_mask = (h_arr >= 0) & (h_arr <= 20)  # Define a mask for orange pixels
+        red_mask = (h_arr >= 0) & (h_arr <= 20) & (h_arr >= 0) & (h_arr <= 20) # Define a mask for red pixels
         red_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the red pixels
         red_pixels[red_mask] = True  # Set the values of the red pixels to True
 
@@ -1681,15 +1689,15 @@ def adjust_BlueSatColor():
             target_saturation_low = 255  # Set target saturation to 255 (maximum saturation)
             target_saturation_high = 255
         else:
-            target_saturation_low = int(50 + ((255 - 50) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
-            target_saturation_high = int(50 + ((255 - 50) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_low = int(0 + ((255 - 0) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(0 + ((255 - 0) / 200) * (blue_color_value + 100))  # Map pink_color_value to range [50, 255]
 
 
-        blue_mask = ((h_arr >= 150) | (h_arr <= 180))  # Define a mask for blue pixels (adjust the hue range as needed)
+        blue_mask = ((h_arr >= 150) | (h_arr <= 190))  # Define a mask for blue pixels (adjust the hue range as needed)
 
         # Exclude other color ranges by setting their corresponding mask values to False
-        exclude_mask = ((h_arr >= 0) & (h_arr <= 149))  # Exclude green and blue color ranges
-        exclude_mask_2 = ((h_arr >= 179) & (h_arr <= 300)) 
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 150))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 190) & (h_arr <= 360)) 
         blue_mask = blue_mask & ~exclude_mask & ~exclude_mask_2
 
         low_saturation_pixels = blue_mask & (s_arr <= 100)  # Mask for pixels with low saturation
@@ -1769,13 +1777,13 @@ def adjust_PurpulHueColor():
         h_arr = np.array(h)  # Convert h channel to a NumPy array
 
         if purpul_color_value <= -100:
-            target_hue = 160  # Set target hue to 75 (dark purpul)
+            target_hue = 180  # Set target hue to 75 (dark purpul)
         elif purpul_color_value >= 100:
             target_hue = 200  # Set target hue to 260 (maximum purpul with a pinish tint)
         else:
-            target_hue = int(160 + ((200 - 160) / 200) * (purpul_color_value + 100))  # Map purpul_color_value to range [75, 260]
+            target_hue = int(180 + ((200 - 180) / 200) * (purpul_color_value + 100))  # Map purpul_color_value to range [75, 260]
 
-        purpul_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for purpul pixels
+        purpul_mask = ((h_arr >= 180) & (h_arr <= 210))  # Define a mask for purpul pixels
         purpul_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the purpul pixels
         purpul_pixels[purpul_mask] = True  # Set the values of the purpul pixels to True
 
@@ -1813,15 +1821,15 @@ def adjust_PurpulSatColor():
             target_saturation_low = 0  # Set target saturation to 50 (low saturation)
             target_saturation_high = 0
         else:
-            target_saturation_low = int(50 + ((255 - 50) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
-            target_saturation_high = int(50 + ((255 - 50) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_low = int(0 + ((255 - 0) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(0 + ((255 - 0) / 200) * (purpul_color_value + 100))  # Map pink_color_value to range [50, 255]
 
 
-        purpul_mask = ((h_arr >= 160) | (h_arr <= 200))  # Define a mask for pink pixels (adjust the hue range as needed)
+        purpul_mask = ((h_arr >= 180) | (h_arr <= 220))  # Define a mask for pink pixels (adjust the hue range as needed)
 
         # Exclude other color ranges by setting their corresponding mask values to False
-        exclude_mask = ((h_arr >= 0) & (h_arr <= 159))  # Exclude green and blue color ranges
-        exclude_mask_2 = ((h_arr >= 201) & (h_arr <= 300)) 
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 180))  # Exclude green and blue color ranges
+        exclude_mask_2 = ((h_arr >= 220) & (h_arr <= 360)) 
         purpul_mask = purpul_mask & ~exclude_mask & ~exclude_mask_2
 
         low_saturation_pixels = purpul_mask & (s_arr <= 100)  # Mask for pixels with low saturation
@@ -1862,7 +1870,7 @@ def adjust_PurpulLumColor():
         else:
             luminosity_adjustment = int(-50 + ((purpul_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
 
-        purpul_mask = ((h_arr >= 160) & (h_arr <= 200))  # Define a mask for pink pixels
+        purpul_mask = ((h_arr >= 180) & (h_arr <= 210))  # Define a mask for pink pixels
 
         v_arr = np.array(v)  # Convert v channel to a NumPy array
         v_purpul = v_arr.copy()  # Create a copy of the value channel for pink pixels
@@ -1908,7 +1916,7 @@ def adjust_PinkHueColor():
         else:
             target_hue = int(200 + ((250 - 200) / 200) * (pink_color_value + 100))  # Map  to range [75, 260]
 
-        pink_mask = ((h_arr >= 200) & (h_arr <= 250))  # Define a mask for pixels
+        pink_mask = ((h_arr >= 210) & (h_arr <= 250))  # Define a mask for pixels
         pink_pixels = np.zeros(h_arr.shape, dtype=bool)  # Create a boolean array to store the pink pixels
         pink_pixels[pink_mask] = True  # Set the values of the pink pixels to True
 
@@ -1947,13 +1955,13 @@ def adjust_PinkSatColor():
             target_saturation_low = 0  # Set target saturation to 50 (low saturation)
             target_saturation_high = 0
         else:
-            target_saturation_low = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
-            target_saturation_high = int(50 + ((255 - 50) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_low = int(0 + ((255 - 0) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
+            target_saturation_high = int(0 + ((255 - 0) / 200) * (pink_color_value + 100))  # Map pink_color_value to range [50, 255]
 
-        pink_mask = ((h_arr >= 200) | (h_arr <= 250))  # Define a mask for pink pixels (adjust the hue range as needed)
+        pink_mask = ((h_arr >= 210) | (h_arr <= 250))  # Define a mask for pink pixels (adjust the hue range as needed)
 
         # Exclude other color ranges by setting their corresponding mask values to False
-        exclude_mask = ((h_arr >= 0) & (h_arr <= 199))  # Exclude green and blue color ranges
+        exclude_mask = ((h_arr >= 0) & (h_arr <= 210))  # Exclude green and blue color ranges
         pink_mask = pink_mask & ~exclude_mask
 
 
@@ -1997,7 +2005,7 @@ def adjust_PinkLumColor():
         else:
             luminosity_adjustment = int(-50 + ((pink_color_value + 50) / 200) * 200)  # Map pink_color_value to range [-100, 100]
 
-        pink_mask = ((h_arr >= 200) & (h_arr <= 250))  # Define a mask for pink pixels
+        pink_mask = ((h_arr >= 210) & (h_arr <= 250))  # Define a mask for pink pixels
 
         v_arr = np.array(v)  # Convert v channel to a NumPy array
         v_pink = v_arr.copy()  # Create a copy of the value channel for pink pixels
