@@ -1,3 +1,92 @@
+
+  var orangeCheckbox = document.getElementById('orange-checkbox_input');
+  var purpleCheckbox = document.getElementById('purpul-checkbox_input');
+  var payedplanewrapper = document.getElementById('payedplanewrapper_id');
+  var trainglewrapper = document.getElementById('traingle_checkbox_visu_id')
+  
+  // Check the orangeCheckbox by default
+  orangeCheckbox.checked = true;
+  payedplanewrapper.classList.add('orange-bg');
+  trainglewrapper.classList.add('orange-bg');
+  orangeCheckbox.disabled = true;
+  
+  orangeCheckbox.addEventListener('change', function() {
+    if (orangeCheckbox.checked) {
+      payedplanewrapper.classList.add('orange-bg');
+      trainglewrapper.classList.add('orange-bg');
+      orangeCheckbox.disabled = true;
+  
+      // Unclick the purpleCheckbox
+      purpleCheckbox.checked = false;
+      purpleCheckbox.disabled = false;
+      payedplanewrapper.classList.remove('purple-bg');
+      trainglewrapper.classList.remove('purple-bg');
+    } else {
+      payedplanewrapper.classList.remove('orange-bg');
+      trainglewrapper.classList.remove('orange-bg');
+      orangeCheckbox.disabled = true;
+    }
+  });
+  
+  purpleCheckbox.addEventListener('change', function() {
+    if (purpleCheckbox.checked) {
+      payedplanewrapper.classList.add('purple-bg');
+      trainglewrapper.classList.add('purple-bg');
+      purpleCheckbox.disabled = true;
+  
+      // Unclick the orangeCheckbox
+      orangeCheckbox.checked = false;
+      orangeCheckbox.disabled = false;
+      payedplanewrapper.classList.remove('orange-bg');
+      trainglewrapper.classList.remove('orange-bg');
+    } else {
+      payedplanewrapper.classList.remove('purple-bg');
+      trainglewrapper.classList.remove('purple-bg');
+      purpleCheckbox.disabled = false;
+    }
+  });
+
+
+
+
+
+
+
+const downloadImage = document.getElementById('image-canvas');
+// Check first if there is an image and it has an src then do the function if not just skip it
+if (!downloadImage || !downloadImage.src) {
+  document.getElementById('download').disabled = true;
+  document.getElementById('send').disabled = true;
+  document.getElementById('auto_awesome_button').disabled = true;
+  document.getElementById('camera_roll_button').disabled = true;
+  document.getElementById('auto_fix_high_button').disabled = true;
+  document.getElementById('download').style.cursor = 'not-allowed';
+  document.getElementById('send').style.cursor = 'not-allowed';
+  document.getElementById('download').classList.add('disabled');
+  document.getElementById('send').classList.add('disabled');
+  document.getElementById('auto_awesome_button').classList.add('disabled');
+  document.getElementById('camera_roll_button').classList.add('disabled');
+  document.getElementById('auto_fix_high_button').classList.add('disabled');
+  document.getElementById('auto_fix_high_button').style.cursor = 'not-allowed';
+  document.getElementById('auto_awesome_button').style.cursor = 'not-allowed';
+  document.getElementById('camera_roll_button').style.cursor = 'not-allowed';
+} else {
+  document.getElementById('download').disabled = false;
+  document.getElementById('send').disabled = false;
+  document.getElementById('auto_awesome_button').disabled = false;
+  document.getElementById('camera_roll_button').disabled = false;
+  document.getElementById('auto_fix_high_button').disabled = false;
+  document.getElementById('download').classList.remove('disabled');
+  document.getElementById('send').classList.remove('disabled');
+  document.getElementById('auto_awesome_button').classList.remove('disabled');
+  document.getElementById('camera_roll_button').classList.remove('disabled');
+  document.getElementById('auto_fix_high_button').classList.remove('disabled');
+}
+
+
+
+
+
 var cropButton = document.getElementById("crop_rotate_button");
 var textBox = null; // initialize textBox variable to null
 
@@ -2769,7 +2858,6 @@ function getEnhance() {
       document.body.style.overflow = 'auto';
     }
   };
-
   xhr.onerror = function() {
     console.error('Request failed');
     // Print error message on screen
@@ -2777,7 +2865,79 @@ function getEnhance() {
   };
   xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
 }
-
+function getBackgroundRemoved() {
+  var imageSrc = document.getElementById('image-canvas').src;
+  console.log(imageSrc);
+  document.getElementById("imageurl").innerHTML = imageSrc;
+  var img = document.getElementById('image-canvas');
+  var img1 = document.getElementById('image-canvas1');
+  var img2 = document.getElementById('image-canvas2');
+  var img3 = document.getElementById('image-canvas3');
+  var img4 = document.getElementById('image-canvas4');
+  var img5 = document.getElementById('image-canvas5');
+  var imageName = imageSrc.substring(imageSrc.lastIndexOf("/") + 1);
+  console.log(imageName);
+  var imageExt = imageName.split('.').pop();
+  console.log(imageExt);
+  var timestamp = new Date().getTime().toString().slice(-4);  // Get the current timestamp
+  var newImageName = imageName.split('.')[0] + '-' + timestamp + '.' + imageExt; // Add timestamp to the image name
+  console.log(newImageName);
+  var xhr = new XMLHttpRequest();
+  xhr.responseType = 'json';
+  xhr.open('POST', '/BackgroundRemoved', true);
+  xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+  xhr.onload = function() {
+    if (xhr.status === 200) {
+      // Decode the Base64-encoded image data
+      var imgData = xhr.response['image'];
+      var byteCharacters = atob(imgData);
+      var byteNumbers = new Array(byteCharacters.length);
+      for (var i = 0; i < byteCharacters.length; i++) {
+          byteNumbers[i] = byteCharacters.charCodeAt(i);
+      }
+      var byteArray = new Uint8Array(byteNumbers);
+      // Create a blob with the byte array and create an object URL
+      var blob = new Blob([byteArray], { type: 'image/png' });
+      var blobURL = URL.createObjectURL(blob);
+      // Get the image name from the URL and construct the new URL
+      var imageName = img.src.substring(img.src.lastIndexOf("/") + 1);
+      console.log(imageName);
+      var newURL = '/static/uploads/' + newImageName;
+      // Set the new image source
+      img.src = newURL;
+      img1.src = newURL;       // new canvas
+      img2.src = newURL;
+      img3.src = newURL;
+      img4.src = newURL;// new canvas   
+      img5.src = newURL;   
+      console.log(newURL);
+      // Revoke the old object URL to free up memory
+      URL.revokeObjectURL(blobURL);
+      const imgSrc = img.src;
+      const imgName = imgSrc.substring(imgSrc.lastIndexOf('/') + 1);
+      console.log(imgName)
+      // set the value of the hidden input field to the filename
+      document.getElementById('image_name').value = imgName;
+      document.getElementById("imageurl").innerHTML = imageSrc;
+      auto_fix_high_button.classList.remove("clicked", "spinner");
+      overlay_colorizing.remove();
+      document.body.style.overflow = 'auto';
+    }else {
+      console.error('Error:', xhr.status);
+      // Print error message on screen
+      alert('There was an error processing the request. Please try again.');
+      auto_fix_high_button.classList.remove("clicked", "spinner");
+      overlay_colorizing.remove();
+      document.body.style.overflow = 'auto';
+    }
+  };
+  xhr.onerror = function() {
+    console.error('Request failed');
+    // Print error message on screen
+    alert('There was an error processing the request. Please try again.');
+  };
+  xhr.send(JSON.stringify({ imageName: imageName, newImageName: newImageName }));
+}
 function getTemp() {
   var imageSrc = document.getElementById('image-canvas').src;
   console.log(imageSrc);
@@ -3537,9 +3697,7 @@ overlay2.addEventListener('click', (event) => {
     overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
   }
 });
-closeinfoBtn.addEventListener('click', () => {
-  overlay2.classList.remove('active'); // remove the 'active' class to hide the overlay
-});
+
 
 
 const premBtn = document.getElementById('premium');
@@ -3606,6 +3764,12 @@ camera_roll_button.addEventListener("click", function() {
 var auto_awesome_button = document.getElementById("auto_awesome_button");
 auto_awesome_button.addEventListener("click", function() {
   auto_awesome_button.classList.add("clicked", "spinner");
+  document.body.appendChild(overlay_colorizing);
+  document.body.style.overflow = 'hidden';
+});
+var auto_fix_high_button = document.getElementById("auto_fix_high_button");
+auto_fix_high_button.addEventListener("click", function() {
+  auto_fix_high_button.classList.add("clicked", "spinner");
   document.body.appendChild(overlay_colorizing);
   document.body.style.overflow = 'hidden';
 });
