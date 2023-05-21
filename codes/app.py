@@ -3,6 +3,8 @@ import os
 import base64
 
 import torch
+from torchvision import transforms
+from torchvision.models.segmentation import deeplabv3_resnet101
 import arch 
 import cv2
 import numpy as np
@@ -18,15 +20,23 @@ app = Flask(__name__)
 #from DeOldify.deoldify.visualize import *
 #import utils.RRDBNet_arch as arch
 from utils.systemPath import *
+from utils.segment_image import segment_image
 #device.set(device=DeviceId.GPU1)
 #device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
 #print("PyTorch version:", torch.__version__)
-#print("CUDA version:", torch.version.cuda)
+##print("CUDA version:", torch.version.cuda)
 #print("Device used:", device)
 #device_1 = torch.device('cpu')
 #model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
 #model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
 #model.eval()
+
+
+
+
+
+
+
 
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
@@ -41,7 +51,7 @@ class InternalServerError(Exception):
 app.config['RESULT_PATH'] = RESULT_PATH
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-#app.config['DEBUG'] = False
+app.config['DEBUG'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 app.secret_key = "teqi-Eest1-iold4"
 
@@ -885,7 +895,24 @@ def enhance():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
-#'''
+'''
+
+@app.route('/BackgroundRemoved', methods=['POST'])
+def BackgroundRemoved():
+    if request.method == 'POST':
+        image_name = request.json['imageName']
+        new_image_name = request.json['newImageName']
+        image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
+        new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name)
+        new_result_path = os.path.join(app.config['RESULT_PATH'], new_image_name)
+        segment_image(image_path, new_result_path)
+        image =Image.open(new_result_path)
+        image.save(new_image_path)
+        toBeRemovedPath = os.path.join(app.config['RESULT_PATH'], new_image_name)
+        os.remove(toBeRemovedPath)
+        img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
+    # Return the edited image as a JSON object with the new file name
+    return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
 
 
 @app.route('/crop_image', methods=['POST'])
@@ -2040,7 +2067,6 @@ def download_file(filename):
                 image_format = request.form.get('image_format_selector').lower()
                 image_quality = request.form.get('image_quality_selector')
                 image_dpi = request.form.get('image_dpi_selector')
-                print(image_dpi)
                 if new_filename == '':
                     new_filename = "Your_image_from" + "_NotPHOTOSHOP"
                 else:
