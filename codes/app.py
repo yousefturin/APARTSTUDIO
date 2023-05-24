@@ -2,9 +2,6 @@
 import os
 import base64
 
-import torch
-from torchvision import transforms
-from torchvision.models.segmentation import deeplabv3_resnet101
 import arch 
 import cv2
 import numpy as np
@@ -12,26 +9,16 @@ from PIL import Image, ImageEnhance, ImageDraw, ImageFont
 from flask import Flask, flash, request, render_template, redirect, url_for, send_file
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
-
-#import utils.deoldify_path as deoldify_path
-#from DeOldify.deoldify import device
-#from DeOldify.deoldify._device import DeviceId
-#from DeOldify.deoldify.visualize import *
-#import utils.RRDBNet_arch as arch
-from utils.systemPath import *
 from utils.segment_image import segment_image
-#device.set(device=DeviceId.GPU1)
-#device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
-#print("PyTorch version:", torch.__version__)
-##print("CUDA version:", torch.version.cuda)
-#print("Device used:", device)
-#device_1 = torch.device('cpu')
-#model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
-#model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
-#model.eval()
+from utils.colorizing_image import colorize_image
+from utils.systemPath import *
+import utils.RRDBNet_arch as arch
+
+import torch
+from torchvision import transforms
 
 
+app = Flask(__name__)
 
 
 
@@ -48,6 +35,7 @@ class ResourceNotFoundError(Exception):
 
 class InternalServerError(Exception):
     pass
+
 app.config['RESULT_PATH'] = RESULT_PATH
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -849,7 +837,8 @@ def add_text():
 # Run time 22.87s --> width:1280px, height:854px
 # Run time 18.33s --> width:1920px, height:1280px
 # Run time 26,73  --> width:6720px, height:4480px -----!
-'''
+#'''
+
 @app.route('/colorize', methods=['POST'])
 def colorize():
     if request.method == 'POST':
@@ -859,10 +848,7 @@ def colorize():
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
         new_result_path = os.path.join(app.config['RESULT_PATH'], image_name)
         # Load the image
-        colorizer = get_image_colorizer(artistic=True)
-        # Create the colorizers
-        render_factor = 35
-        colorizer.plot_transformed_image(path=image_path, render_factor=render_factor, compare=False, watermarked=False)
+        colorize_image(image_path)
         image = Image.open(new_result_path)
         image.save(new_image_path)
         # clean the output image to free space in Disk
@@ -881,6 +867,13 @@ def enhance():
         new_image_name = request.json['newImageName']
         image_path = os.path.join(app.config['UPLOAD_FOLDER'], image_name)
         new_image_path = os.path.join(app.config['UPLOAD_FOLDER'], new_image_name) 
+        device = torch.device('cuda:0') if torch.cuda.is_available() else torch.device('cpu')
+        print("PyTorch version:", torch.__version__)
+        print("CUDA version:", torch.version.cuda)
+        print("Device used:", device)
+        model = arch.RRDBNet(3, 3, 64, 23, gc=32).to(device)
+        model.load_state_dict(torch.load(MODEL_PATH, map_location=device), strict=True)
+        model.eval()
         # Load the input image
         image = cv2.imread(image_path, cv2.IMREAD_COLOR)
         image = image * 1.0 / 255
@@ -895,7 +888,7 @@ def enhance():
         img_base64 = base64.b64encode(image.tobytes()).decode('utf-8')
     # Return the edited image as a JSON object with the new file name
     return {'image': img_base64, 'newImageName': new_image_name}, 200, {'Content-Type': 'application/json'}
-'''
+
 
 @app.route('/BackgroundRemoved', methods=['POST'])
 def BackgroundRemoved():
@@ -2116,4 +2109,4 @@ def download_file(filename):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,host='0.0.0.0', port=5001)
