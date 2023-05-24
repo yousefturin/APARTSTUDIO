@@ -2,7 +2,7 @@
   margin: 0!important;
   padding: 0;
   box-sizing: border-box;
-  font-family: Helvetica;
+  font-family: 'Arimo';
   letter-spacing: 0.1px;
   user-select: none;
   
@@ -111,7 +111,7 @@ user-select: none;
 color: black;
 font-weight: bold;
 user-select: none;
-cursor: pointer;
+cursor: pointer !important;
 }
 
 .container {
@@ -186,6 +186,7 @@ cursor: pointer;
     align-items: center;
     text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
     padding: 2%;
+    gap: 1%;
   }
 
   .middlebuttompanewrapfree{
@@ -279,6 +280,7 @@ cursor: pointer;
     align-items: center;
     text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
     padding: 2%;
+    gap: 1%
   }
 
 
@@ -4970,6 +4972,9 @@ justify-content: center;
 align-items: center;
 text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
 }
+.sharescreentitle a{
+  font-weight: bold;
+}
  a{
   cursor: default !important;
   user-select: none !important;
@@ -5087,6 +5092,8 @@ align-content: center;
 #imageurl{
 white-space: nowrap;
 overflow: hidden;
+user-select: auto !important;
+cursor: auto !important;
 }
 #savebtnforshare{
 font-size: 280%;
@@ -5174,6 +5181,9 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.downloadscreentitle a{
+  font-weight: bold;
 }
 .downloadscreenup{
 width: 100%;
@@ -5488,6 +5498,9 @@ flex-direction: column;
 justify-content: center;
 align-items: center;
 text-shadow: 0.5px 0.5px 2px rgba(0, 0, 0, 0.2);
+}
+.openscreentitle a{
+  font-weight: bold;
 }
 .openscreenup{
 width: 100%;
