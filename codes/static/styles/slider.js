@@ -495,6 +495,33 @@ selectorFont.addEventListener("change", (event) => {
   textBox.style.fontFamily = selectorFont;
 });
 
+var fontSelector_changes = document.getElementById('font-selector');
+                                    
+fontSelector_changes.addEventListener('change', function() {
+    var selectedOption = fontSelector_changes.options[fontSelector_changes.selectedIndex];
+    var selectedFontFamily = selectedOption.value;
+    fontSelector_changes.style.fontFamily = selectedFontFamily;
+});
+
+var fontTypeSelector = document.getElementById('font-type-selector');
+
+fontTypeSelector.addEventListener('change', function() {
+    var selectedOption = fontTypeSelector.options[fontTypeSelector.selectedIndex];
+    var selectedFontWeight = selectedOption.value;
+
+    if (selectedFontWeight === 'Normal') {
+        fontTypeSelector.style.fontWeight = 'normal';
+        fontTypeSelector.style.fontStyle = 'normal';
+    } else if (selectedFontWeight === 'Bold') {
+        fontTypeSelector.style.fontWeight = 'bold';
+        fontTypeSelector.style.fontStyle = 'normal';
+    } else if (selectedFontWeight === 'Italic') {
+        fontTypeSelector.style.fontWeight = 'normal';
+        fontTypeSelector.style.fontStyle = 'italic';
+    }
+});
+
+
 
 const fontWeightStyle = document.getElementById("font-type-selector");
 
@@ -3862,6 +3889,7 @@ overlaygrain.addEventListener('click', (event) => {
 
 
 // displaying the style of the font selector in the font box
+/*
 const fontTypeSelector = document.querySelector('#font-type-selector');
 
 fontTypeSelector.addEventListener('change', () => {
@@ -3877,7 +3905,7 @@ fontTypeSelector.addEventListener('change', () => {
     fontTypeSelector.style.fontWeight = 'normal';
   }
 });
-
+*/
 const fontSelector = document.querySelector('#font-selector');
 
 fontSelector.addEventListener('change', () => {
