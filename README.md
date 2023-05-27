@@ -44,6 +44,11 @@ https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/6768ddb8-0af9-4c05-
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/83941011-a99f-4117-b7f7-827d4b305dd5" width="500" height="500">
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/2815c444-f8e4-4520-9c02-60254cb77f85" width="500" height="500">
 
+# Remove Background 
+<img src= "https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/0a630e17-12b5-4ef4-9f77-80150dd4be6a">
+<img src= "https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/8f69b56f-ae87-4b8c-9271-9279992c6701">
+
+
 
 # Blur and Grin Image
 <img src="https://github.com/yousefturin/NOT-PHOTOSHOP/assets/94796673/7326629c-55af-40b0-a5f7-7dcc70e5d123" width="300" height="250">
