@@ -28,6 +28,7 @@ It's a web application written in Python using the Flask framework and it allows
 >- Resize the image using **SCALORBUST**
 >- Colorize images using **DeOldif** model
 >- Enhance images using **ESRGAN** model
+>- Remove Background using **resnet101** model
 >- Download The image in any Quality (100%, 75%, 50%, 25%). Any format (.jpg, .jpeg, .png). Any DPI(300dpi, 150dpi, 96dpi, 72dpi)
 >- Share The image on any platform with one click
 
