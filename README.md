@@ -1,5 +1,5 @@
 # What is  **APART STUDIO**
-<img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/c19e72a4-66bc-478a-9b75-7d30488aebf1">
+<img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/190298e6-be36-4281-8fd1-e07e68b84385">
 
 
 
