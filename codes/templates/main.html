@@ -19,6 +19,47 @@
 <link href="https://fonts.googleapis.com/css2?family=Arimo:wght@400;700&display=swap" rel="stylesheet">
 
 <body>
+    <div class="overlay_login" id="overlay_login">
+        <div class="wrap_login_image_name">
+            <div class="wrap_name_email">
+                <div class="name_of-user">
+                    Yusef Rayyan
+                </div>
+                <div class="user_email_display">
+                    yusefturin@gmail.com
+                </div>
+            </div>
+            <div class="wrap_image_loging">
+                <div class="small_image_login">
+                    <div class="loging_small_wrap" id="loging_small_wrap">
+                        <img src="/static/images/IMG_8056.png" alt="Image Description">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr class="custom-line">
+        <div class="wrap_login_menu">
+            <div class="my_account_holder">
+                My Account
+            </div>
+            <div class="login_function_holder">
+                Log In
+            </div>
+            <div class="logout_function_holder">
+                Sign out
+            </div>
+        </div>
+        <div class="container">
+            <div class="toggle-btn" id="_1st-toggle-btn">
+                <input type="checkbox" id="themeToggle">
+                <span></span>
+            </div>
+        </div>
+
+        
+
+    </div>
+
     <div id="blur_overlay_function">
         <div class="container">
             <video src="/static/images/data/videos/blur_button-function.mp4" id="blur_video_function" loop autoplay muted>
@@ -125,7 +166,7 @@
             </video>
             <div class="text_to_add_openai_using_function">
                 <p>OpenAI (G)</p>
-                <a>This function is used to convert text to image.</a>
+                <a>This function is used to convert text to image. <b>(Beta)</b></a>
             </div>
         </div>
     </div>
@@ -407,7 +448,7 @@
                                 </span>
                                 <a>1. Upload an image</a>
                                 <p> Upload an image to the canvas to get started editing
-                                    with APART's image editor.</p>
+                                    with Apart's image editor.</p>
                             </div>
 
                         </div>
@@ -417,7 +458,7 @@
                                     auto_fix_high
                                 </span>
                                 <a>2. Select a feature</a>
-                                <p> Click on the left menu of the APART photo
+                                <p> Click on the left menu of the Apart photo
                                     editor web app, browse through.</p>
                             </div>
                         </div>
@@ -427,7 +468,7 @@
                                     tune
                                 </span>
                                 <a>3. Adjust and preview</a>
-                                <p> Edit images online with APART's picture editor
+                                <p> Edit images online with Apart's picture editor
                                     in just a few clicks, adjust the intensity,
                                     preview, and apply.</p>
 
@@ -1021,6 +1062,11 @@
                                 send
                                 <h id="topbuttomssend">Share</h>
                             </button>
+                        </div>
+                        <div class="login_icon_user_input_display">
+                            <div class="wrap_loging" id="wrap_loging">
+                                <img src="/static/images/IMG_8056.png" alt="Image Description">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1645,8 +1691,7 @@
             <button type="button" class="cookie-agree">I agree</button>
         </div>
     </div>
-    <script src="{{url_for('static', filename='styles/slider.js')}}">
-    </script>
+
     <!--<script src="slider.js"></script>-->
     <script>
         // get the filename from the "src" attribute of the "image-canvas" element on first 
@@ -1666,13 +1711,17 @@
 
 </body>
 <footer>
-    <div class=" footer">
-        <p class="translate">The content of this site is copyright-protected and is the property of APART STUDIO,
+    <div class=" footer" id="footer_div">
+        
+            <div class="wrap_text_for_copywrites"><p>
+                The content of this site is copyright-protected and is the property of Apart Studio,
             business concept
-            is to offer image editor free of charge. APART STUDIO has since it was founded in 2022 in istanbul as
+            is to offer image editor free of charge. Apart Studio has since it was founded in 2022 in istanbul as
             project for 4th
-            year student of computer engineering department at byekoz university.<br><br>
-
+            year student of computer engineering department at byekoz university.</p>
+            </div>
+        
+        <div class="wrap_social_media_logos">
             <a style="text-decoration:none" href="https://github.com/yousefturin">
                 <img src="/static/images/github.png" alt="buttonpng" id="img_github" style="width: 20px; height: 20px;">
             </a>
@@ -1684,13 +1733,14 @@
                 <img src="/static/images/instagram.png" alt="buttonpng" id="img_instaram"
                     style="width: 20px; height: 20px;">
             </a>
-
-            <br><br>
+        </div>
+        <div class="wrap_email_location_text">
             Turkey | <a style="text-decoration:none;font-weight: bold;"
-                href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@Scalorbost.com</a>
-        </p>
+            href="mailto:muradrayyan@ogrenci.beykoz.edu.tr">contact@apartstudio.com</a>
+        </div>
     </div>
 
 </footer>
-
+<script src="{{url_for('static', filename='styles/slider.js')}}">
+</script>
 </html>
