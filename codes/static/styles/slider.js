@@ -1,3 +1,125 @@
+const leftpane = document.querySelector('.leftpane');
+const toppane = document.querySelector('.toppane');
+const rightpane = document.querySelector('.rightpane');
+const middlepane = document.querySelector('.middlepane');
+const footerpane = document.querySelector('.footer');
+const toggleButton = document.getElementById('_1st-toggle-btn');
+const themeToggle = document.getElementById('themeToggle');
+const histogramcanvas = document.getElementById('histogram-canvas');
+const overlaylogin = document.getElementById('overlay_login');
+const overlaycontent = document.querySelector('.overlay-content');
+const overlay1content = document.querySelector('.overlay1-content');
+const overlay2content = document.querySelector('.overlay2-content');
+const overlay3content = document.querySelector('.overlay3-content');
+const overlay4content = document.querySelector('.overlay4-content');
+
+// Check if a theme is stored in cookies
+const storedTheme = getCookie('theme');
+if (storedTheme === 'dark') {
+  applyDarkTheme();
+  themeToggle.checked = false;
+} else {
+  applyLightTheme();
+  themeToggle.checked = true;
+}
+
+toggleButton.addEventListener('click', () => {
+  // Toggle between themes
+  if (leftpane.classList.contains('light-e5e5e5')) {
+    applyDarkTheme();
+    setCookie('theme', 'dark', 365); // Store the theme in a cookie for 365 days
+    themeToggle.checked = false;
+  } else {
+    applyLightTheme();
+    setCookie('theme', 'light', 365);
+    themeToggle.checked = true;
+  }
+});
+
+function applyLightTheme() {
+  leftpane.classList.remove('dark-595858');
+  toppane.classList.remove('dark-595858');
+  rightpane.classList.remove('dark-595858');
+  footerpane.classList.remove('dark-595858');
+  overlaylogin.classList.remove('dark-595858');
+  overlaycontent.classList.remove('dark-595858');
+  overlay1content.classList.remove('dark-595858');
+  overlay2content.classList.remove('dark-595858');
+  overlay3content.classList.remove('dark-595858');
+  overlay4content.classList.remove('dark-595858');
+  middlepane.classList.remove('dark-4c4b4b');
+  histogramcanvas.classList.remove('dark-4c4b4b');
+
+
+  leftpane.classList.add('light-e5e5e5');
+  toppane.classList.add('light-e5e5e5');
+  rightpane.classList.add('light-e5e5e5');
+  footerpane.classList.add('light-e5e5e5');
+  overlaylogin.classList.add('light-e5e5e5');
+  overlaycontent.classList.add('light-e5e5e5');
+  overlay1content.classList.add('light-e5e5e5');
+  overlay2content.classList.add('light-e5e5e5');
+  overlay3content.classList.add('light-e5e5e5');
+  overlay4content.classList.add('light-e5e5e5');
+  middlepane.classList.add('light-9b9b9b');
+  histogramcanvas.classList.add('light-9b9b9b');
+
+}
+
+function applyDarkTheme() {
+  leftpane.classList.remove('light-e5e5e5');
+  toppane.classList.remove('light-e5e5e5');
+  rightpane.classList.remove('light-e5e5e5');
+  footerpane.classList.remove('light-e5e5e5');
+  overlaylogin.classList.remove('light-e5e5e5');
+  overlaycontent.classList.remove('light-e5e5e5');
+  overlay1content.classList.remove('light-e5e5e5');
+  overlay2content.classList.remove('light-e5e5e5');
+  overlay3content.classList.remove('light-e5e5e5');
+  overlay4content.classList.remove('light-e5e5e5');
+  middlepane.classList.remove('light-9b9b9b');
+  histogramcanvas.classList.remove('light-9b9b9b');
+
+
+  leftpane.classList.add('dark-595858');
+  toppane.classList.add('dark-595858');
+  rightpane.classList.add('dark-595858');
+  footerpane.classList.add('dark-595858');
+  overlaylogin.classList.add('dark-595858');
+  overlaycontent.classList.add('dark-595858');
+  overlay1content.classList.add('dark-595858');
+  overlay2content.classList.add('dark-595858');
+  overlay3content.classList.add('dark-595858');
+  overlay4content.classList.add('dark-595858');
+  middlepane.classList.add('dark-4c4b4b');
+  histogramcanvas.classList.add('dark-4c4b4b');
+}
+
+// Helper function to set a cookie
+function setCookie(name, value, days) {
+  const date = new Date();
+  date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+  const expires = "expires=" + date.toUTCString();
+  document.cookie = name + "=" + value + ";" + expires + ";path=/";
+}
+
+// Helper function to get a cookie by name
+function getCookie(name) {
+  const cookieName = name + "=";
+  const cookies = document.cookie.split(';');
+  for (let i = 0; i < cookies.length; i++) {
+    let cookie = cookies[i];
+    while (cookie.charAt(0) === ' ') {
+      cookie = cookie.substring(1);
+    }
+    if (cookie.indexOf(cookieName) === 0) {
+      return cookie.substring(cookieName.length, cookie.length);
+    }
+  }
+  return "";
+}
+
+
 function setupVideoOverlay(button, overlay, video) {
   var timer;
 
@@ -3852,6 +3974,33 @@ overlaygrain.addEventListener("click", (event) => {
     buttons[i].classList.remove("clicked");
   }
 });
+
+const loginBtn = document.getElementById("wrap_loging");
+const overlayLogin = document.getElementById("overlay_login");
+
+let isActive = false;
+
+loginBtn.addEventListener("click", () => {
+  if (isActive) {
+    overlayLogin.classList.remove("active"); // remove the 'active' class to hide the overlay
+    isActive = false;
+  } else {
+    overlayLogin.classList.add("active"); // add the 'active' class to show the overlay
+    isActive = true;
+  }
+});
+
+document.addEventListener("click", (event) => {
+  if (
+    !loginBtn.contains(event.target) &&
+    event.target !== overlayLogin &&
+    !overlayLogin.contains(event.target)
+  ) {
+    overlayLogin.classList.remove("active"); // remove the 'active' class to hide the overlay
+    isActive = false;
+  }
+});
+
 
 // displaying the style of the font selector in the font box
 /*
