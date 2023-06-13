@@ -1,9 +1,11 @@
 # What is  **APART STUDIO**
-<img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/190298e6-be36-4281-8fd1-e07e68b84385">
 
 
+![Screenshot 2023-06-13 164124](https://github.com/yousefturin/APARTSTUDIO/assets/94796673/caf9a7a1-2e05-4b4b-ad7f-b889335b2135)
+![Screenshot 2023-06-13 164355](https://github.com/yousefturin/APARTSTUDIO/assets/94796673/7df539fc-2b68-4bf6-8b72-357506c0a158)
 
-It's a web application written in Python using the Flask framework and it allows users to editor images where users can upload there pictures and edit them using different tools and methods that program provide, such as:
+
+It's a web application written in Python using the Flask framework and it allows users to editor images where users can upload there pictures and edit them using different tools and methods that the program provides, such as:
 > 
 >- Apply filters
 >- Histogram Visualization and Equalization
