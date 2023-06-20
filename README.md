@@ -32,15 +32,15 @@ It's a web application written in Python using the Flask framework and it allows
 #### Colorizing Image Screenshots
 
 <div style="display:flex;">
-  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/f309ca57-cce0-4a3a-90cf-ddc236221f17" alt="237668461-9ea8c110-43a3-48ee-9f96-37af6926fdd3" width="370" />
-  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/afb2810e-9c2f-45c5-bdb2-6c976e16e919" alt="237668259-1f8cb417-3be3-4622-92ed-4972eb2c2a19" width="370" />
+  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/f309ca57-cce0-4a3a-90cf-ddc236221f17" alt="237668461-9ea8c110-43a3-48ee-9f96-37af6926fdd3" width="400" />
+  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/afb2810e-9c2f-45c5-bdb2-6c976e16e919" alt="237668259-1f8cb417-3be3-4622-92ed-4972eb2c2a19" width="400" />
 </div>
 
 
 #### Remove Background Screenshots
 <div style="display:flex;">
-  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/9040561d-d462-444c-ac39-0fd0188890b2" alt="brooke-cagle-NoRsyXmHGpI-unsplash" width="370" />
-  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/65bfde51-1b3d-43c0-b063-6e1f8a3e27a8" alt="brooke-cagle-NoRsyXmHGpI-unsplash-7891" width="370" />
+  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/9040561d-d462-444c-ac39-0fd0188890b2" alt="brooke-cagle-NoRsyXmHGpI-unsplash" width="400" />
+  <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/65bfde51-1b3d-43c0-b063-6e1f8a3e27a8" alt="brooke-cagle-NoRsyXmHGpI-unsplash-7891" width="400" />
 </div>
 ## Technologies Used
 This project utilizes the following technologies and dependencies:
