@@ -78,6 +78,7 @@ Extract the downloaded file and place it in the `APARTSTUDIO/codes/models/RRDB_E
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/9040561d-d462-444c-ac39-0fd0188890b2" alt="brooke-cagle-NoRsyXmHGpI-unsplash" width="400" />
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/65bfde51-1b3d-43c0-b063-6e1f8a3e27a8" alt="brooke-cagle-NoRsyXmHGpI-unsplash-7891" width="400" />
 </div>
+
 ## Technologies Used
 This project utilizes the following technologies and dependencies:
 
