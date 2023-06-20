@@ -1,6 +1,5 @@
 
 
-#DONT UPLOAD THIS CODE TO GITHUB DONT DONT DONT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 
 import os
@@ -67,7 +66,7 @@ def allowed_file(filename):
 
 
 def get_user_by_username(username):
-    conn = sqlite3.connect('database.db')
+    conn = sqlite3.connect('codes/utils/database.db')
     c = conn.cursor()
 
     c.execute("SELECT username, email FROM users WHERE username=?", (username,))
