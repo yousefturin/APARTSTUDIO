@@ -1,13 +1,21 @@
 
+
+#DONT UPLOAD THIS CODE TO GITHUB DONT DONT DONT!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+
 import os
 import base64
+import random
+import sqlite3
 
 import arch 
 import cv2
 import numpy as np
 from PIL import Image, ImageEnhance, ImageDraw, ImageFont 
-from flask import Flask, flash, request, render_template, redirect, url_for, send_file
+from flask import Flask, flash, request, render_template, redirect, url_for, send_file, session
 from werkzeug.utils import secure_filename
+
+
 
 from utils.segment_image import segment_image
 from utils.colorizing_image import colorize_image
@@ -35,14 +43,13 @@ class ResourceNotFoundError(Exception):
 
 class InternalServerError(Exception):
     pass
-
+app.config['SESSION_TYPE'] = 'filesystem'
 app.config['RESULT_PATH'] = RESULT_PATH
 app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 app.config['DEBUG'] = False
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1000 * 1000
 app.secret_key = "teqi-Eest1-iold4"
-
 
 @app.errorhandler(ResourceNotFoundError)
 def handle_resource_not_found(e):
@@ -59,10 +66,28 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 
+def get_user_by_username(username):
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+
+    c.execute("SELECT username, email FROM users WHERE username=?", (username,))
+    result = c.fetchone()
+    conn.close()
+
+    return result
+
+
 @app.route('/')
 def home():
         try:
-            return render_template('main.html')
+            if 'username' in session:
+                    username = session['username']
+                    user = get_user_by_username(username)
+                    if user:
+                        username, email = user
+                        return render_template('main.html', username=username, email=email)
+
+            return render_template('main.html', username=None, email=None)
         except:
             raise ResourceNotFoundError("Resource page not found")
 
@@ -74,8 +99,8 @@ def upload_image():
         file = request.files['file'] 
 
         if 'file' not in request.files:
-             flash('No Image Part')
-             return redirect(request.url)
+            flash('No Image Part')
+            return redirect(request.url)
         else:
             if file.filename == '':
                 flash('No Selected Image')
@@ -86,10 +111,17 @@ def upload_image():
                         filename = secure_filename(file.filename)
                         app.logger.info(f'{filename}')
                         file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-                        return render_template('main.html', filename=filename)
+                        if 'username' in session:
+                            username = session['username']
+                            user = get_user_by_username(username)
+                            if user:
+                                username, email = user
+                        else:
+                            return render_template('main.html',filename=filename)
+                        return render_template('main.html', filename=filename, username=username, email=email)
                     except:
                         raise ResourceNotFoundError("Image Resource could not be processed") 
-                                 
+                                
                 elif file.filename not in ALLOWED_EXTENSIONS :
                     flash('Allowed image types are \n (png, jpg, jpeg, gif)')
                     return redirect(request.url)           
@@ -98,7 +130,7 @@ def upload_image():
             else:
                 raise ResourceNotFoundError("Image Resource could not be retuned")  
     else:
-             return render_template('main.html')
+            return render_template('main.html')
 
 
 @app.route('/display/<filename>')
@@ -2106,7 +2138,64 @@ def download_file(filename):
         return send_file(output_path, output_img, as_attachment=True)
 
 
+# Function to create the users table if it doesn't exist
+def create_table():
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute('''CREATE TABLE IF NOT EXISTS users
+                (id INTEGER PRIMARY KEY AUTOINCREMENT,
+                full_name TEXT,
+                username TEXT,
+                email TEXT,
+                password TEXT)''')
+    conn.commit()
+    conn.close()
 
+# Check if the table exists before creating it
+conn = sqlite3.connect('database.db')
+c = conn.cursor()
+c.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='users'")
+table_exists = c.fetchone()
+conn.close()
+
+
+@app.route('/register', methods=['POST'])
+def register():
+    if not table_exists:
+        create_table() 
+    full_name = request.form.get('full_name')
+    username = request.form.get('username')
+    email = request.form.get('email')
+    password = request.form.get('password')
+
+    conn = sqlite3.connect('database.db')
+    c = conn.cursor()
+    c.execute("INSERT INTO users (full_name, username, email, password) VALUES (?, ?, ?, ?)",
+            (full_name, username, email, password))
+    conn.commit()
+    conn.close()
+
+    return render_template('main.html', username=username, email=email)
+
+@app.route('/login', methods=['POST'])
+def login():
+    username = request.form.get('username')
+    password = request.form.get('password')
+    # Need authinication for pass and username
+
+    user = get_user_by_username(username)
+    if user:
+        session['username'] = username
+        username, email = user
+        return render_template('main.html', username=username, email=email)
+
+    return render_template('main.html', username=None, email=None)
+
+@app.route('/logout')
+def logout():
+    session.pop('username', None)
+    session.pop('email', None)
+    return render_template('main.html', username=None, email=None)
 
 if __name__ == "__main__":
     app.run(debug=True,host='0.0.0.0', port=5001)
