@@ -23,15 +23,15 @@ To install the necessary dependencies, follow these steps:
 
 **1.Clone the APARTSTUDIO repository from GitHub:**
 
-  `git clone https://github.com/yousefturin/APARTSTUDIO.git`
+    `git clone https://github.com/yousefturin/APARTSTUDIO.git`
 
 **2.Navigate to the project directory:**
 
-  `cd APARTSTUDIO/codes`
+    `cd APARTSTUDIO/codes`
 
 **3.Create a virtual environment**(optional but recommended):
 
-  `python3 -m venv env`
+    `python3 -m venv env`
 
 On macOS/Linux:
 
@@ -42,7 +42,7 @@ On Windows:
 
 **4.Install the required Python packages:**
 
-`pip install -r requirements.txt`
+    `pip install -r requirements.txt`
 
 **5.Download the pre-trained models:**
 
@@ -51,21 +51,21 @@ Model 1: **ColorizeArtistic_gen**
 Download the ColorizeArtistic_gen model from [[model_link_1](https://drive.google.com/file/d/1zflvwQIiMjuOCB5DVWEU-e-4KtC7OeVP/view?usp=sharing)].
 Extract the downloaded file and place it in the directory.
 
-  `APARTSTUDIO/codes/models/ColorizeArtistic_gen` 
+    `APARTSTUDIO/codes/models/ColorizeArtistic_gen`
 
 Model 2: **deeplabv3_resnet101_coco-586e9e4e** 
 
 Download the deeplabv3_resnet101_coco-586e9e4e model from [[model_link_2](https://drive.google.com/file/d/1Yx63QqZqIiJaTrMGamPJR0fSKRbao4An/view?usp=sharing)].
 Extract the downloaded file and place it in the directory.
 
-  `APARTSTUDIO/codes/models/deeplabv3_resnet101_coco-586e9e4e`
+    `APARTSTUDIO/codes/models/deeplabv3_resnet101_coco-586e9e4e` 
 
 Model 3: **RRDB_ESRGAN_x4** Model
 
 Download the RRDB_ESRGAN_x4 model from [[model_link_3](https://drive.google.com/file/d/12O_3vsUi-AQcgk999kJ6bmMD3ylmlhqI/view?usp=sharing)].
 Extract the downloaded file and place it in the directory.
-  
-  `APARTSTUDIO/codes/models/RRDB_ESRGAN_x4` 
+
+    `APARTSTUDIO/codes/models/RRDB_ESRGAN_x4` 
 
 ## Screenshots/Demo
 
