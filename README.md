@@ -169,7 +169,7 @@ These updates will significantly enhance APARTSTUDIO by addressing the mobile re
 - [yousefturin](https://github.com/yousefturin)
 
 ## License
-This project is licensed under the terms of the APACHE License. See the [LICENSE](codes/LICENSE) file for details.
+This project is licensed under the terms of the APACHE License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 This project makes use of the following external resources and models:
