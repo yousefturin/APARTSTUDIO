@@ -42,6 +42,8 @@ It's a web application written in Python using the Flask framework and it allows
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/9040561d-d462-444c-ac39-0fd0188890b2" alt="brooke-cagle-NoRsyXmHGpI-unsplash" width="370" />
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/65bfde51-1b3d-43c0-b063-6e1f8a3e27a8" alt="brooke-cagle-NoRsyXmHGpI-unsplash-7891" width="370" />
 </div>
+
+
 ## Technologies Used
 This project utilizes the following technologies and dependencies:
 
