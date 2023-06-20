@@ -113,32 +113,30 @@ This project incorporates the following models for image processing:
 
 
 ## Features
-> 
->- Histogram Visualization
->- Fix White-balance
->- Fix Exposure
->- Fix Contrast
->- Fix Highlights
->- Fix Shadows
->- Fix White
->- Fix Black
->- Add Texture
->- Add Claruty
->- Add Dehaze
->- Set Vibrance
->- Set Saturation
->- Clip The colors "Red/Orange/Yellow/Green/Sky-Blue/Blue/Purple/Pink" and Adjust (Hue, Saturation, Luminance)
->- Add text and customize it with (Font size, Rotation, Color, Font Type and Font View) 
->- Add Blur
->- Add Grin
->- Crop The Image 
->- Resize the image using **SCALORBUST**
->- Colorize images using **DeOldif** model
->- Enhance images using **ESRGAN** model
->- Remove Background using **deeplabv3_resnet101** model
->- Download The image in any Quality (100%, 75%, 50%, 25%). Any format (.jpg, .jpeg, .png). Any DPI(300dpi, 150dpi, 96dpi, 72dpi)
->- Share The image on any platform with one click
-
+- Histogram Visualization
+- Fix White-balance
+- Fix Exposure
+- Fix Contrast
+- Fix Highlights
+- Fix Shadows
+- Fix White
+- Fix Black
+- Add Texture
+- Add Clarity
+- Add Dehaze
+- Set Vibrance
+- Set Saturation
+- Clip The colors "Red/Orange/Yellow/Green/Sky-Blue/Blue/Purple/Pink" and Adjust (Hue, Saturation, Luminance)
+- Add text and customize it with (Font size, Rotation, Color, Font Type and Font View) 
+- Add Blur
+- Add Grin
+- Crop The Image 
+- Resize the image using **SCALORBUST**
+- Colorize images using **DeOldif** model
+- Enhance images using **ESRGAN** model
+- Remove Background using **deeplabv3_resnet101** model
+- Download The image in any Quality (100%, 75%, 50%, 25%). Any format (.jpg, .jpeg, .png). Any DPI(300dpi, 150dpi, 96dpi, 72dpi)
+- Share The image on any platform with one click
 ## Contributing
 We welcome contributions from the community to help improve APARTSTUDIO. If you encounter any bugs, visual problems, or non-responsive issues, or if you have ideas on making the website better, we would appreciate your input and assistance.
 
