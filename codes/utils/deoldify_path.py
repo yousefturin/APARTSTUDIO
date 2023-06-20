@@ -1,2 +1,2 @@
 import sys
-sys.path.append('/APARTSTUDIO/DeOldify')
+sys.path.append('/codes/DeOldify')
