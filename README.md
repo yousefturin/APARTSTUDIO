@@ -15,7 +15,7 @@ It's a web application written in Python using the Flask framework and it allows
   - [Features](#features)
   - [Contributing](#contributing)
   - [Roadmap/Future Development](#roadmapfuture-development)
-  - [Authors](#authors)
+  - [Author](#author)
   - [License](#license)
   - [Acknowledgments](#acknowledgments)
 
@@ -42,8 +42,6 @@ It's a web application written in Python using the Flask framework and it allows
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/9040561d-d462-444c-ac39-0fd0188890b2" alt="brooke-cagle-NoRsyXmHGpI-unsplash" width="370" />
   <img src="https://github.com/yousefturin/APARTSTUDIO/assets/94796673/65bfde51-1b3d-43c0-b063-6e1f8a3e27a8" alt="brooke-cagle-NoRsyXmHGpI-unsplash-7891" width="370" />
 </div>
-
-
 ## Technologies Used
 This project utilizes the following technologies and dependencies:
 
@@ -122,11 +120,11 @@ If you have any questions or need further assistance, please feel free to reach 
 **Text-to-Image Generation with OpenAI DALL·E:** As part of our future development, we're excited to integrate OpenAI DALL·E into APARTSTUDIO. This powerful model allows users to generate images based on text descriptions, expanding the creative possibilities of our web image editor.
 
 These updates will significantly enhance APARTSTUDIO by addressing the mobile responsiveness, improving performance, and introducing a cutting-edge feature for text-to-image generation. We value user feedback and strive to create a robust and user-friendly platform for image editing.
-## Authors
+## Author
 - [yousefturin](https://github.com/yousefturin)
 
 ## License
-This project is licensed under the terms of the MIT License. See the [LICENSE](codes/LICENSE) file for details.
+This project is licensed under the terms of the APACHE License. See the [LICENSE](codes/LICENSE) file for details.
 
 ## Acknowledgments
 This project makes use of the following external resources and models:
