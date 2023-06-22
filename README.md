@@ -95,7 +95,7 @@ This project utilizes the following technologies and dependencies:
 - [NumPy](https://numpy.org/): A library for numerical computations in Python.
 - [arch](https://arch.readthedocs.io/): A library for econometric modeling.
 - [PIL (Python Imaging Library)](https://pillow.readthedocs.io/): A library for image processing in Python.
-- Other dependencies: `os`, `base64`
+- Other dependencies: `os`, `base64`, `sqlite3`, `random`, `schedule`, `time`
 
 The project also utilizes the following external API:
 
