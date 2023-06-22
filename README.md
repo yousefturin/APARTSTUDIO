@@ -103,13 +103,13 @@ The project also utilizes the following external API:
 ## Models Used
 This project incorporates the following models for image processing:
 
-- DeOldify: A deep learning model for colorizing black and white images.
-   (https://github.com/jantic/DeOldify)
-- ESRGAN: Enhanced Super-Resolution Generative Adversarial Networks, used for enhancing image quality.
-    (https://github.com/xinntao/ESRGAN)
-- resnet101: A deep learning model, specifically the resnet101 architecture, used for background removal.    
-    (https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/deeplabv3.py)
-
+- [DeOldify](https://github.com/jantic/DeOldify): A deep learning model for colorizing black and white images.
+  
+- [ESRGAN](https://github.com/xinntao/ESRGAN): Enhanced Super-Resolution Generative Adversarial Networks, used for enhancing image quality.
+  
+- [resnet101](https://github.com/pytorch/vision/blob/main/torchvision/models/segmentation/deeplabv3.py)
+: A deep learning model, specifically the resnet101 architecture, used for background removal.    
+    
 
 
 ## Features
