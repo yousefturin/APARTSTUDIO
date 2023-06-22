@@ -55,14 +55,14 @@ Extract the downloaded file and place it in the directory.
 
 - Model 2: **deeplabv3_resnet101_coco-586e9e4e** 
 
-Download the deeplabv3_resnet101_coco-586e9e4e model from [[model_link_2](https://drive.google.com/file/d/1Yx63QqZqIiJaTrMGamPJR0fSKRbao4An/view?usp=sharing)].
+Download the [deeplabv3_resnet101_coco-586e9e4e](https://drive.google.com/file/d/1Yx63QqZqIiJaTrMGamPJR0fSKRbao4An/view?usp=sharing) model.
 Extract the downloaded file and place it in the directory.
 
     `APARTSTUDIO/codes/models/deeplabv3_resnet101_coco-586e9e4e` 
 
 - Model 3: **RRDB_ESRGAN_x4** Model
 
-Download the RRDB_ESRGAN_x4 model from [[model_link_3](https://drive.google.com/file/d/12O_3vsUi-AQcgk999kJ6bmMD3ylmlhqI/view?usp=sharing)].
+Download the [RRDB_ESRGAN_x4](https://drive.google.com/file/d/12O_3vsUi-AQcgk999kJ6bmMD3ylmlhqI/view?usp=sharing) model.
 Extract the downloaded file and place it in the directory.
 
     `APARTSTUDIO/codes/models/RRDB_ESRGAN_x4` 
