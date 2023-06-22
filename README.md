@@ -46,9 +46,9 @@ To install the necessary dependencies, follow these steps:
 
 **5.Download the pre-trained models:**
 
-- Model 1: **ColorizeArtistic_gen** 
+- Model 1: **ColorizeArtistic_gen**
 
-Download the [ColorizeArtistic_gen(https://drive.google.com/file/d/1zflvwQIiMjuOCB5DVWEU-e-4KtC7OeVP/view?usp=sharing)] model.
+Download the [ColorizeArtistic_gen](https://drive.google.com/file/d/1zflvwQIiMjuOCB5DVWEU-e-4KtC7OeVP/view?usp=sharing) model.
 Extract the downloaded file and place it in the directory.
 
     `APARTSTUDIO/codes/models/ColorizeArtistic_gen`
